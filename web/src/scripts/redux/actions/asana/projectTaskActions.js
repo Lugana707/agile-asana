@@ -84,7 +84,12 @@ const loadProjectTasks = ({ asanaProjects }) => {
             completedTasks,
             completedTasksWeight,
             completedTasksOverweight:
-              completedTasksWeight - completedTasks.length
+              completedTasksWeight - completedTasks.length,
+            totalStoryPoints: completedTasks.reduce(
+              (accumulator, { "Story Points": storyPoints = 0 }) =>
+                accumulator + parseInt(storyPoints, 10),
+              0
+            )
           };
         }
       );

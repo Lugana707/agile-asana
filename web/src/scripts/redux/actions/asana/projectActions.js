@@ -1,5 +1,6 @@
 import axios from "axios";
 import jsLogger from "js-logger";
+import async from "async";
 import { ASANA_API_URL } from "../../../api";
 import { loadProjectTasks } from "./projectTaskActions";
 
@@ -17,16 +18,28 @@ const loadProjects = () => {
       const url = `${ASANA_API_URL}/projects`;
       jsLogger.debug("Getting project list from API...", { url });
 
-      const { data } = await axios.get(url, {
-        params: {
-          opt_fields: [].join(",") || undefined,
-          archived: true
-        },
-        validateStatus: status => status === 200
-      });
-      jsLogger.debug("Gotten projects! Filtering...", { data, match });
+      const [archived, unarchived] = await async.mapLimit(
+        [true, false],
+        2,
+        async archived => {
+          const { data } = await axios.get(url, {
+            params: {
+              opt_fields: [""].join(",") || undefined,
+              archived
+            },
+            validateStatus: status => status === 200
+          });
+          return data.data.map(obj => ({ ...obj, archived }));
+        }
+      );
 
-      const asanaProjects = data.data
+      jsLogger.debug("Gotten projects! Filtering...", {
+        archived,
+        unarchived,
+        match
+      });
+      const asanaProjects = archived
+        .concat(unarchived)
         .filter(({ name }) => match.test(name))
         .map(({ name, ...project }) => ({
           name,

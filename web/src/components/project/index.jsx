@@ -19,14 +19,19 @@ const Projects = () => {
   }, [asanaProjectTasks, dispatch]);
 
   const TableRow = ({ data }) => {
-    const { gid, week, completedTasks } = data;
+    const { gid, week, completedTasks, totalStoryPoints, archived } = data;
     return (
       <>
         <td>
-          <LinkContainer to={`/project/${gid}`}>
+          <LinkContainer
+            to={`/project/${gid}`}
+            className={!archived && "text-danger"}
+            disabled={!archived}
+          >
             <Button variant="link">Week {week}</Button>
           </LinkContainer>
         </td>
+        <td>{archived ? totalStoryPoints || "" : "In Progress"}</td>
         <td>{completedTasks.length}</td>
       </>
     );
