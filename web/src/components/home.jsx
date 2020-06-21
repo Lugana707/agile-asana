@@ -1,19 +1,24 @@
 import React from "react";
-import Button from "react-bootstrap/Button";
+import { Button, Container, Row, Col } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import logo from "../logo.svg";
 
 const Home = () => {
   return (
-    <>
-      <img src={logo} className="App-logo" alt="logo" />
-      <p>
-        Edit <code>src/App.js</code> and save to reload.
-      </p>
-      <LinkContainer to="/projects">
-        <Button variant="primary">Projects</Button>
-      </LinkContainer>
-    </>
+    <Container>
+      <Row>
+        <Col>
+          <img src={logo} className="App-logo" alt="logo" />
+        </Col>
+      </Row>
+      <Row>
+        <Col className="text-center">
+          <LinkContainer to="/project" className="m-1">
+            <Button variant="primary">Projects</Button>
+          </LinkContainer>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

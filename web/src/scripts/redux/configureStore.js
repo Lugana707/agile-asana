@@ -12,7 +12,7 @@ import crudReducer from "./reducers/crudReducer";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["asanaProjects"]
+  whitelist: ["asanaProjects", "asanaProjectTasks"]
 };
 
 const initialiseReduxStore = preloadedState => {
@@ -27,7 +27,8 @@ const initialiseReduxStore = preloadedState => {
     : compose)(...enhancers);
 
   const rootReducer = combineReducers({
-    asanaProjects: crudReducer("asanaProjects")
+    asanaProjects: crudReducer("asanaProjects"),
+    asanaProjectTasks: crudReducer("asanaProjectTasks")
   });
 
   const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -7,7 +7,9 @@ import jsLogger from "js-logger";
 import configureStore from "./scripts/redux/configureStore";
 import { ASANA_API_TOKEN } from "./scripts/api";
 import Home from "./components/home";
-import Projects from "./components/projects";
+import Projects from "./components/project/index";
+import ProjectShow from "./components/project/show";
+import ProjectTasks from "./components/project/tasks";
 
 const { store, persistor } = configureStore();
 
@@ -43,7 +45,17 @@ function App() {
             <BrowserRouter>
               <Switch>
                 <Route exact path="/" component={Home} />
-                <Route exact path="/projects" component={Projects} />
+                <Route exact path="/project" component={Projects} />
+                <Route
+                  exact
+                  path="/project/:projectGid"
+                  component={ProjectShow}
+                />
+                <Route
+                  exact
+                  path="/project/:projectGid/task"
+                  component={ProjectTasks}
+                />
               </Switch>
             </BrowserRouter>
           </PersistGate>

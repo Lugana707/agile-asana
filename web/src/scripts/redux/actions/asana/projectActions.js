@@ -1,6 +1,7 @@
 import axios from "axios";
 import jsLogger from "js-logger";
 import { ASANA_API_URL } from "../../../api";
+import { loadProjectTasks } from "./projectTaskActions";
 
 const SET_LOADING_ASANA_PROJECTS = "SET_LOADING_ASANAPROJECTS";
 const SUCCESS_LOADING_ASANA_PROJECTS = "SUCCESS_LOADING_ASANAPROJECTS";
@@ -25,7 +26,14 @@ const loadProjects = () => {
       });
       jsLogger.debug("Gotten projects! Filtering...", { data, match });
 
-      const asanaProjects = data.data.filter(({ name }) => match.test(name));
+      const asanaProjects = data.data
+        .filter(({ name }) => match.test(name))
+        .map(({ name, ...project }) => ({
+          name,
+          week: parseInt(name.replace(/.+ Kanban Week /, "").trim(), 10),
+          ...project
+        }));
+      asanaProjects.sort((a, b) => (a.week < b.week ? 1 : -1));
 
       dispatch({
         type: SUCCESS_LOADING_ASANA_PROJECTS,
@@ -33,6 +41,7 @@ const loadProjects = () => {
         value: { asanaProjects },
         timestamp: new Date()
       });
+      dispatch(loadProjectTasks({ asanaProjects }));
     } catch (error) {
       dispatch({ type: SET_LOADING_ASANA_PROJECTS, loading: false });
       jsLogger.error(error.callStack || error);
