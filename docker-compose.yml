@@ -1,0 +1,28 @@
+version: "3.3"
+services:
+  web:
+    image: node:12-alpine
+    command: sh -c "yarn install --immutable --production=false && yarn start"
+    user: node
+    working_dir: /src
+    env_file:
+      - ./web/.env
+    environment:
+      REACT_APP_ASANA_API_ENDPOINT: https://app.asana.com/api/1.0
+    ports:
+      - 80:3000
+    volumes:
+      - ./web/:/src/:cached
+  api:
+    image: node:12-alpine
+    command: sh -c "yarn setup:development && yarn start"
+    user: node
+    working_dir: /src
+    env_file:
+      - ./api/.env
+    environment:
+      NODE_ENV: production
+      ASANA_API_ENDPOINT: https://app.asana.com/api/1.0
+    volumes:
+      - ./api:/src:cached
+      - /tmp:/tmp:delegated

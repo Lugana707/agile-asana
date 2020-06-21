@@ -1,0 +1,15 @@
+@import "~axios-progress-bar/dist/nprogress.css";
+@import "./vars";
+
+#nprogress .bar {
+  background: $primary !important;
+}
+
+#nprogress .peg {
+  box-shadow: 0 0 10px $primary, 0 0 5px $primary !important;
+}
+
+#nprogress .spinner-icon {
+  border-top-color: $primary !important;
+  border-left-color: $primary !important;
+}
