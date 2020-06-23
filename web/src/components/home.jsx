@@ -5,7 +5,7 @@ import logo from "../logo.svg";
 
 const Home = () => {
   return (
-    <Container>
+    <Container hidden>
       <Row>
         <Col>
           <img src={logo} className="App-logo" alt="logo" />

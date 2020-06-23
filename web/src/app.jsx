@@ -6,6 +6,8 @@ import axios from "axios";
 import jsLogger from "js-logger";
 import configureStore from "./scripts/redux/configureStore";
 import { ASANA_API_TOKEN } from "./scripts/api";
+import Header from "./components/_header";
+import Footer from "./components/_footer";
 import Home from "./components/home";
 import Projects from "./components/project/index";
 import ProjectShow from "./components/project/show";
@@ -42,6 +44,7 @@ function App() {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <BrowserRouter>
+            <Header />
             <Switch>
               <Route exact path="/" component={Home} />
               <Route exact path="/project" component={Projects} />
@@ -56,6 +59,7 @@ function App() {
                 component={ProjectTasks}
               />
             </Switch>
+            <Footer />
           </BrowserRouter>
         </PersistGate>
       </Provider>

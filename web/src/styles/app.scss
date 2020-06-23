@@ -8,3 +8,13 @@
   position: relative;
   padding-bottom: 10vh;
 }
+
+.footer {
+  font-size: 0.8em;
+  max-height: 10vh;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  background-color: lighten($body-bg, 2);
+}
