@@ -19,20 +19,49 @@ const Projects = () => {
   }, [asanaProjectTasks, dispatch]);
 
   const TableRow = ({ data }) => {
-    const { gid, week, completedTasks, totalStoryPoints, archived } = data;
+    const {
+      gid,
+      week,
+      completedStoryPoints,
+      committedStoryPoints,
+      archived
+    } = data;
+
+    const percentageComplete =
+      committedStoryPoints === 0
+        ? false
+        : Math.round(
+            (completedStoryPoints / parseFloat(committedStoryPoints)) * 100
+          );
+
     return (
       <>
         <td>
           <LinkContainer
             to={`/project/${gid}`}
-            className={!archived && "text-danger"}
-            disabled={!archived}
+            className={archived ? "" : "text-danger"}
           >
             <Button variant="link">Week {week}</Button>
           </LinkContainer>
         </td>
-        <td>{archived ? totalStoryPoints || "" : "In Progress"}</td>
-        <td>{completedTasks.length}</td>
+        <td className="text-right">
+          <span>{completedStoryPoints} /</span>
+        </td>
+        {archived ? (
+          <>
+            <td>{committedStoryPoints}</td>
+            <td className="text-right">
+              {percentageComplete !== false && (
+                <span>{percentageComplete}%</span>
+              )}
+            </td>
+            <td></td>
+          </>
+        ) : (
+          <td colSpan="3" className="text-warning">
+            (In Progress)
+          </td>
+        )}
       </>
     );
   };
