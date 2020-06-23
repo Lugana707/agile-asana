@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import { Chart } from "react-charts";
 import { useSelector } from "react-redux";
 
@@ -10,22 +10,37 @@ const GraphStoryPoints = () => {
   const data = useMemo(
     () => [
       {
-        label: "Completed Story Points",
+        label: "3 Week Average",
         data: asanaProjectTasks
-          .map(obj => [obj.week, obj.completedStoryPoints])
+          .map(obj => [obj.week, obj.runningAverageCompletedStoryPoints])
+          .reverse()
+      },
+      {
+        label: "Committed Story Points",
+        data: asanaProjectTasks
+          .map(obj => [obj.week, obj.committedStoryPoints])
           .reverse()
       },
       {
         label: "Completed Story Points",
         data: asanaProjectTasks
-          .map(obj => [obj.week, obj.committedStoryPoints])
+          .map(obj => [obj.week, obj.completedStoryPoints])
           .reverse()
       }
     ],
     [asanaProjectTasks]
   );
 
-  const series = useMemo(() => ({ type: "bar", position: "bottom" }), []);
+  const series = useCallback((series, index) => {
+    switch (index) {
+      case 0:
+        return { type: "line", position: "bottom" };
+      case 1:
+      case 2:
+      default:
+        return { type: "bar", position: "bottom" };
+    }
+  }, []);
   const axes = useMemo(
     () => [
       { primary: true, type: "ordinal", position: "bottom" },

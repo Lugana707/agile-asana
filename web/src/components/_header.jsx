@@ -6,7 +6,6 @@ import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { Button, Form, FormControl } from "react-bootstrap";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
 import Logo from "../logo.png";
 import { loadProjects } from "../scripts/redux/actions/asana/projectActions";
 

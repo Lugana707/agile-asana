@@ -3,6 +3,8 @@ import jsLogger from "js-logger";
 import async from "async";
 import { ASANA_API_URL } from "../../../api";
 
+const RUNNING_AVERAGE_WEEK_COUNT = 3;
+
 const SET_LOADING_ASANA_PROJECT_TASKS = "SET_LOADING_ASANAPROJECTTASKS";
 const SUCCESS_LOADING_ASANA_PROJECT_TASKS = "SUCCESS_LOADING_ASANAPROJECTTASKS";
 
@@ -44,8 +46,8 @@ const loadProjectTasks = ({ asanaProjects }) => {
 
       jsLogger.debug("Weighting project tasks for...", { asanaProjectTasks });
       let tasksFound = {};
-      const weightedProjectTasks = asanaProjectTasks.map(
-        ({ tasks, ...project }) => {
+      const processedProjectTasks = asanaProjectTasks
+        .map(({ tasks, ...project }) => {
           const parsedTasks = tasks.map(({ custom_fields, ...task }) => {
             const customFields = custom_fields.reduce(
               (accumulator, { name, number_value, enum_value }) => ({
@@ -85,6 +87,8 @@ const loadProjectTasks = ({ asanaProjects }) => {
               0
             );
 
+          const completedStoryPoints = sumStoryPoints(completedTasks);
+
           return {
             ...project,
             tasks: parsedTasks,
@@ -93,16 +97,29 @@ const loadProjectTasks = ({ asanaProjects }) => {
             completedTasksOverweight:
               completedTasksWeight - completedTasks.length,
             committedStoryPoints: sumStoryPoints(parsedTasks),
-            completedStoryPoints: sumStoryPoints(completedTasks)
+            completedStoryPoints
           };
-        }
-      );
-      jsLogger.debug("Weighted project tasks!", { weightedProjectTasks });
+        })
+        .map((project, index, projects) => {
+          const runningAverageCompletedStoryPoints = Math.round(
+            projects
+              .slice(index, index + RUNNING_AVERAGE_WEEK_COUNT)
+              .reduce(
+                (accumulator, { completedStoryPoints }) =>
+                  accumulator + completedStoryPoints,
+                0
+              ) / RUNNING_AVERAGE_WEEK_COUNT
+          );
+          return {
+            ...project,
+            runningAverageCompletedStoryPoints
+          };
+        });
 
       dispatch({
         type: SUCCESS_LOADING_ASANA_PROJECT_TASKS,
         loading: false,
-        value: { asanaProjectTasks: weightedProjectTasks },
+        value: { asanaProjectTasks: processedProjectTasks },
         timestamp: new Date()
       });
     } catch (error) {

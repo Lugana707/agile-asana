@@ -1,4 +1,5 @@
 @import "./bootstrap-overrides";
+@import "./react-chart-overrides";
 
 .App {
   @extend .text-white, .text-center, .min-vh-100;
