@@ -6,6 +6,8 @@ import { LinkContainer } from "react-router-bootstrap";
 import Table from "../_library/_table";
 
 const Projects = () => {
+  const RUNNING_AVERAGE_WEEK_COUNT = 3;
+
   const { loading, asanaProjectTasks = [] } = useSelector(
     state => state.asanaProjectTasks
   );
@@ -34,9 +36,20 @@ const Projects = () => {
             (completedStoryPoints / parseFloat(committedStoryPoints)) * 100
           );
 
+    const projectIndex = asanaProjectTasks.findIndex(obj => obj.gid === gid);
+    const runningAverageCompletedStoryPoints = Math.round(
+      asanaProjectTasks
+        .slice(projectIndex, projectIndex + RUNNING_AVERAGE_WEEK_COUNT)
+        .reduce(
+          (accumulator, { completedStoryPoints }) =>
+            accumulator + completedStoryPoints,
+          0
+        ) / RUNNING_AVERAGE_WEEK_COUNT
+    );
+
     return (
       <>
-        <td>
+        <td className="align-middle">
           <LinkContainer
             to={`/project/${gid}`}
             className={archived ? "" : "text-danger"}
@@ -44,21 +57,23 @@ const Projects = () => {
             <Button variant="link">Week {week}</Button>
           </LinkContainer>
         </td>
-        <td className="text-right">
-          <span>{completedStoryPoints} /</span>
-        </td>
+        <td className="text-center align-middle">{committedStoryPoints}</td>
         {archived ? (
           <>
-            <td>{committedStoryPoints}</td>
-            <td className="text-right">
+            <td className="text-center align-middle">
+              <span>{completedStoryPoints}</span>
+            </td>
+            <td className="text-center align-middle">
               {percentageComplete !== false && (
                 <span>{percentageComplete}%</span>
               )}
             </td>
-            <td></td>
+            <td className="text-center align-middle">
+              {runningAverageCompletedStoryPoints}
+            </td>
           </>
         ) : (
-          <td colSpan="3" className="text-warning">
+          <td colSpan="3" className="text-warning text-center align-middle">
             (In Progress)
           </td>
         )}
@@ -74,7 +89,12 @@ const Projects = () => {
     <Container>
       <Row>
         <Col>
-          <Table loading={loading} data={asanaProjectTasks} row={TableRow} />
+          <Table
+            loading={loading}
+            data={asanaProjectTasks}
+            row={TableRow}
+            columns={["", "Committed", "Completed", "", "3 Week Average"]}
+          />
         </Col>
       </Row>
     </Container>
