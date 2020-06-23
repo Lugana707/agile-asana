@@ -39,28 +39,26 @@ axios.interceptors.response.use(null, error => {
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <BrowserRouter>
-              <Switch>
-                <Route exact path="/" component={Home} />
-                <Route exact path="/project" component={Projects} />
-                <Route
-                  exact
-                  path="/project/:projectGid"
-                  component={ProjectShow}
-                />
-                <Route
-                  exact
-                  path="/project/:projectGid/task"
-                  component={ProjectTasks}
-                />
-              </Switch>
-            </BrowserRouter>
-          </PersistGate>
-        </Provider>
-      </header>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <BrowserRouter>
+            <Switch>
+              <Route exact path="/" component={Home} />
+              <Route exact path="/project" component={Projects} />
+              <Route
+                exact
+                path="/project/:projectGid"
+                component={ProjectShow}
+              />
+              <Route
+                exact
+                path="/project/:projectGid/task"
+                component={ProjectTasks}
+              />
+            </Switch>
+          </BrowserRouter>
+        </PersistGate>
+      </Provider>
     </div>
   );
 }
