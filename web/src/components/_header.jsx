@@ -7,7 +7,7 @@ import { Button, Form, FormControl } from "react-bootstrap";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import Logo from "../logo.svg";
+import Logo from "../logo.png";
 import { loadProjects } from "../scripts/redux/actions/asana/projectActions";
 
 const Header = () => {
@@ -24,15 +24,15 @@ const Header = () => {
   }, [asanaProjects, dispatch]);
 
   return (
-    <header className="text-left">
+    <header className="header">
       <Navbar collapseOnSelect expand="sm" bg="dark" variant="dark">
         <LinkContainer to="/">
           <Navbar.Brand href="#">
             <img
               src={Logo}
               height="30px"
-              className="d-inline-block align-top"
-              alt="Open Columnist logo"
+              className="d-inline-block align-top rounded"
+              alt="Sam Albon"
             />
           </Navbar.Brand>
         </LinkContainer>

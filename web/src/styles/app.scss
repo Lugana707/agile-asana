@@ -1,20 +1,82 @@
 @import "./bootstrap-overrides";
 
 .App {
-  @extend .text-white;
-  @extend .text-center;
+  @extend .text-white, .text-center, .min-vh-100;
   background-color: $body-bg;
-  min-height: 100vh;
   position: relative;
   padding-bottom: 10vh;
 }
 
+.header {
+  @extend .text-left, .pb-4;
+}
+
 .footer {
+  @extend .w-100;
   font-size: 0.8em;
   max-height: 10vh;
   bottom: 0;
   left: 0;
   position: absolute;
-  width: 100%;
   background-color: lighten($body-bg, 2);
+}
+
+.loading-spinner {
+  @extend .d-inline-block, .align-middle, .p-0, .ml-0, .mr-0, .rounded;
+  background: no-repeat center/100% url("/logo.png");
+  width: 2.5em;
+  height: 2.5em;
+  position: relative;
+  top: -0.125em;
+  margin-top: -0.25em;
+  margin-bottom: -0.25em;
+  font-size: 1em;
+
+  $width: 9em;
+
+  &.big {
+    width: $width;
+    height: $width;
+  }
+  &.centre {
+    position: absolute;
+    top: 50%;
+    &.big {
+      margin-left: -($width / 2) !important;
+      margin-top: -($width / 2);
+    }
+  }
+
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+
+  -webkit-animation-name: spin;
+  -webkit-animation-duration: 1500ms;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease;
+
+  @-moz-keyframes spin {
+    from {
+      -moz-transform: rotate(0deg);
+    }
+    to {
+      -moz-transform: rotate(360deg);
+    }
+  }
+  @-webkit-keyframes spin {
+    from {
+      -webkit-transform: rotate(0deg);
+    }
+    to {
+      -webkit-transform: rotate(360deg);
+    }
+  }
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 }

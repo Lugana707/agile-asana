@@ -1,21 +1,14 @@
 import React from "react";
 import { Button, Container, Row, Col } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
-import logo from "../logo.svg";
+import ProjectWidgetGraphStoryPoints from "./project/_widgets/_graphStoryPoints";
 
 const Home = () => {
   return (
-    <Container hidden>
+    <Container className="">
       <Row>
-        <Col>
-          <img src={logo} className="App-logo" alt="logo" />
-        </Col>
-      </Row>
-      <Row>
-        <Col className="text-center">
-          <LinkContainer to="/project" className="m-1">
-            <Button variant="primary">Projects</Button>
-          </LinkContainer>
+        <Col xs="6" style={{ "min-height": "30vw" }}>
+          <ProjectWidgetGraphStoryPoints />
         </Col>
       </Row>
     </Container>
