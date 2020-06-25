@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from "react";
 import { Chart } from "react-charts";
 import { useSelector } from "react-redux";
 
-const GraphStoryPoints = () => {
+const GraphStoryPointsTrend = () => {
   const { loading, asanaProjectTasks = [] } = useSelector(
     state => state.asanaProjectTasks
   );
@@ -56,4 +56,4 @@ const GraphStoryPoints = () => {
   return <Chart data={data} series={series} axes={axes} tooltip dark />;
 };
 
-export default GraphStoryPoints;
+export default GraphStoryPointsTrend;
