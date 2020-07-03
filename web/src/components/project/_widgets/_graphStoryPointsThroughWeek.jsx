@@ -8,7 +8,9 @@ const GraphStoryPointsThroughWeek = () => {
     state => state.asanaProjectTasks
   );
 
-  const projectTasks = asanaProjectTasks || [];
+  const projectTasks = (asanaProjectTasks || []).filter(
+    ({ archived }) => !!archived
+  );
 
   const fullWeek = moment.weekdays().map(weekDay => [weekDay, 0]);
   const data = useMemo(
