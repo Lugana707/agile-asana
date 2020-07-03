@@ -7,7 +7,9 @@ const GraphStoryPointsTrend = () => {
     state => state.asanaProjectTasks
   );
 
-  const projectTasks = asanaProjectTasks || [];
+  const projectTasks = (asanaProjectTasks || []).filter(
+    ({ archived }) => !!archived
+  );
 
   const data = useMemo(
     () => [

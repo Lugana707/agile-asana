@@ -86,7 +86,7 @@ const processProjectTasks = ({ rawProjectTasks }) => {
           });
 
           const completedTasks = parsedTasks.filter(
-            ({ gid }) => !tasksFound[gid]
+            ({ gid, completed_at }) => completed_at && !tasksFound[gid]
           );
           tasksFound = completedTasks.reduce(
             (accumulator, { gid }) => ({ ...accumulator, [gid]: true }),
@@ -137,6 +137,8 @@ const processProjectTasks = ({ rawProjectTasks }) => {
             runningAverageCompletedStoryPoints
           };
         });
+
+      jsLogger.debug("Finished processing tasks!", { asanaProjectTasks });
 
       dispatch({
         type: SUCCESS_LOADING_ASANA_PROJECT_TASKS,
