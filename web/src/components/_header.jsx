@@ -8,19 +8,22 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Logo from "../logo.png";
 import { loadProjects } from "../scripts/redux/actions/asana/projectActions";
+import { processProjectTasks } from "../scripts/redux/actions/asana/projectTaskActions";
 
 const Header = () => {
-  const { loading, asanaProjects = [] } = useSelector(
-    state => state.asanaProjects
+  const { rawProjectTasks: rawProjectTasksState, globalReducer } = useSelector(
+    state => state
   );
-
+  const { loading = [] } = globalReducer;
+  const { rawProjectTasks = [] } = rawProjectTasksState;
   const dispatch = useDispatch();
   useEffect(() => {
-    if (asanaProjects) {
+    if (rawProjectTasks) {
+      dispatch(processProjectTasks({ rawProjectTasks }));
       return;
     }
     dispatch(loadProjects());
-  }, [asanaProjects, dispatch]);
+  }, [dispatch, rawProjectTasks]);
 
   return (
     <header className="header">

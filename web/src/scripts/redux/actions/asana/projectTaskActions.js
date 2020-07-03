@@ -5,13 +5,16 @@ import { ASANA_API_URL } from "../../../api";
 
 const RUNNING_AVERAGE_WEEK_COUNT = 3;
 
+const SET_LOADING_RAW_PROJECT_TASKS = "SET_LOADING_RAWPROJECTTASKS";
+const SUCCESS_LOADING_RAW_PROJECT_TASKS = "SUCCESS_LOADING_RAWPROJECTTASKS";
+
 const SET_LOADING_ASANA_PROJECT_TASKS = "SET_LOADING_ASANAPROJECTTASKS";
 const SUCCESS_LOADING_ASANA_PROJECT_TASKS = "SUCCESS_LOADING_ASANAPROJECTTASKS";
 
 const loadProjectTasks = ({ asanaProjects }) => {
   return async dispatch => {
     try {
-      dispatch({ type: SET_LOADING_ASANA_PROJECT_TASKS, loading: true });
+      dispatch({ type: SET_LOADING_RAW_PROJECT_TASKS, loading: true });
 
       const url = `${ASANA_API_URL}/projects`;
       jsLogger.debug("Getting project tasks from API...", {
@@ -19,7 +22,7 @@ const loadProjectTasks = ({ asanaProjects }) => {
         url
       });
 
-      const asanaProjectTasks = await async.mapLimit(
+      const rawProjectTasks = await async.mapLimit(
         asanaProjects,
         5,
         async ({ gid, ...project }) => {
@@ -42,11 +45,30 @@ const loadProjectTasks = ({ asanaProjects }) => {
           };
         }
       );
-      jsLogger.debug("Gotten project tasks!", { asanaProjectTasks });
+      jsLogger.debug("Gotten project tasks!", { rawProjectTasks });
 
-      jsLogger.debug("Weighting project tasks for...", { asanaProjectTasks });
+      dispatch({
+        type: SUCCESS_LOADING_RAW_PROJECT_TASKS,
+        loading: false,
+        value: { rawProjectTasks },
+        timestamp: new Date()
+      });
+      dispatch(processProjectTasks({ rawProjectTasks }));
+    } catch (error) {
+      dispatch({ type: SET_LOADING_RAW_PROJECT_TASKS, loading: false });
+      jsLogger.error(error.callStack || error);
+    }
+  };
+};
+
+const processProjectTasks = ({ rawProjectTasks }) => {
+  return async dispatch => {
+    try {
+      dispatch({ type: SET_LOADING_ASANA_PROJECT_TASKS, loading: true });
+
+      jsLogger.debug("Weighting project tasks for...", { rawProjectTasks });
       let tasksFound = {};
-      const processedProjectTasks = asanaProjectTasks
+      const asanaProjectTasks = rawProjectTasks
         .map(({ tasks, ...project }) => {
           const parsedTasks = tasks.map(({ custom_fields, ...task }) => {
             const customFields = custom_fields.reduce(
@@ -75,7 +97,7 @@ const loadProjectTasks = ({ asanaProjects }) => {
             (accumulator, { projects }) =>
               accumulator +
               projects.filter(project =>
-                asanaProjectTasks.some(({ gid }) => gid === project.gid)
+                rawProjectTasks.some(({ gid }) => gid === project.gid)
               ).length,
             0
           );
@@ -119,7 +141,7 @@ const loadProjectTasks = ({ asanaProjects }) => {
       dispatch({
         type: SUCCESS_LOADING_ASANA_PROJECT_TASKS,
         loading: false,
-        value: { asanaProjectTasks: processedProjectTasks },
+        value: { asanaProjectTasks },
         timestamp: new Date()
       });
     } catch (error) {
@@ -129,4 +151,4 @@ const loadProjectTasks = ({ asanaProjects }) => {
   };
 };
 
-export { loadProjectTasks };
+export { loadProjectTasks, processProjectTasks };

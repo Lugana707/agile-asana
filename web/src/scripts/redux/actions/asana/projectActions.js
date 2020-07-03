@@ -4,6 +4,9 @@ import async from "async";
 import { ASANA_API_URL } from "../../../api";
 import { loadProjectTasks } from "./projectTaskActions";
 
+const SET_LOADING_RAW_PROJECTS = "SET_LOADING_RAWPROJECTS";
+const SUCCESS_LOADING_RAW_PROJECTS = "SUCCESS_LOADING_RAWPROJECTS";
+
 const SET_LOADING_ASANA_PROJECTS = "SET_LOADING_ASANAPROJECTS";
 const SUCCESS_LOADING_ASANA_PROJECTS = "SUCCESS_LOADING_ASANAPROJECTS";
 
@@ -12,9 +15,8 @@ const MATCH_PROJECT_KANBAN = /^(Dev|Product) Kanban Week \d\d?/;
 const loadProjects = () => {
   return async dispatch => {
     try {
-      dispatch({ type: SET_LOADING_ASANA_PROJECTS, loading: true });
+      dispatch({ type: SET_LOADING_RAW_PROJECTS, loading: true });
 
-      const match = MATCH_PROJECT_KANBAN;
       const url = `${ASANA_API_URL}/projects`;
       jsLogger.debug("Getting project list from API...", { url });
 
@@ -33,13 +35,34 @@ const loadProjects = () => {
         }
       );
 
+      const rawProjects = archived.concat(unarchived);
+
+      dispatch({
+        type: SUCCESS_LOADING_RAW_PROJECTS,
+        loading: false,
+        value: { rawProjects },
+        timestamp: new Date()
+      });
+      dispatch(processProjects({ rawProjects }));
+    } catch (error) {
+      dispatch({ type: SET_LOADING_RAW_PROJECTS, loading: false });
+      jsLogger.error(error.callStack || error);
+    }
+  };
+};
+
+const processProjects = ({ rawProjects }) => {
+  return async dispatch => {
+    try {
+      dispatch({ type: SET_LOADING_ASANA_PROJECTS, loading: true });
+
+      const match = MATCH_PROJECT_KANBAN;
+
       jsLogger.debug("Gotten projects! Filtering...", {
-        archived,
-        unarchived,
+        rawProjects,
         match
       });
-      const asanaProjects = archived
-        .concat(unarchived)
+      const asanaProjects = rawProjects
         .filter(({ name }) => match.test(name))
         .map(({ name, ...project }) => ({
           name,

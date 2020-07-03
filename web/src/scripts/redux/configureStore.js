@@ -7,12 +7,13 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 //import monitorReducersEnhancer from "./enhancers/monitorReducers";
 import loggerMiddleware from "./middleware/logger";
+import globalReducer from "./reducers/globalReducer";
 import crudReducer from "./reducers/crudReducer";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["asanaProjects", "asanaProjectTasks"]
+  whitelist: ["rawProjects", "rawProjectTasks"]
 };
 
 const initialiseReduxStore = preloadedState => {
@@ -27,7 +28,10 @@ const initialiseReduxStore = preloadedState => {
     : compose)(...enhancers);
 
   const rootReducer = combineReducers({
+    globalReducer,
+    rawProjects: crudReducer("rawProjects"),
     asanaProjects: crudReducer("asanaProjects"),
+    rawProjectTasks: crudReducer("rawProjectTasks"),
     asanaProjectTasks: crudReducer("asanaProjectTasks")
   });
 
