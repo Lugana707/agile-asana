@@ -7,28 +7,30 @@ const GraphStoryPointsTrend = () => {
     state => state.asanaProjectTasks
   );
 
+  const projectTasks = asanaProjectTasks || [];
+
   const data = useMemo(
     () => [
       {
         label: "3 Week Average",
-        data: asanaProjectTasks
+        data: projectTasks
           .map(obj => [obj.week, obj.runningAverageCompletedStoryPoints])
           .reverse()
       },
       {
         label: "Committed Story Points",
-        data: asanaProjectTasks
+        data: projectTasks
           .map(obj => [obj.week, obj.committedStoryPoints])
           .reverse()
       },
       {
         label: "Completed Story Points",
-        data: asanaProjectTasks
+        data: projectTasks
           .map(obj => [obj.week, obj.completedStoryPoints])
           .reverse()
       }
     ],
-    [asanaProjectTasks]
+    [projectTasks]
   );
 
   const series = useCallback((series, index) => {

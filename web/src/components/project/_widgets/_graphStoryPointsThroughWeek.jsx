@@ -8,10 +8,12 @@ const GraphStoryPointsThroughWeek = () => {
     state => state.asanaProjectTasks
   );
 
+  const projectTasks = asanaProjectTasks || [];
+
   const fullWeek = moment.weekdays().map(weekDay => [weekDay, 0]);
   const data = useMemo(
     () =>
-      asanaProjectTasks.map(obj => ({
+      projectTasks.map(obj => ({
         label: `Week ${obj.week}`,
         data: obj.completedTasks
           .filter(obj => obj.completed_at)
@@ -33,7 +35,7 @@ const GraphStoryPointsThroughWeek = () => {
               moment().day(weekDayA) - moment().day(weekDayB)
           )
       })),
-    [asanaProjectTasks, fullWeek]
+    [projectTasks, fullWeek]
   );
 
   const series = useCallback((series, index) => {
