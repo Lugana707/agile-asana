@@ -16,7 +16,7 @@ const GraphStoryPointsThroughWeek = () => {
   const data = useMemo(
     () =>
       projectTasks.map(obj => ({
-        label: `Week ${obj.week}`,
+        label: `Sprint ${obj.week}`,
         data: obj.completedTasks
           .filter(obj => obj.completed_at)
           .map(obj => [
