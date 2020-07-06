@@ -16,7 +16,6 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "add": "^2.0.6",
     "async": "^3.2.0",
     "axios": "^0.19.2",
     "axios-progress-bar": "^1.2.0",
@@ -42,7 +41,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "yarn test:hint && yarn test:depcheck && yarn test:react",
+    "test": "yarn test:hint && yarn test:depcheck",
     "test:react": "react-scripts test",
     "test:hint": "jshint src/",
     "test:depcheck": "depcheck .",
