@@ -1,4 +1,4 @@
-name: Asana Agile Web CI
+name: web-ci
 
 on:
   push:
