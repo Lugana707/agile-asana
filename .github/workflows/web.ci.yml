@@ -7,6 +7,7 @@ on:
   push:
     branches: [master]
     paths:
+      - ".github/workflows/web.ci.yml"
       - "web/**"
 
 defaults:
