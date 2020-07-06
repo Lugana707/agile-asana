@@ -5,8 +5,6 @@ services:
     command: sh -c "yarn install --immutable --production=false && yarn start"
     user: node
     working_dir: /src
-    env_file:
-      - ./web/.env
     environment:
       REACT_APP_ASANA_API_ENDPOINT: https://app.asana.com/api/1.0
     ports:

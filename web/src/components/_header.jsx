@@ -6,17 +6,43 @@ import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { Button, Form, FormControl } from "react-bootstrap";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import axios from "axios";
+import jsLogger from "js-logger";
 import Logo from "../logo.png";
 import { loadProjects } from "../scripts/redux/actions/asana/projectActions";
 import { processProjectTasks } from "../scripts/redux/actions/asana/projectTaskActions";
 
 const Header = () => {
-  const { rawProjectTasks: rawProjectTasksState, globalReducer } = useSelector(
-    state => state
-  );
+  const {
+    settings,
+    globalReducer,
+    rawProjectTasks: rawProjectTasksState
+  } = useSelector(state => state);
+
+  const { asanaApiKey } = settings;
   const { loading = [] } = globalReducer;
   const { rawProjectTasks = [] } = rawProjectTasksState;
+
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    axios.interceptors.request.use(
+      ({ headers, ...config }) => {
+        return {
+          headers: {
+            Authorization: `Bearer ${asanaApiKey}`,
+            ...headers
+          },
+          ...config
+        };
+      },
+      error => {
+        jsLogger.error(error);
+        return Promise.reject(error);
+      }
+    );
+  }, [asanaApiKey]);
+
   useEffect(() => {
     if (rawProjectTasks) {
       dispatch(processProjectTasks({ rawProjectTasks }));
@@ -40,9 +66,14 @@ const Header = () => {
         </LinkContainer>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="mr-auto">
+          <Nav>
             <LinkContainer to="/project">
               <Nav.Link>Sprints</Nav.Link>
+            </LinkContainer>
+          </Nav>
+          <Nav className="mr-auto">
+            <LinkContainer to="/settings">
+              <Nav.Link>Settings</Nav.Link>
             </LinkContainer>
           </Nav>
           <Form inline hidden>

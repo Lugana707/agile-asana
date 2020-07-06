@@ -9,11 +9,12 @@ import storage from "redux-persist/lib/storage";
 import loggerMiddleware from "./middleware/logger";
 import globalReducer from "./reducers/globalReducer";
 import crudReducer from "./reducers/crudReducer";
+import objectReducer from "./reducers/objectReducer";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["rawProjects", "rawProjectTasks"]
+  whitelist: ["rawProjects", "rawProjectTasks", "settings"]
 };
 
 const initialiseReduxStore = preloadedState => {
@@ -32,7 +33,8 @@ const initialiseReduxStore = preloadedState => {
     rawProjects: crudReducer("rawProjects"),
     asanaProjects: crudReducer("asanaProjects"),
     rawProjectTasks: crudReducer("rawProjectTasks"),
-    asanaProjectTasks: crudReducer("asanaProjectTasks")
+    asanaProjectTasks: crudReducer("asanaProjectTasks"),
+    settings: objectReducer("settings")
   });
 
   const persistedReducer = persistReducer(persistConfig, rootReducer);
