@@ -1,10 +1,10 @@
-name: web-ci
+name: web-deploy
 
 on:
   push:
     branches: [master]
     paths:
-      - ".github/workflows/web.ci.yml"
+      - ".github/workflows/web.deploy.yml"
       - "web/**"
 
 env:
