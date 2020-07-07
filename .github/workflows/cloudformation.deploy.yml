@@ -1,0 +1,37 @@
+name: cloudformation-deploy
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/cloudformation.deploy.yml"
+      - "cloudformation.yml"
+
+env:
+  AWS_REGION: "ca-central-1"
+  ENVIRONMENT_NAME: "production"
+  WEBSITE_NAME: "asana.albon.me"
+
+defaults:
+  run:
+    working-directory: .
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Deploy to AWS CloudFormation
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: agile-asana-stack
+          template: cloudformation.yml
+          parameter-overrides: "EnvironmentName=${{ env.ENVIRONMENT_NAME }},WebsiteName=${{ env.WEBSITE_NAME }}"
+          tags: [{ "Key": "website", "Value": "${{ env.WEBSITE_NAME }}" }]
