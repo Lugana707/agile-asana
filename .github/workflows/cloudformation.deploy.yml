@@ -34,4 +34,5 @@ jobs:
           name: agile-asana-stack
           template: cloudformation.yml
           parameter-overrides: "EnvironmentName=${{ env.ENVIRONMENT_NAME }},WebsiteName=${{ env.WEBSITE_NAME }}"
-          tags: [{ "Key": "website", "Value": "${{ env.WEBSITE_NAME }}" }]
+          tags: >
+            [{ "Key": "website", "Value": "${{ env.WEBSITE_NAME }}" }]
