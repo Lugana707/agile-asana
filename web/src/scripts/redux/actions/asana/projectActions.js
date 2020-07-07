@@ -11,20 +11,22 @@ const SET_LOADING_ASANA_PROJECTS = "SET_LOADING_ASANAPROJECTS";
 const SUCCESS_LOADING_ASANA_PROJECTS = "SUCCESS_LOADING_ASANAPROJECTS";
 
 const MATCH_PROJECT_KANBAN = /^(Dev|Product) Kanban Week \d\d?/u;
+const MATCH_PROJECT_BACKLOG = /^Product Backlog$/u;
 
 const processProjects = ({ rawProjects }) => {
   return async dispatch => {
     try {
       dispatch({ type: SET_LOADING_ASANA_PROJECTS, loading: true });
 
-      const match = MATCH_PROJECT_KANBAN;
+      const matchKanban = MATCH_PROJECT_KANBAN;
+      const matchBacklog = MATCH_PROJECT_BACKLOG;
 
       jsLogger.debug("Gotten projects! Filtering...", {
         rawProjects,
-        match
+        matchKanban
       });
       const asanaProjects = rawProjects
-        .filter(({ name }) => match.test(name))
+        .filter(({ name }) => matchKanban.test(name))
         .map(({ name, ...project }) => ({
           name,
           week: parseInt(name.replace(/.+ Kanban Week /u, "").trim(), 10),
@@ -32,13 +34,19 @@ const processProjects = ({ rawProjects }) => {
         }));
       asanaProjects.sort((a, b) => (a.week < b.week ? 1 : -1));
 
+      const [asanaBacklog] = rawProjects.filter(({ name }) =>
+        matchBacklog.test(name)
+      );
+
+      jsLogger.debug("Filtered projects!", { asanaProjects, asanaBacklog });
+
       dispatch({
         type: SUCCESS_LOADING_ASANA_PROJECTS,
         loading: false,
         value: { asanaProjects },
         timestamp: new Date()
       });
-      dispatch(loadProjectTasks({ asanaProjects }));
+      dispatch(loadProjectTasks({ asanaProjects, asanaBacklog }));
     } catch (error) {
       dispatch({ type: SET_LOADING_ASANA_PROJECTS, loading: false });
       jsLogger.error(error.callStack || error);
@@ -61,11 +69,11 @@ const loadProjects = () => {
           const { data } = await axios.get(url, {
             params: {
               opt_fields: [""].join(",") || undefined,
-              archivedFlag
+              archived: archivedFlag
             },
             validateStatus: status => status === 200
           });
-          return data.data.map(obj => ({ ...obj, archivedFlag }));
+          return data.data.map(obj => ({ ...obj, archived: archivedFlag }));
         }
       );
 

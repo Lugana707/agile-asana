@@ -8,6 +8,7 @@ import configureStore from "./scripts/redux/configureStore";
 import Header from "./components/_header";
 import Footer from "./components/_footer";
 import Home from "./components/home";
+import Backlog from "./components/backlog/index";
 import Projects from "./components/project/index";
 import ProjectShow from "./components/project/show";
 import ProjectTasks from "./components/project/tasks";
@@ -32,6 +33,7 @@ function App() {
             <Header />
             <Switch>
               <Route exact path="/" component={Home} />
+              <Route exact path="/backlog" component={Backlog} />
               <Route exact path="/project" component={Projects} />
               <Route
                 exact

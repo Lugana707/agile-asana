@@ -14,7 +14,7 @@ import objectReducer from "./reducers/objectReducer";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["rawProjects", "rawProjectTasks", "settings"]
+  whitelist: ["rawBacklogTasks", "rawProjects", "rawProjectTasks", "settings"]
 };
 
 const initialiseReduxStore = preloadedState => {
@@ -30,6 +30,7 @@ const initialiseReduxStore = preloadedState => {
 
   const rootReducer = combineReducers({
     globalReducer,
+    rawBacklogTasks: objectReducer("rawBacklogTasks"),
     rawProjects: crudReducer("rawProjects"),
     asanaProjects: crudReducer("asanaProjects"),
     rawProjectTasks: crudReducer("rawProjectTasks"),

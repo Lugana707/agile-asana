@@ -8,6 +8,8 @@ const RUNNING_AVERAGE_WEEK_COUNT = 3;
 const SET_LOADING_RAW_PROJECT_TASKS = "SET_LOADING_RAWPROJECTTASKS";
 const SUCCESS_LOADING_RAW_PROJECT_TASKS = "SUCCESS_LOADING_RAWPROJECTTASKS";
 
+const SUCCESS_LOADING_RAW_BACKLOG_TASKS = "SUCCESS_LOADING_RAWBACKLOGTASKS";
+
 const SET_LOADING_ASANA_PROJECT_TASKS = "SET_LOADING_ASANAPROJECTTASKS";
 const SUCCESS_LOADING_ASANA_PROJECT_TASKS = "SUCCESS_LOADING_ASANAPROJECTTASKS";
 
@@ -103,7 +105,7 @@ const processProjectTasks = ({ rawProjectTasks }) => {
   };
 };
 
-const loadProjectTasks = ({ asanaProjects }) => {
+const loadProjectTasks = ({ asanaProjects, asanaBacklog }) => {
   return async dispatch => {
     try {
       dispatch({ type: SET_LOADING_RAW_PROJECT_TASKS, loading: true });
@@ -111,38 +113,51 @@ const loadProjectTasks = ({ asanaProjects }) => {
       const url = `${ASANA_API_URL}/projects`;
       jsLogger.debug("Getting project tasks from API...", {
         asanaProjects,
+        asanaBacklog,
         url
       });
+
+      const getProjectTasksFromApi = async ({ gid, ...project }) => {
+        const { data } = await axios.get(`${ASANA_API_URL}/tasks`, {
+          params: {
+            opt_fields: [
+              "projects",
+              "name",
+              "completed_at",
+              "started_at",
+              "custom_fields"
+            ].join(","),
+            project: gid
+          }
+        });
+        return {
+          gid,
+          ...project,
+          tasks: data.data
+        };
+      };
 
       const rawProjectTasks = await async.mapLimit(
         asanaProjects,
         5,
-        async ({ gid, ...project }) => {
-          const { data } = await axios.get(`${ASANA_API_URL}/tasks`, {
-            params: {
-              opt_fields: [
-                "projects",
-                "name",
-                "completed_at",
-                "started_at",
-                "custom_fields"
-              ].join(","),
-              project: gid
-            }
-          });
-          return {
-            gid,
-            ...project,
-            tasks: data.data
-          };
-        }
+        async obj => getProjectTasksFromApi(obj)
       );
-      jsLogger.debug("Gotten project tasks!", { rawProjectTasks });
+      const rawBacklogTasks = await getProjectTasksFromApi(asanaBacklog);
+      jsLogger.debug("Gotten project tasks!", {
+        rawProjectTasks,
+        rawBacklogTasks
+      });
 
       dispatch({
         type: SUCCESS_LOADING_RAW_PROJECT_TASKS,
         loading: false,
         value: { rawProjectTasks },
+        timestamp: new Date()
+      });
+      dispatch({
+        type: SUCCESS_LOADING_RAW_BACKLOG_TASKS,
+        loading: false,
+        value: rawBacklogTasks,
         timestamp: new Date()
       });
       dispatch(processProjectTasks({ rawProjectTasks }));
