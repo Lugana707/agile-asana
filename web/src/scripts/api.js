@@ -1,6 +1,3 @@
-const {
-  REACT_APP_ASANA_API_ENDPOINT: ASANA_API_URL,
-  REACT_APP_ASANA_API_TOKEN: ASANA_API_TOKEN
-} = process.env;
+const ASANA_API_URL = "https://app.asana.com/api/1.0";
 
-export { ASANA_API_URL, ASANA_API_TOKEN };
+export { ASANA_API_URL };
