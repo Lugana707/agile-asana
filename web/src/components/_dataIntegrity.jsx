@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
+import { withRouter } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import jsLogger from "js-logger";
 import { loadProjects } from "../scripts/redux/actions/asana/projectActions";
 import { processProjectTasks } from "../scripts/redux/actions/asana/projectTaskActions";
 
-const Data = () => {
+const DataIntegrity = ({ history }) => {
   const { settings, rawProjectTasks: rawProjectTasksState } = useSelector(
     state => state
   );
@@ -34,14 +35,18 @@ const Data = () => {
   }, [asanaApiKey]);
 
   useEffect(() => {
+    if (!asanaApiKey) {
+      history.push("/settings");
+      return;
+    }
     if (rawProjectTasks) {
       dispatch(processProjectTasks({ rawProjectTasks }));
       return;
     }
     dispatch(loadProjects());
-  }, [dispatch, rawProjectTasks]);
+  }, [dispatch, rawProjectTasks, asanaApiKey]);
 
   return <div />;
 };
 
-export default Data;
+export default withRouter(DataIntegrity);

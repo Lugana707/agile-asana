@@ -3,6 +3,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import axios from "axios";
 import jsLogger from "js-logger";
 import DataProvider from "./dataProvider";
+import DataIntegrity from "./components/_dataIntegrity";
 import Header from "./components/_header";
 import Footer from "./components/_footer";
 import Home from "./components/home";
@@ -25,6 +26,7 @@ function App() {
     <div className="App">
       <DataProvider>
         <BrowserRouter>
+          <DataIntegrity />
           <Header />
           <Switch>
             <Route exact path="/" component={Home} />
