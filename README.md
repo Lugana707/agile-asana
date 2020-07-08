@@ -1,4 +1,5 @@
-![web-ci](https://github.com/Lugana707/agile-asana/workflows/web-ci/badge.svg)
+![web-deploy](https://github.com/Lugana707/agile-asana/workflows/web-deploy/badge.svg)
+![cloudformation-deploy](https://github.com/Lugana707/agile-asana/workflows/cloudformation-deploy/badge.svg)
 
 # agile-asana
 
