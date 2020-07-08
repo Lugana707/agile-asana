@@ -20,6 +20,7 @@
     "axios-progress-bar": "^1.2.0",
     "boostrap": "^2.0.0",
     "bootstrap": "^4.5.0",
+    "camelcase": "^6.0.0",
     "js-logger": "^1.6.0",
     "moment": "^2.27.0",
     "node-sass": "^4.14.1",

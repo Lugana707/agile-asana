@@ -1,5 +1,6 @@
 import axios from "axios";
 import jsLogger from "js-logger";
+import camelcase from "camelcase";
 import { ASANA_API_URL } from "../../../api";
 
 const RUNNING_AVERAGE_WEEK_COUNT = 3;
@@ -17,14 +18,14 @@ const processProjectTasks = ({ rawProjectTasks }) => {
     try {
       dispatch({ type: SET_LOADING_ASANA_PROJECT_TASKS, loading: true });
 
-      jsLogger.debug("Weighting project tasks for...", { rawProjectTasks });
+      jsLogger.debug("Processing project tasks...", { rawProjectTasks });
       let tasksFound = {};
       const asanaProjectTasks = rawProjectTasks
         .map(({ tasks, ...project }) => {
           const parsedTasks = tasks.map(({ custom_fields, ...task }) => {
             const customFields = custom_fields.reduce(
               (accumulator, { name, number_value, enum_value }) => ({
-                [name]: number_value || enum_value,
+                [camelcase(name)]: number_value || enum_value,
                 ...accumulator
               }),
               {}
@@ -55,7 +56,7 @@ const processProjectTasks = ({ rawProjectTasks }) => {
 
           const sumStoryPoints = projectTasks =>
             projectTasks.reduce(
-              (accumulator, { "Story Points": storyPoints = 0 }) =>
+              (accumulator, { storyPoints = 0 }) =>
                 accumulator + parseInt(storyPoints, 10),
               0
             );

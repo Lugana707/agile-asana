@@ -21,7 +21,7 @@ const GraphStoryPointsThroughWeek = () => {
           .filter(obj => obj.completed_at)
           .map(obj => [
             moment(obj.completed_at).format("dddd"),
-            obj["Story Points"] || 0
+            obj.storyPoints || 0
           ])
           .reduce(
             (accumulator, [weekDay, storyPoints]) => {
