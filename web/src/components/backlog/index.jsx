@@ -4,15 +4,18 @@ import { useSelector } from "react-redux";
 import Table from "../_library/_table";
 
 const Backlog = () => {
-  const { loading, tasks = [] } = useSelector(state => state.rawBacklogTasks);
+  const { loading, tasks = [] } = useSelector(state => state.backlogTasks);
 
   const filteredTasks = tasks.filter(obj => !obj.completed_at);
 
+  console.debug("Hello backlog!", { filteredTasks });
+
   const TableRow = ({ data }) => {
-    const { name } = data;
+    const { name, storyPoints } = data;
     return (
       <>
         <td className="align-middle">{name}</td>
+        <td className="align-middle text-right">{storyPoints}</td>
       </>
     );
   };

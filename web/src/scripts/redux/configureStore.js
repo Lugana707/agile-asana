@@ -31,6 +31,7 @@ const initialiseReduxStore = preloadedState => {
   const rootReducer = combineReducers({
     globalReducer,
     rawBacklogTasks: objectReducer("rawBacklogTasks"),
+    backlogTasks: objectReducer("backlogTasks"),
     rawProjects: crudReducer("rawProjects"),
     asanaProjects: crudReducer("asanaProjects"),
     rawProjectTasks: crudReducer("rawProjectTasks"),

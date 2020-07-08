@@ -13,6 +13,39 @@ const SUCCESS_LOADING_RAW_BACKLOG_TASKS = "SUCCESS_LOADING_RAWBACKLOGTASKS";
 const SET_LOADING_ASANA_PROJECT_TASKS = "SET_LOADING_ASANAPROJECTTASKS";
 const SUCCESS_LOADING_ASANA_PROJECT_TASKS = "SUCCESS_LOADING_ASANAPROJECTTASKS";
 
+const SET_LOADING_BACKLOG_TASKS = "SET_LOADING_BACKLOGTASKS";
+const SUCCESS_LOADING_BACKLOG_TASKS = "SUCCESS_LOADING_BACKLOGTASKS";
+
+const sumStoryPoints = projectTasks =>
+  projectTasks.reduce(
+    (accumulator, { storyPoints = 0 }) =>
+      accumulator + parseInt(storyPoints, 10),
+    0
+  );
+
+const processProjectTasksForProject = ({ tasks, ...project }) => {
+  const parsedTasks = tasks.map(({ custom_fields, ...task }) => {
+    const customFields = custom_fields.reduce(
+      (accumulator, { name, number_value, enum_value }) => ({
+        [camelcase(name)]: number_value || enum_value,
+        ...accumulator
+      }),
+      {}
+    );
+    return {
+      ...task,
+      ...customFields,
+      custom_fields
+    };
+  });
+
+  return {
+    ...project,
+    tasks: parsedTasks,
+    committedStoryPoints: sumStoryPoints(parsedTasks)
+  };
+};
+
 const processProjectTasks = ({ rawProjectTasks }) => {
   return async dispatch => {
     try {
@@ -21,23 +54,9 @@ const processProjectTasks = ({ rawProjectTasks }) => {
       jsLogger.debug("Processing project tasks...", { rawProjectTasks });
       let tasksFound = {};
       const asanaProjectTasks = rawProjectTasks
-        .map(({ tasks, ...project }) => {
-          const parsedTasks = tasks.map(({ custom_fields, ...task }) => {
-            const customFields = custom_fields.reduce(
-              (accumulator, { name, number_value, enum_value }) => ({
-                [camelcase(name)]: number_value || enum_value,
-                ...accumulator
-              }),
-              {}
-            );
-            return {
-              ...task,
-              ...customFields,
-              custom_fields
-            };
-          });
-
-          const completedTasks = parsedTasks.filter(
+        .map(project => processProjectTasksForProject(project))
+        .map(project => {
+          const completedTasks = project.tasks.filter(
             ({ gid, completed_at }) => completed_at && !tasksFound[gid]
           );
           tasksFound = completedTasks.reduce(
@@ -54,24 +73,15 @@ const processProjectTasks = ({ rawProjectTasks }) => {
             0
           );
 
-          const sumStoryPoints = projectTasks =>
-            projectTasks.reduce(
-              (accumulator, { storyPoints = 0 }) =>
-                accumulator + parseInt(storyPoints, 10),
-              0
-            );
-
           const completedStoryPoints = sumStoryPoints(completedTasks);
 
           return {
-            ...project,
-            tasks: parsedTasks,
             completedTasks,
             completedTasksWeight,
             completedTasksOverweight:
               completedTasksWeight - completedTasks.length,
-            committedStoryPoints: sumStoryPoints(parsedTasks),
-            completedStoryPoints
+            completedStoryPoints,
+            ...project
           };
         })
         .map((project, index, projects) => {
@@ -102,6 +112,37 @@ const processProjectTasks = ({ rawProjectTasks }) => {
       dispatch({ type: SET_LOADING_ASANA_PROJECT_TASKS, loading: false });
       jsLogger.error(error.callStack || error);
     }
+  };
+};
+
+const processBacklogTasks = ({ rawBacklogTasks }) => {
+  return dispatch => {
+    try {
+      dispatch({ type: SET_LOADING_BACKLOG_TASKS, loading: true });
+
+      const backlogTasks = processProjectTasksForProject(rawBacklogTasks);
+
+      dispatch({
+        type: SUCCESS_LOADING_BACKLOG_TASKS,
+        loading: false,
+        value: backlogTasks,
+        timestamp: new Date()
+      });
+    } catch (error) {
+      dispatch({ type: SET_LOADING_BACKLOG_TASKS, loading: false });
+      jsLogger.error(error.callStack || error);
+    }
+  };
+};
+
+const reprocessAllTasks = () => {
+  return (dispatch, getState) => {
+    const { rawBacklogTasks, ...state } = getState();
+
+    const { rawProjectTasks } = state.rawProjectTasks;
+
+    dispatch(processProjectTasks({ rawProjectTasks }));
+    dispatch(processBacklogTasks({ rawBacklogTasks }));
   };
 };
 
@@ -159,6 +200,7 @@ const loadProjectTasks = ({ asanaProjects, asanaBacklog }) => {
         timestamp: new Date()
       });
       dispatch(processProjectTasks({ rawProjectTasks }));
+      dispatch(processBacklogTasks({ rawBacklogTasks }));
     } catch (error) {
       dispatch({ type: SET_LOADING_RAW_PROJECT_TASKS, loading: false });
       jsLogger.error(error.callStack || error);
@@ -166,4 +208,4 @@ const loadProjectTasks = ({ asanaProjects, asanaBacklog }) => {
   };
 };
 
-export { loadProjectTasks, processProjectTasks };
+export { loadProjectTasks, reprocessAllTasks };

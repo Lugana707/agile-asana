@@ -4,15 +4,13 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import jsLogger from "js-logger";
 import { loadProjects } from "../scripts/redux/actions/asana/projectActions";
-import { processProjectTasks } from "../scripts/redux/actions/asana/projectTaskActions";
+import { reprocessAllTasks } from "../scripts/redux/actions/asana/projectTaskActions";
 
 const DataIntegrity = ({ history }) => {
-  const { settings, rawProjectTasks: rawProjectTasksState } = useSelector(
-    state => state
-  );
-
-  const { asanaApiKey } = settings;
-  const { rawProjectTasks = [] } = rawProjectTasksState;
+  const { loading } = useSelector(state => state.globalReducer);
+  const { asanaApiKey } = useSelector(state => state.settings);
+  const { rawProjectTasks } = useSelector(state => state.rawProjectTasks);
+  const { rawBacklogTasks } = useSelector(state => state.rawBacklogTasks);
 
   const dispatch = useDispatch();
 
@@ -35,16 +33,27 @@ const DataIntegrity = ({ history }) => {
   }, [asanaApiKey]);
 
   useEffect(() => {
-    if (!asanaApiKey) {
+    if (loading) {
+      return;
+    } else if (!asanaApiKey) {
       history.push("/settings");
-      return;
+    } else if (!rawProjectTasks && !rawBacklogTasks) {
+      dispatch(loadProjects());
+    } else {
+      console.debug("Hello DataIntegrity!", {
+        rawProjectTasks,
+        rawBacklogTasks
+      });
+      dispatch(reprocessAllTasks());
     }
-    if (rawProjectTasks) {
-      dispatch(processProjectTasks({ rawProjectTasks }));
-      return;
-    }
-    dispatch(loadProjects());
-  }, [history, dispatch, rawProjectTasks, asanaApiKey]);
+  }, [
+    loading,
+    asanaApiKey,
+    history,
+    dispatch,
+    rawProjectTasks,
+    rawBacklogTasks
+  ]);
 
   return <div />;
 };
