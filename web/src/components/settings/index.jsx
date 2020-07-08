@@ -66,7 +66,6 @@ const Settings = ({ history }) => {
                     href={asanaDeveloperConsoleUrl}
                     rel="noopener noreferrer"
                     target="_blank"
-                    aria-link={asanaDeveloperConsoleUrl}
                   >
                     <span>developer console </span>
                     <FontAwesomeIcon icon={faExternalLinkAlt} size="1x" />

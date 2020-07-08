@@ -44,7 +44,7 @@ const DataIntegrity = ({ history }) => {
       return;
     }
     dispatch(loadProjects());
-  }, [dispatch, rawProjectTasks, asanaApiKey]);
+  }, [history, dispatch, rawProjectTasks, asanaApiKey]);
 
   return <div />;
 };
