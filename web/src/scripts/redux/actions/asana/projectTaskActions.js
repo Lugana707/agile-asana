@@ -1,6 +1,5 @@
 import axios from "axios";
 import jsLogger from "js-logger";
-import async from "async";
 import { ASANA_API_URL } from "../../../api";
 
 const RUNNING_AVERAGE_WEEK_COUNT = 3;
@@ -137,10 +136,8 @@ const loadProjectTasks = ({ asanaProjects, asanaBacklog }) => {
         };
       };
 
-      const rawProjectTasks = await async.mapLimit(
-        asanaProjects,
-        5,
-        async obj => getProjectTasksFromApi(obj)
+      const rawProjectTasks = await Promise.all(
+        asanaProjects.map(async obj => await getProjectTasksFromApi(obj))
       );
       const rawBacklogTasks = await getProjectTasksFromApi(asanaBacklog);
       jsLogger.debug("Gotten project tasks!", {
