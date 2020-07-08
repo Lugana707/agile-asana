@@ -7,7 +7,13 @@ const Footer = () => {
       <Container className="text-muted">
         <div className="w-100">
           <div className="float-left text-left">
-            <a href="mailto:hello@opencolumnist.com">Sam Albon</a>
+            <a
+              href="https://github.com/Lugana707"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Sam Albon
+            </a>
             <span> © </span>
             <span>{new Date().getFullYear()}</span>
           </div>
