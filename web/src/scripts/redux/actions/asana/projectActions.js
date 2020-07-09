@@ -22,8 +22,10 @@ const processProjects = ({ rawProjects }) => {
 
       jsLogger.debug("Gotten projects! Filtering...", {
         rawProjects,
-        matchKanban
+        matchKanban,
+        matchBacklog
       });
+
       const asanaProjects = rawProjects
         .filter(({ name }) => matchKanban.test(name))
         .map(({ name, ...project }) => ({
@@ -58,18 +60,45 @@ const loadProjects = () => {
     try {
       dispatch({ type: SET_LOADING_RAW_PROJECTS, loading: true });
 
-      const url = `${ASANA_API_URL}/projects`;
-      jsLogger.debug("Getting project list from API...", { url });
+      const getSections = async ({ gid }) => {
+        const url = `${ASANA_API_URL}/projects/${gid}/sections`;
+        jsLogger.trace("Getting section list from API...", {
+          url,
+          projectGid: gid
+        });
 
-      const getProjects = async archived => {
         const { data } = await axios.get(url, {
           params: {
-            opt_fields: [""].join(",") || undefined,
+            opt_fields: [].join(",") || undefined
+          },
+          validateStatus: status => status === 200
+        });
+
+        jsLogger.trace("Gotten sections!", { data });
+
+        return data.data;
+      };
+
+      const getProjects = async archived => {
+        const url = `${ASANA_API_URL}/projects`;
+        jsLogger.debug("Getting project list from API...", { url, archived });
+
+        const { data } = await axios.get(url, {
+          params: {
+            opt_fields: ["sections", "name"].join(","),
             archived
           },
           validateStatus: status => status === 200
         });
-        return data.data.map(obj => ({ ...obj, archived }));
+
+        return Promise.all(
+          data.data
+            .map(project => ({ ...project, archived }))
+            .map(async project => ({
+              ...project,
+              sections: await getSections(project)
+            }))
+        );
       };
 
       const rawProjects = []

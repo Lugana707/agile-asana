@@ -120,12 +120,28 @@ const processBacklogTasks = ({ rawBacklogTasks }) => {
     try {
       dispatch({ type: SET_LOADING_BACKLOG_TASKS, loading: true });
 
-      const backlogTasks = processProjectTasksForProject(rawBacklogTasks);
+      const { sections, tasks, ...backlog } = processProjectTasksForProject(
+        rawBacklogTasks
+      );
+
+      const sectionTasks = sections.reduce(
+        (accumulator, { name }) => ({
+          ...accumulator,
+          [camelcase(name)]: tasks.filter(
+            ({ section }) => section.name === name
+          )
+        }),
+        {}
+      );
 
       dispatch({
         type: SUCCESS_LOADING_BACKLOG_TASKS,
         loading: false,
-        value: backlogTasks,
+        value: {
+          sections,
+          ...sectionTasks,
+          ...backlog
+        },
         timestamp: new Date()
       });
     } catch (error) {
@@ -151,41 +167,62 @@ const loadProjectTasks = ({ asanaProjects, asanaBacklog }) => {
     try {
       dispatch({ type: SET_LOADING_RAW_PROJECT_TASKS, loading: true });
 
-      const url = `${ASANA_API_URL}/projects`;
-      jsLogger.debug("Getting project tasks from API...", {
-        asanaProjects,
-        asanaBacklog,
-        url
-      });
-
-      const getProjectTasksFromApi = async ({ gid, ...project }) => {
-        const { data } = await axios.get(`${ASANA_API_URL}/tasks`, {
-          params: {
-            opt_fields: [
-              "projects",
-              "name",
-              "completed_at",
-              "started_at",
-              "custom_fields"
-            ].join(","),
-            project: gid
-          }
+      const getProjectTasksFromApi = async ({ sections, ...project }) => {
+        jsLogger.debug("Getting project tasks from API...", {
+          sections,
+          project
         });
-        return {
-          gid,
+
+        const tasks = await Promise.all(
+          sections.map(async ({ gid, ...section }) => {
+            const url = `${ASANA_API_URL}/sections/${gid}/tasks`;
+            jsLogger.trace("Getting project tasks from API...", {
+              url,
+              sectionGid: gid
+            });
+
+            const { data } = await axios.get(url, {
+              params: {
+                opt_fields: [
+                  "projects",
+                  "name",
+                  "completed_at",
+                  "started_at",
+                  "custom_fields"
+                ].join(",")
+              }
+            });
+
+            const combined = data.data.map(task => ({
+              ...task,
+              section: { gid, ...section }
+            }));
+
+            jsLogger.trace("Gotten project tasks from API!", combined);
+
+            return combined;
+          })
+        );
+
+        const combined = {
+          sections,
           ...project,
-          tasks: data.data
+          tasks: tasks.flat()
         };
+
+        jsLogger.debug("Gotten project tasks!", combined);
+
+        return combined;
       };
 
+      jsLogger.info("Loading project tasks...", {
+        asanaProjects,
+        asanaBacklog
+      });
       const rawProjectTasks = await Promise.all(
         asanaProjects.map(async obj => await getProjectTasksFromApi(obj))
       );
       const rawBacklogTasks = await getProjectTasksFromApi(asanaBacklog);
-      jsLogger.debug("Gotten project tasks!", {
-        rawProjectTasks,
-        rawBacklogTasks
-      });
 
       dispatch({
         type: SUCCESS_LOADING_RAW_PROJECT_TASKS,

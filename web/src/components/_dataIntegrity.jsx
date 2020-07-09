@@ -40,10 +40,6 @@ const DataIntegrity = ({ history }) => {
     } else if (!rawProjectTasks && !rawBacklogTasks) {
       dispatch(loadProjects());
     } else {
-      console.debug("Hello DataIntegrity!", {
-        rawProjectTasks,
-        rawBacklogTasks
-      });
       dispatch(reprocessAllTasks());
     }
   }, [
