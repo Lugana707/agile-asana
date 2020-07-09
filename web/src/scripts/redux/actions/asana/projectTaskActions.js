@@ -127,9 +127,9 @@ const processBacklogTasks = ({ rawBacklogTasks }) => {
       const sectionTasks = sections.reduce(
         (accumulator, { name }) => ({
           ...accumulator,
-          [camelcase(name)]: tasks.filter(
-            ({ section }) => section.name === name
-          )
+          [camelcase(name)]: tasks
+            .filter(obj => !obj.completed_at)
+            .filter(({ section }) => section.name === name)
         }),
         {}
       );

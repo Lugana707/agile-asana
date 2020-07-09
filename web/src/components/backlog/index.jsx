@@ -5,8 +5,16 @@ import Table from "../_library/_table";
 
 const Backlog = () => {
   const { loading, refined = [] } = useSelector(state => state.backlogTasks);
+  const { asanaProjectTasks = [] } = useSelector(
+    state => state.asanaProjectTasks
+  );
 
-  const filteredRefined = refined.filter(({ completed_at }) => !completed_at);
+  const [currentSprint] = asanaProjectTasks || [];
+
+  const filteredRefined = refined.filter(
+    ({ projects }) =>
+      !projects.map(({ gid }) => gid).includes(currentSprint.gid)
+  );
 
   const TableRow = ({ data }) => {
     const { name, storyPoints } = data;
@@ -20,8 +28,11 @@ const Backlog = () => {
 
   return (
     <>
-      <Jumbotron fluid className="bg-primary">
-        <h1>Backlog / Refined</h1>
+      <Jumbotron fluid className="bg-primary text-left">
+        <Container>
+          <h1>Backlog / Refined</h1>
+          <p>Hello World!</p>
+        </Container>
       </Jumbotron>
       <Container>
         <Row>
