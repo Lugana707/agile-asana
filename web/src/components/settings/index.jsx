@@ -60,7 +60,7 @@ const Settings = ({ history }) => {
         <Container>
           <h1>Settings</h1>
           <p>These settings be stored locally using local storage.</p>
-          <Alert variant="info">No data is stored remotely</Alert>
+          <Alert variant="info">No data is stored remotely!</Alert>
         </Container>
       </Jumbotron>
       <Container>
