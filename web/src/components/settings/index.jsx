@@ -2,6 +2,7 @@ import React, { useReducer } from "react";
 import {
   Container,
   Button,
+  ButtonGroup,
   Row,
   Col,
   Form,
@@ -16,15 +17,18 @@ import {
   faInfoCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
+import moment from "moment";
 import { updateSettings } from "../../scripts/redux/actions/settingsActions";
 
 const Settings = ({ history }) => {
   const asanaDeveloperConsoleUrl = "https://app.asana.com/0/developer-console";
 
-  const { loading, asanaApiKey } = useSelector(state => state.settings);
+  const { loading, asanaApiKey, sprintStartDay = 2 } = useSelector(
+    state => state.settings
+  );
   const [settings, setSettings] = useReducer(
     (accumulator, currentValue) => ({ ...accumulator, ...currentValue }),
-    { asanaApiKey }
+    { asanaApiKey, sprintStartDay }
   );
 
   const dispatch = useDispatch();
@@ -42,11 +46,17 @@ const Settings = ({ history }) => {
     </Tooltip>
   );
 
+  const SprintStartDayTooltip = props => (
+    <Tooltip id="api-key-tooltip" {...props}>
+      this will be used when presenting data
+    </Tooltip>
+  );
+
   return (
     <Container>
       <Form className="text-left" onSubmit={handleSubmit}>
         <fieldset disabled={loading}>
-          <Row className="pb-2">
+          <Row>
             <Form.Group as={Col} xs="12" controlId="formAsanaApiKey">
               <Form.Label>
                 <span className="pr-2">Asana API Key</span>
@@ -58,7 +68,7 @@ const Settings = ({ history }) => {
                   <FontAwesomeIcon icon={faInfoCircle} size="1x" />
                 </OverlayTrigger>
               </Form.Label>
-              <Form.Text className="text-muted pb-3">
+              <Form.Text className="pb-3" muted>
                 <span className="d-block">
                   <span>you can generate an API Key from </span>
                   <a
@@ -83,6 +93,36 @@ const Settings = ({ history }) => {
               />
             </Form.Group>
           </Row>
+          <Row>
+            <Form.Group as={Col} xs="12" controlId="formSprintStartDay">
+              <Form.Label>
+                <span className="pr-2">First Day of Sprint</span>
+                <OverlayTrigger
+                  placement="right"
+                  delay={{ show: 250, hide: 400 }}
+                  overlay={SprintStartDayTooltip}
+                >
+                  <FontAwesomeIcon icon={faInfoCircle} size="1x" />
+                </OverlayTrigger>
+              </Form.Label>
+              <div>
+                <ButtonGroup aria-label="First Day of Sprint">
+                  {moment.weekdays().map((weekday, index) => (
+                    <Button
+                      key={index}
+                      variant={
+                        index === sprintStartDay ? "primary" : "secondary"
+                      }
+                      onClick={() => setSettings({ sprintStartDay: index })}
+                    >
+                      {weekday}
+                    </Button>
+                  ))}
+                </ButtonGroup>
+              </div>
+            </Form.Group>
+          </Row>
+          <hr />
           <Row>
             <Form.Group as={Col} xs="12">
               <Button type="submit" variant="warning">
