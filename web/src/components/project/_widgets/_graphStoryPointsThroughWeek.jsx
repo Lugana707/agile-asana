@@ -1,6 +1,7 @@
 import React, { useMemo, useCallback } from "react";
 import { Chart } from "react-charts";
 import { useSelector } from "react-redux";
+import collect from "collect.js";
 import moment from "moment";
 
 const GraphStoryPointsThroughWeek = () => {
@@ -15,72 +16,59 @@ const GraphStoryPointsThroughWeek = () => {
     ({ archived }) => !!archived
   );
 
-  const fullWeek = moment.weekdays().map(weekDay => [weekDay, 0]);
+  const fullWeek = new Array(7).fill(0).map((_, index) => index);
+
   const data = useMemo(
     () =>
-      projectTasks
-        .map(obj => [
-          {
-            label: `Sprint ${obj.week}`,
-            data: obj.completedTasks
-              .filter(obj => obj.completed_at)
-              .map(obj => [
-                moment(obj.completed_at).format("dddd"),
-                obj.storyPoints || 0
-              ])
-              .reduce(
-                (accumulator, [weekDay, storyPoints]) => {
-                  return accumulator.map(obj => [
-                    obj[0],
-                    obj[0] === weekDay ? obj[1] + storyPoints : obj[1]
-                  ]);
+      projectTasks.map(({ week, completedTasks }) => {
+        const dataGroupedByDayOfSprint = collect(completedTasks)
+          .filter(obj => !!obj.completedAt && !!obj.storyPoints)
+          .groupBy("completedAt.dayOfSprint")
+          .all();
+
+        const data = collect(fullWeek)
+          .map(weekday => {
+            const dayOfSprint = (weekday + 7 - sprintStartDay) % 7;
+            const datum = dataGroupedByDayOfSprint[dayOfSprint];
+            if (!datum) {
+              return {
+                completedAt: {
+                  dayOfWeek: weekday,
+                  dayOfSprint: dayOfSprint
                 },
-                [...fullWeek]
-              )
-              .filter(
-                ([weekday]) =>
-                  !hideWeekends ||
-                  !(
-                    weekday ===
-                      moment()
-                        .weekday(6)
-                        .format("dddd") ||
-                    weekday ===
-                      moment()
-                        .weekday(7)
-                        .format("dddd")
-                  )
-              )
-              .sort(([weekDayA], [weekDayB]) => {
-                const momentA =
-                  parseInt(
-                    moment()
-                      .day(weekDayA)
-                      .add(-sprintStartDay, "Days")
-                      .format("d"),
-                    10
-                  ) % 7;
-                const momentB =
-                  parseInt(
-                    moment()
-                      .day(weekDayB)
-                      .add(-sprintStartDay, "Days")
-                      .format("d"),
-                    10
-                  ) % 7;
-                return momentA - momentB;
-              })
-          }
-        ])
-        .flat(),
-    [projectTasks, fullWeek, sprintStartDay]
+                storyPoints: 0
+              };
+            }
+            const { completedAt } = datum.first();
+            return {
+              completedAt,
+              storyPoints: datum.sum("storyPoints")
+            };
+          })
+          .filter(
+            ({ completedAt }) =>
+              !hideWeekends || ![6, 0].includes(completedAt.dayOfWeek)
+          )
+          .sortBy("completedAt.dayOfSprint")
+          .map(obj => [
+            moment()
+              .weekday(obj.completedAt.dayOfWeek)
+              .format("dddd"),
+            obj.storyPoints
+          ])
+          .all();
+
+        return { label: `Sprint ${week}`, data };
+      }),
+    [projectTasks, fullWeek, hideWeekends, sprintStartDay]
   );
 
   const series = useCallback((series, index) => {
     switch (index) {
       case 0:
-        return { type: "bar" };
       case 1:
+        return { type: "bar" };
+      case 2:
       default:
         return { type: "bar", position: "bottom" };
     }

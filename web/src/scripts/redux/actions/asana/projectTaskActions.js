@@ -1,6 +1,7 @@
 import axios from "axios";
 import jsLogger from "js-logger";
 import camelcase from "camelcase";
+import moment from "moment";
 import { ASANA_API_URL } from "../../../api";
 
 const RUNNING_AVERAGE_WEEK_COUNT = 3;
@@ -23,19 +24,44 @@ const sumStoryPoints = projectTasks =>
     0
   );
 
-const processProjectTasksForProject = ({ tasks, ...project }) => {
-  const parsedTasks = tasks.map(({ custom_fields, ...task }) => {
-    const customFields = custom_fields.reduce(
-      (accumulator, { name, number_value, enum_value }) => ({
-        [camelcase(name)]: number_value || enum_value,
-        ...accumulator
-      }),
-      {}
-    );
+const processProjectTasksForProject = (
+  { tasks, ...project },
+  { sprintStartDay = 2 }
+) => {
+  const parsedTasks = tasks.map(({ custom_fields, completed_at, ...task }) => {
+    let mergeFields = { completed_at };
+
+    jsLogger.trace("Processing task custom fields...", { custom_fields });
+    mergeFields = {
+      ...mergeFields,
+      ...custom_fields.reduce(
+        (accumulator, { name, number_value, enum_value }) => ({
+          [camelcase(name)]: number_value || enum_value,
+          ...accumulator
+        }),
+        {}
+      )
+    };
+
+    if (completed_at) {
+      jsLogger.debug("Processing task for sprint metrics...", {
+        completed_at,
+        sprintStartDay
+      });
+      const completedAt = moment(completed_at);
+      const completedAtDayOfWeek = parseInt(completedAt.format("d"), 10);
+      mergeFields = {
+        ...mergeFields,
+        completedAt: {
+          dayOfWeek: completedAtDayOfWeek,
+          dayOfSprint: (completedAtDayOfWeek + 7 - sprintStartDay) % 7
+        }
+      };
+    }
+
     return {
       ...task,
-      ...customFields,
-      custom_fields
+      ...mergeFields
     };
   });
 
@@ -47,14 +73,16 @@ const processProjectTasksForProject = ({ tasks, ...project }) => {
 };
 
 const processProjectTasks = ({ rawProjectTasks }) => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     try {
       dispatch({ type: SET_LOADING_ASANA_PROJECT_TASKS, loading: true });
+
+      const { settings } = getState();
 
       jsLogger.debug("Processing project tasks...", { rawProjectTasks });
       let tasksFound = {};
       const asanaProjectTasks = rawProjectTasks
-        .map(project => processProjectTasksForProject(project))
+        .map(project => processProjectTasksForProject(project, settings))
         .map(project => {
           const completedTasks = project.tasks.filter(
             ({ gid, completed_at }) => completed_at && !tasksFound[gid]
@@ -116,12 +144,15 @@ const processProjectTasks = ({ rawProjectTasks }) => {
 };
 
 const processBacklogTasks = ({ rawBacklogTasks }) => {
-  return dispatch => {
+  return (dispatch, getState) => {
     try {
       dispatch({ type: SET_LOADING_BACKLOG_TASKS, loading: true });
 
+      const { settings } = getState();
+
       const { sections, tasks, ...backlog } = processProjectTasksForProject(
-        rawBacklogTasks
+        rawBacklogTasks,
+        settings
       );
 
       const sectionTasks = sections.reduce(

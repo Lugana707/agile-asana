@@ -3137,6 +3137,11 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
+collect.js@^4.27.4:
+  version "4.27.4"
+  resolved "https://registry.yarnpkg.com/collect.js/-/collect.js-4.27.4.tgz#210c70010c49350fd8b91bbff80a7194407d2c29"
+  integrity sha512-+umY6X+mb1qWrAsu9S2c2jyIK7nlKf1vM7E7CH6E1cm4SeBWxCGsGd1vZZ2YHP9uBfAbgHWrsvEs3g3yUodxbA==
+
 collection-visit@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/collection-visit/-/collection-visit-1.0.0.tgz#4bc0373c164bc3291b4d368c829cf1a80a59dca0"
