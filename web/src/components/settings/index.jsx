@@ -1,6 +1,8 @@
 import React, { useReducer } from "react";
 import {
   Container,
+  Jumbotron,
+  Alert,
   Button,
   ButtonGroup,
   Row,
@@ -53,97 +55,106 @@ const Settings = ({ history }) => {
   );
 
   return (
-    <Container>
-      <Form className="text-left" onSubmit={handleSubmit}>
-        <fieldset disabled={loading}>
-          <Row>
-            <Form.Group as={Col} xs="12" controlId="formAsanaApiKey">
-              <Form.Label>
-                <span className="pr-2">Asana API Key</span>
-                <OverlayTrigger
-                  placement="right"
-                  delay={{ show: 250, hide: 400 }}
-                  overlay={ApiKeyTooltip}
-                >
-                  <FontAwesomeIcon icon={faInfoCircle} size="1x" />
-                </OverlayTrigger>
-              </Form.Label>
-              <Form.Text className="pb-3" muted>
-                <span className="d-block">
-                  <span>you can generate an API Key from </span>
-                  <a
-                    className=""
-                    href={asanaDeveloperConsoleUrl}
-                    rel="noopener noreferrer"
-                    target="_blank"
+    <>
+      <Jumbotron fluid className="bg-primary text-left">
+        <Container>
+          <h1>Settings</h1>
+          <p>These settings be stored locally using local storage.</p>
+          <Alert variant="info">No data is stored remotely</Alert>
+        </Container>
+      </Jumbotron>
+      <Container>
+        <Form className="text-left" onSubmit={handleSubmit}>
+          <fieldset disabled={loading}>
+            <Row>
+              <Form.Group as={Col} xs="12" controlId="formAsanaApiKey">
+                <Form.Label>
+                  <span className="pr-2">Asana API Key</span>
+                  <OverlayTrigger
+                    placement="right"
+                    delay={{ show: 250, hide: 400 }}
+                    overlay={ApiKeyTooltip}
                   >
-                    <span>developer console </span>
-                    <FontAwesomeIcon icon={faExternalLinkAlt} size="1x" />
-                  </a>
-                </span>
-              </Form.Text>
-              <Form.Control
-                type="password"
-                placeholder="asana api key"
-                value={settings.asanaApiKey}
-                onChange={({ target }) =>
-                  setSettings({ asanaApiKey: target.value })
-                }
-                required
-              />
-            </Form.Group>
-          </Row>
-          <Row>
-            <Form.Group as={Col} xs="12" controlId="formSprintStartDay">
-              <Form.Label>
-                <span className="pr-2">First Day of Sprint</span>
-                <OverlayTrigger
-                  placement="right"
-                  delay={{ show: 250, hide: 400 }}
-                  overlay={SprintStartDayTooltip}
-                >
-                  <FontAwesomeIcon icon={faInfoCircle} size="1x" />
-                </OverlayTrigger>
-              </Form.Label>
-              <div>
-                <ButtonGroup aria-label="First Day of Sprint">
-                  {moment.weekdays().map((weekday, index) => (
-                    <Button
-                      key={index}
-                      variant={
-                        index === sprintStartDay ? "primary" : "secondary"
-                      }
-                      onClick={() => setSettings({ sprintStartDay: index })}
+                    <FontAwesomeIcon icon={faInfoCircle} />
+                  </OverlayTrigger>
+                </Form.Label>
+                <Form.Text className="pb-3" muted>
+                  <span className="d-block">
+                    <span>you can generate an API Key from </span>
+                    <a
+                      className=""
+                      href={asanaDeveloperConsoleUrl}
+                      rel="noopener noreferrer"
+                      target="_blank"
                     >
-                      {weekday}
-                    </Button>
-                  ))}
-                </ButtonGroup>
-              </div>
-            </Form.Group>
-          </Row>
-          <hr />
-          <Row>
-            <Form.Group as={Col} xs="12">
-              <Button type="submit" variant="warning">
-                {loading && (
-                  <>
-                    <FontAwesomeIcon icon={faCircleNotch} size="1x" spin />
-                    <span className="pl-1">Updating...</span>
-                  </>
-                )}
-                {!loading && (
-                  <>
-                    <FontAwesomeIcon icon={faSave} size="1x" />
-                    <span className="pl-1">Update</span>
-                  </>
-                )}
-              </Button>
-            </Form.Group>
-          </Row>
-        </fieldset>
-      </Form>
-    </Container>
+                      <span>developer console </span>
+                      <FontAwesomeIcon icon={faExternalLinkAlt} />
+                    </a>
+                  </span>
+                </Form.Text>
+                <Form.Control
+                  type="password"
+                  placeholder="asana api key"
+                  value={settings.asanaApiKey}
+                  onChange={({ target }) =>
+                    setSettings({ asanaApiKey: target.value })
+                  }
+                  required
+                />
+              </Form.Group>
+            </Row>
+            <Row>
+              <Form.Group as={Col} xs="12" controlId="formSprintStartDay">
+                <Form.Label>
+                  <span className="pr-2">First Day of Sprint</span>
+                  <OverlayTrigger
+                    placement="right"
+                    delay={{ show: 250, hide: 400 }}
+                    overlay={SprintStartDayTooltip}
+                  >
+                    <FontAwesomeIcon icon={faInfoCircle} />
+                  </OverlayTrigger>
+                </Form.Label>
+                <div>
+                  <ButtonGroup aria-label="First Day of Sprint">
+                    {moment.weekdays().map((weekday, index) => (
+                      <Button
+                        key={index}
+                        variant={
+                          index === sprintStartDay ? "primary" : "secondary"
+                        }
+                        onClick={() => setSettings({ sprintStartDay: index })}
+                      >
+                        {weekday}
+                      </Button>
+                    ))}
+                  </ButtonGroup>
+                </div>
+              </Form.Group>
+            </Row>
+            <hr />
+            <Row>
+              <Form.Group as={Col} xs="12">
+                <Button type="submit" variant="warning">
+                  {loading && (
+                    <>
+                      <FontAwesomeIcon icon={faCircleNotch} spin />
+                      <span className="pl-1">Updating...</span>
+                    </>
+                  )}
+                  {!loading && (
+                    <>
+                      <FontAwesomeIcon icon={faSave} />
+                      <span className="pl-1">Update</span>
+                    </>
+                  )}
+                </Button>
+              </Form.Group>
+            </Row>
+          </fieldset>
+        </Form>
+      </Container>
+    </>
   );
 };
 
