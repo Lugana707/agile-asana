@@ -73,7 +73,7 @@ const Settings = ({ history }) => {
                 </span>
               </Form.Text>
               <Form.Control
-                type="text"
+                type="password"
                 placeholder="asana api key"
                 value={settings.asanaApiKey}
                 onChange={({ target }) =>
