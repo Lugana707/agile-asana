@@ -4,64 +4,61 @@ import { useSelector } from "react-redux";
 import collect from "collect.js";
 import moment from "moment";
 
-const GraphStoryPointsThroughWeek = () => {
+const GraphStoryPointsThroughWeek = ({ sprints }) => {
   const { sprintStartDay = 2 } = useSelector(state => state.settings);
-  const { loading, asanaProjectTasks = [] } = useSelector(
+  const { loading, asanaProjectTasks } = useSelector(
     state => state.asanaProjectTasks
   );
 
   const hideWeekends = true;
 
-  const projectTasks = (asanaProjectTasks || []).filter(
-    ({ archived }) => !!archived
-  );
+  const data = useMemo(() => {
+    const fullWeek = new Array(7).fill(0).map((_, index) => index);
 
-  const fullWeek = new Array(7).fill(0).map((_, index) => index);
+    const sprintTasks =
+      sprints || (asanaProjectTasks || []).filter(obj => obj.archived);
 
-  const data = useMemo(
-    () =>
-      projectTasks.map(({ week, completedTasks }) => {
-        const dataGroupedByDayOfSprint = collect(completedTasks)
-          .filter(obj => !!obj.completedAt && !!obj.storyPoints)
-          .groupBy("completedAt.dayOfSprint")
-          .all();
+    return sprintTasks.map(({ week, completedTasks }) => {
+      const dataGroupedByDayOfSprint = collect(completedTasks)
+        .filter(obj => !!obj.completedAt && !!obj.storyPoints)
+        .groupBy("completedAt.dayOfSprint")
+        .all();
 
-        const data = collect(fullWeek)
-          .map(weekday => {
-            const dayOfSprint = (weekday + 7 - sprintStartDay) % 7;
-            const datum = dataGroupedByDayOfSprint[dayOfSprint];
-            if (!datum) {
-              return {
-                completedAt: {
-                  dayOfWeek: weekday,
-                  dayOfSprint: dayOfSprint
-                },
-                storyPoints: 0
-              };
-            }
-            const { completedAt } = datum.first();
+      const data = collect(fullWeek)
+        .map(weekday => {
+          const dayOfSprint = (weekday + 7 - sprintStartDay) % 7;
+          const datum = dataGroupedByDayOfSprint[dayOfSprint];
+          if (!datum) {
             return {
-              completedAt,
-              storyPoints: datum.sum("storyPoints")
+              completedAt: {
+                dayOfWeek: weekday,
+                dayOfSprint: dayOfSprint
+              },
+              storyPoints: 0
             };
-          })
-          .filter(
-            ({ completedAt }) =>
-              !hideWeekends || ![6, 0].includes(completedAt.dayOfWeek)
-          )
-          .sortBy("completedAt.dayOfSprint")
-          .map(obj => [
-            moment()
-              .weekday(obj.completedAt.dayOfWeek)
-              .format("dddd"),
-            obj.storyPoints
-          ])
-          .all();
+          }
+          const { completedAt } = datum.first();
+          return {
+            completedAt,
+            storyPoints: datum.sum("storyPoints")
+          };
+        })
+        .filter(
+          ({ completedAt }) =>
+            !hideWeekends || ![6, 0].includes(completedAt.dayOfWeek)
+        )
+        .sortBy("completedAt.dayOfSprint")
+        .map(obj => [
+          moment()
+            .weekday(obj.completedAt.dayOfWeek)
+            .format("dddd"),
+          obj.storyPoints
+        ])
+        .all();
 
-        return { label: `Sprint ${week}`, data };
-      }),
-    [projectTasks, fullWeek, hideWeekends, sprintStartDay]
-  );
+      return { label: `Sprint ${week}`, data };
+    });
+  }, [asanaProjectTasks, sprints, hideWeekends, sprintStartDay]);
 
   const series = useCallback((series, index) => {
     switch (index) {
