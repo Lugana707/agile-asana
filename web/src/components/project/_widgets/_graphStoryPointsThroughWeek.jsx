@@ -18,58 +18,61 @@ const GraphStoryPointsThroughWeek = () => {
   const fullWeek = moment.weekdays().map(weekDay => [weekDay, 0]);
   const data = useMemo(
     () =>
-      projectTasks.map(obj => ({
-        label: `Sprint ${obj.week}`,
-        data: obj.completedTasks
-          .filter(obj => obj.completed_at)
-          .map(obj => [
-            moment(obj.completed_at).format("dddd"),
-            obj.storyPoints || 0
-          ])
-          .reduce(
-            (accumulator, [weekDay, storyPoints]) => {
-              return accumulator.map(obj => [
-                obj[0],
-                obj[0] === weekDay ? obj[1] + storyPoints : obj[1]
-              ]);
-            },
-            [...fullWeek]
-          )
-          .filter(
-            ([weekday]) =>
-              !hideWeekends ||
-              !(
-                weekday ===
-                  moment()
-                    .weekday(6)
-                    .format("dddd") ||
-                weekday ===
-                  moment()
-                    .weekday(7)
-                    .format("dddd")
+      projectTasks
+        .map(obj => [
+          {
+            label: `Sprint ${obj.week}`,
+            data: obj.completedTasks
+              .filter(obj => obj.completed_at)
+              .map(obj => [
+                moment(obj.completed_at).format("dddd"),
+                obj.storyPoints || 0
+              ])
+              .reduce(
+                (accumulator, [weekDay, storyPoints]) => {
+                  return accumulator.map(obj => [
+                    obj[0],
+                    obj[0] === weekDay ? obj[1] + storyPoints : obj[1]
+                  ]);
+                },
+                [...fullWeek]
               )
-          )
-          .sort(([weekDayA], [weekDayB]) => {
-            console.debug("Hello weekday!", moment().weekday(6));
-            const momentA =
-              parseInt(
-                moment()
-                  .day(weekDayA)
-                  .add(-sprintStartDay, "Days")
-                  .format("d"),
-                10
-              ) % 7;
-            const momentB =
-              parseInt(
-                moment()
-                  .day(weekDayB)
-                  .add(-sprintStartDay, "Days")
-                  .format("d"),
-                10
-              ) % 7;
-            return momentA - momentB;
-          })
-      })),
+              .filter(
+                ([weekday]) =>
+                  !hideWeekends ||
+                  !(
+                    weekday ===
+                      moment()
+                        .weekday(6)
+                        .format("dddd") ||
+                    weekday ===
+                      moment()
+                        .weekday(7)
+                        .format("dddd")
+                  )
+              )
+              .sort(([weekDayA], [weekDayB]) => {
+                const momentA =
+                  parseInt(
+                    moment()
+                      .day(weekDayA)
+                      .add(-sprintStartDay, "Days")
+                      .format("d"),
+                    10
+                  ) % 7;
+                const momentB =
+                  parseInt(
+                    moment()
+                      .day(weekDayB)
+                      .add(-sprintStartDay, "Days")
+                      .format("d"),
+                    10
+                  ) % 7;
+                return momentA - momentB;
+              })
+          }
+        ])
+        .flat(),
     [projectTasks, fullWeek, sprintStartDay]
   );
 
