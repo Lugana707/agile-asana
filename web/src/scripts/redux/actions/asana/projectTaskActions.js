@@ -113,9 +113,13 @@ const processProjectTasks = ({ rawProjectTasks }) => {
           };
         })
         .map((project, index, projects) => {
+          const offset = project.archived ? 0 : 1;
           const runningAverageCompletedStoryPoints = Math.round(
             projects
-              .slice(index, index + RUNNING_AVERAGE_WEEK_COUNT)
+              .slice(
+                index + offset,
+                index + offset + RUNNING_AVERAGE_WEEK_COUNT
+              )
               .reduce(
                 (accumulator, { completedStoryPoints }) =>
                   accumulator + completedStoryPoints,
