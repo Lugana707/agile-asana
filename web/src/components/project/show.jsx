@@ -44,7 +44,7 @@ const Show = ({ match }) => {
     <Container>
       <Row>
         <Col xs={{ order: "last", span: 12 }} md={{ order: "first" }}>
-          <div style={{ height: "60vh" }}>
+          <div className="h-100" style={{ minHeight: "300px" }}>
             <ProjectWidgetGraphStoryPointsThroughWeek sprints={sprintsMemo} />
           </div>
         </Col>
