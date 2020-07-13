@@ -32,8 +32,6 @@ const Show = ({ match }) => {
     return <div className="loading-spinner centre" />;
   }
 
-  console.debug("Hello sprint!", { sprint });
-
   const {
     name,
     week,
