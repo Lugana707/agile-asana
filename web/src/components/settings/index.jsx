@@ -82,7 +82,6 @@ const Settings = ({ history }) => {
                   <span className="d-block">
                     <span>you can generate an API Key from </span>
                     <a
-                      className=""
                       href={asanaDeveloperConsoleUrl}
                       rel="noopener noreferrer"
                       target="_blank"
