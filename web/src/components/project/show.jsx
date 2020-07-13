@@ -37,7 +37,8 @@ const Show = ({ match }) => {
     week,
     committedStoryPoints,
     completedStoryPoints,
-    runningAverageCompletedStoryPoints
+    runningAverageCompletedStoryPoints,
+    archived
   } = sprint;
 
   return (
@@ -55,7 +56,14 @@ const Show = ({ match }) => {
         >
           <Card bg="dark" text="light" className="text-left h-100">
             <Card.Body>
-              <Card.Title>Sprint {week}</Card.Title>
+              <Card.Title>
+                <span>Sprint {week}</span>
+                {archived ? (
+                  <span className="text-success"> Completed</span>
+                ) : (
+                  <span className="text-warning"> (In Progress)</span>
+                )}
+              </Card.Title>
               <Card.Subtitle className="text-muted">{name}</Card.Subtitle>
             </Card.Body>
             <ListGroup className="list-group-flush">
@@ -86,8 +94,7 @@ const Show = ({ match }) => {
                 <span> completed story points</span>
               </ListGroupItem>
             </ListGroup>
-
-            <Card.Footer>
+            <Card.Footer className="text-right">
               <LinkContainer to={`/project/${projectGidMemo}/task`}>
                 <Button className="mr-2">Tasks</Button>
               </LinkContainer>
