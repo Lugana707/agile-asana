@@ -44,7 +44,7 @@ const processProjectTasksForProject = (
     };
 
     if (completed_at) {
-      jsLogger.debug("Processing task for sprint metrics...", {
+      jsLogger.trace("Processing task for sprint metrics...", {
         completed_at,
         sprintStartDay
       });

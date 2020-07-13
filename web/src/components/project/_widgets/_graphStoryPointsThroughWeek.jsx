@@ -12,70 +12,118 @@ const GraphStoryPointsThroughWeek = ({ sprints }) => {
 
   const hideWeekends = true;
 
+  const sprintTasksMemo = useMemo(
+    () => sprints || (asanaProjectTasks || []).filter(obj => obj.archived),
+    [sprints, asanaProjectTasks]
+  );
+
+  const showBurnUp = sprintTasksMemo.length === 1;
+
   const data = useMemo(() => {
     const fullWeek = new Array(7).fill(0).map((_, index) => index);
 
-    const sprintTasks =
-      sprints || (asanaProjectTasks || []).filter(obj => obj.archived);
+    const sumOfStoryPointsByDay = sprintTasksMemo
+      .map(({ week, completedTasks }) => {
+        const dataGroupedByDayOfSprint = collect(completedTasks)
+          .filter(obj => !!obj.completedAt && !!obj.storyPoints)
+          .groupBy("completedAt.dayOfSprint")
+          .all();
 
-    return sprintTasks.map(({ week, completedTasks }) => {
-      const dataGroupedByDayOfSprint = collect(completedTasks)
-        .filter(obj => !!obj.completedAt && !!obj.storyPoints)
-        .groupBy("completedAt.dayOfSprint")
-        .all();
-
-      const data = collect(fullWeek)
-        .map(weekday => {
-          const dayOfSprint = (weekday + 7 - sprintStartDay) % 7;
-          const datum = dataGroupedByDayOfSprint[dayOfSprint];
-          if (!datum) {
+        const data = collect(fullWeek)
+          .map(weekday => {
+            const dayOfSprint = (weekday + 7 - sprintStartDay) % 7;
+            const datum = dataGroupedByDayOfSprint[dayOfSprint];
+            if (!datum) {
+              return {
+                completedAt: {
+                  dayOfWeek: weekday,
+                  dayOfSprint: dayOfSprint
+                },
+                storyPoints: 0
+              };
+            }
+            const { completedAt } = datum.first();
             return {
-              completedAt: {
-                dayOfWeek: weekday,
-                dayOfSprint: dayOfSprint
-              },
-              storyPoints: 0
+              completedAt,
+              storyPoints: datum.sum("storyPoints")
             };
-          }
-          const { completedAt } = datum.first();
-          return {
-            completedAt,
-            storyPoints: datum.sum("storyPoints")
+          })
+          .filter(
+            ({ completedAt }) =>
+              !hideWeekends || ![6, 0].includes(completedAt.dayOfWeek)
+          )
+          .sortBy("completedAt.dayOfSprint")
+          .map(obj => [
+            moment()
+              .weekday(obj.completedAt.dayOfWeek)
+              .format("dddd"),
+            obj.storyPoints
+          ])
+          .all();
+
+        const results = [
+          { label: `Sprint ${week}`, data, secondaryAxisID: "dailySum" }
+        ];
+
+        if (showBurnUp) {
+          let totalStoryPoints = 0;
+          const sumOfStoryPointsAcrossWeek = {
+            label: `Burn Up`,
+            data: [
+              //[data[0][0], 0],
+              ...data.map(([weekday, storyPoints]) => {
+                totalStoryPoints += storyPoints;
+                return [weekday, totalStoryPoints];
+              })
+            ],
+            secondaryAxisID: "cummulativeSum"
           };
-        })
-        .filter(
-          ({ completedAt }) =>
-            !hideWeekends || ![6, 0].includes(completedAt.dayOfWeek)
-        )
-        .sortBy("completedAt.dayOfSprint")
-        .map(obj => [
-          moment()
-            .weekday(obj.completedAt.dayOfWeek)
-            .format("dddd"),
-          obj.storyPoints
-        ])
-        .all();
+          results.unshift(sumOfStoryPointsAcrossWeek);
+        }
 
-      return { label: `Sprint ${week}`, data };
-    });
-  }, [asanaProjectTasks, sprints, hideWeekends, sprintStartDay]);
+        return results;
+      })
+      .flat();
 
-  const series = useCallback((series, index) => {
-    switch (index) {
-      case 0:
-      case 1:
-        return { type: "bar" };
-      case 2:
-      default:
-        return { type: "bar", position: "bottom" };
-    }
-  }, []);
+    return [...sumOfStoryPointsByDay];
+  }, [showBurnUp, sprintTasksMemo, hideWeekends, sprintStartDay]);
+
+  const series = useCallback(
+    (series, index) => {
+      if (showBurnUp && index % 2 === 0) {
+        return { type: "line", position: "bottom" };
+      }
+      switch (index) {
+        case 0:
+        case 1:
+          return { type: "bar" };
+        case 2:
+        default:
+          return { type: "bar", position: "bottom" };
+      }
+    },
+    [showBurnUp]
+  );
   const axes = useMemo(
     () => [
       { primary: true, type: "ordinal", position: "bottom" },
-      { position: "left", type: "linear", stacked: true }
+      {
+        id: "dailySum",
+        position: "left",
+        type: "linear",
+        hardMin: 0,
+        format: d => Math.round(d, 0),
+        stacked: !showBurnUp
+      },
+      {
+        id: "cummulativeSum",
+        position: "right",
+        type: "linear",
+        hardMin: 0,
+        format: d => Math.round(d, 0)
+      }
     ],
-    []
+    [showBurnUp]
   );
 
   if (loading) {
