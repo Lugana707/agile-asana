@@ -49,13 +49,15 @@ const processProjectTasksForProject = (
         sprintStartDay
       });
       const completedAt = moment(completed_at);
-      const completedAtDayOfWeek = parseInt(completedAt.format("d"), 10);
+      const completedAtDayOfSprint = completedAt.diff(
+        project.createdAt,
+        "days"
+      );
+
       mergeFields = {
         ...mergeFields,
-        completedAt: {
-          dayOfWeek: completedAtDayOfWeek,
-          dayOfSprint: (completedAtDayOfWeek + 7 - sprintStartDay) % 7
-        }
+        completedAt,
+        completedAtDayOfSprint
       };
     }
 

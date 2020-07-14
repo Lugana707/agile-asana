@@ -10,6 +10,9 @@ const GraphStoryPointsThroughWeek = ({ sprints }) => {
     state => state.asanaProjectTasks
   );
 
+  const convertSprintdayToWeekday = sprintday =>
+    (sprintday + sprintStartDay) % 7;
+
   const hideWeekends = true;
 
   const sprintTasksMemo = useMemo(
@@ -19,46 +22,47 @@ const GraphStoryPointsThroughWeek = ({ sprints }) => {
 
   const showBurnUp = sprintTasksMemo.length === 1;
 
-  const data = useMemo(() => {
-    const fullWeek = new Array(7).fill(0).map((_, index) => index);
+  console.debug("Hello sprint!", { sprintTasksMemo });
 
+  const data = useMemo(() => {
     const sumOfStoryPointsByDay = sprintTasksMemo
-      .map(({ week, completedTasks }) => {
+      .map(({ week, completedTasks, startedAt, dueOn, sprintLength }) => {
+        const fullSprint = new Array(sprintLength + 1)
+          .fill(0)
+          .map((_, index) => index);
+
         const dataGroupedByDayOfSprint = collect(completedTasks)
-          .filter(obj => !!obj.completedAt && !!obj.storyPoints)
-          .groupBy("completedAt.dayOfSprint")
+          .filter(
+            obj => obj.completedAtDayOfSprint !== undefined && !!obj.storyPoints
+          )
+          .groupBy("completedAtDayOfSprint")
           .all();
 
-        const data = collect(fullWeek)
-          .map(weekday => {
-            const dayOfSprint = (weekday + 7 - sprintStartDay) % 7;
-            const datum = dataGroupedByDayOfSprint[dayOfSprint];
-            if (!datum) {
-              return {
-                completedAt: {
-                  dayOfWeek: weekday,
-                  dayOfSprint: dayOfSprint
-                },
-                storyPoints: 0
-              };
-            }
-            const { completedAt } = datum.first();
+        const data = collect(fullSprint)
+          .map(dayOfSprint => {
+            const datum =
+              dataGroupedByDayOfSprint[dayOfSprint] ||
+              collect([
+                {
+                  completedAtDayOfSprint: dayOfSprint,
+                  storyPoints: 0
+                }
+              ]);
+            const { completedAtDayOfSprint } = datum.first();
             return {
-              completedAt,
+              completedAtDayOfSprint,
               storyPoints: datum.sum("storyPoints")
             };
           })
-          .filter(
-            ({ completedAt }) =>
-              !hideWeekends || ![6, 0].includes(completedAt.dayOfWeek)
-          )
-          .sortBy("completedAt.dayOfSprint")
-          .map(obj => [
-            moment()
-              .weekday(obj.completedAt.dayOfWeek)
-              .format("dddd"),
-            obj.storyPoints
-          ])
+          .filter(({ completedAtDayOfSprint }) => {
+            if (!hideWeekends) {
+              return true;
+            }
+            const weekday = convertSprintdayToWeekday(completedAtDayOfSprint);
+            return weekday !== 6 && weekday !== 0;
+          })
+          .sortBy("completedAtDayOfSprint")
+          .map(obj => [obj.completedAtDayOfSprint, obj.storyPoints])
           .all();
 
         const results = [
@@ -70,7 +74,6 @@ const GraphStoryPointsThroughWeek = ({ sprints }) => {
           const sumOfStoryPointsAcrossWeek = {
             label: `Burn Up`,
             data: [
-              //[data[0][0], 0],
               ...data.map(([weekday, storyPoints]) => {
                 totalStoryPoints += storyPoints;
                 return [weekday, totalStoryPoints];
@@ -106,7 +109,15 @@ const GraphStoryPointsThroughWeek = ({ sprints }) => {
   );
   const axes = useMemo(
     () => [
-      { primary: true, type: "ordinal", position: "bottom" },
+      {
+        primary: true,
+        type: "ordinal",
+        position: "bottom",
+        format: d =>
+          moment()
+            .weekday(convertSprintdayToWeekday(d))
+            .format("dddd")
+      },
       {
         id: "dailySum",
         position: "left",

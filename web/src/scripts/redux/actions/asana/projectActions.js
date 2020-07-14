@@ -1,5 +1,6 @@
 import axios from "axios";
 import jsLogger from "js-logger";
+import moment from "moment";
 import { ASANA_API_URL } from "../../../api";
 import { loadProjectTasks } from "./projectTaskActions";
 
@@ -28,11 +29,19 @@ const processProjects = ({ rawProjects }) => {
 
       const asanaProjects = rawProjects
         .filter(({ name }) => matchKanban.test(name))
-        .map(({ name, ...project }) => ({
-          name,
-          week: parseInt(name.replace(/.+ Kanban Week /u, "").trim(), 10),
-          ...project
-        }));
+        .map(({ name, due_on, created_at, ...project }) => {
+          const createdAt = moment(created_at);
+          const dueOn = moment(due_on);
+
+          return {
+            name,
+            week: parseInt(name.replace(/.+ Kanban Week /u, "").trim(), 10),
+            createdAt,
+            dueOn,
+            sprintLength: dueOn.diff(createdAt.format("YYYY-MM-DD"), "days"),
+            ...project
+          };
+        });
       asanaProjects.sort((a, b) => (a.week < b.week ? 1 : -1));
 
       const [asanaBacklog] = rawProjects.filter(({ name }) =>
@@ -85,7 +94,7 @@ const loadProjects = () => {
 
         const { data } = await axios.get(url, {
           params: {
-            opt_fields: ["sections", "name"].join(","),
+            opt_fields: ["sections", "name", "created_at", "due_on"].join(","),
             archived
           },
           validateStatus: status => status === 200
