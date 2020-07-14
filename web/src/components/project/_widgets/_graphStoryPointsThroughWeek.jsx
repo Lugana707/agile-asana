@@ -4,28 +4,26 @@ import { useSelector } from "react-redux";
 import collect from "collect.js";
 import moment from "moment";
 
-const GraphStoryPointsThroughWeek = ({ sprints }) => {
+const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
   const { sprintStartDay = 2 } = useSelector(state => state.settings);
   const { loading, asanaProjectTasks } = useSelector(
     state => state.asanaProjectTasks
   );
 
-  const convertSprintdayToWeekday = sprintday =>
-    (sprintday + sprintStartDay) % 7;
+  const convertSprintdayToWeekday = useCallback(
+    sprintday => (sprintday + sprintStartDay) % 7,
+    [sprintStartDay]
+  );
 
   const hideWeekends = true;
 
-  const sprintTasksMemo = useMemo(
+  const sprintTasks = useMemo(
     () => sprints || (asanaProjectTasks || []).filter(obj => obj.archived),
     [sprints, asanaProjectTasks]
   );
 
-  const showBurnUp = sprintTasksMemo.length === 1;
-
-  console.debug("Hello sprint!", { sprintTasksMemo });
-
   const data = useMemo(() => {
-    const sumOfStoryPointsByDay = sprintTasksMemo
+    const sumOfStoryPointsByDay = sprintTasks
       .map(({ week, completedTasks, startedAt, dueOn, sprintLength }) => {
         const fullSprint = new Array(sprintLength + 1)
           .fill(0)
@@ -89,7 +87,7 @@ const GraphStoryPointsThroughWeek = ({ sprints }) => {
       .flat();
 
     return [...sumOfStoryPointsByDay];
-  }, [showBurnUp, sprintTasksMemo, hideWeekends, sprintStartDay]);
+  }, [showBurnUp, sprintTasks, hideWeekends, convertSprintdayToWeekday]);
 
   const series = useCallback(
     (series, index) => {
@@ -134,7 +132,7 @@ const GraphStoryPointsThroughWeek = ({ sprints }) => {
         format: d => Math.round(d, 0)
       }
     ],
-    [showBurnUp]
+    [showBurnUp, convertSprintdayToWeekday]
   );
 
   if (loading) {
