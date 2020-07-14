@@ -24,74 +24,102 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
 
   const data = useMemo(() => {
     const sumOfStoryPointsByDay = sprintTasks
-      .map(({ week, completedTasks, startedAt, dueOn, sprintLength }) => {
-        const fullSprint = new Array(sprintLength + 1)
-          .fill(0)
-          .map((_, index) => index);
+      .map(
+        ({
+          week,
+          completedTasks,
+          startedAt,
+          dueOn,
+          sprintLength,
+          committedStoryPoints
+        }) => {
+          const fullSprint = new Array(sprintLength + 1)
+            .fill(0)
+            .map((_, index) => index);
 
-        const dataGroupedByDayOfSprint = collect(completedTasks)
-          .filter(
-            obj => obj.completedAtDayOfSprint !== undefined && !!obj.storyPoints
-          )
-          .groupBy("completedAtDayOfSprint")
-          .all();
+          const dataGroupedByDayOfSprint = collect(completedTasks)
+            .filter(
+              obj =>
+                obj.completedAtDayOfSprint !== undefined && !!obj.storyPoints
+            )
+            .groupBy("completedAtDayOfSprint")
+            .all();
 
-        const data = collect(fullSprint)
-          .map(dayOfSprint => {
-            const datum =
-              dataGroupedByDayOfSprint[dayOfSprint] ||
-              collect([
-                {
-                  completedAtDayOfSprint: dayOfSprint,
-                  storyPoints: 0
-                }
-              ]);
-            const { completedAtDayOfSprint } = datum.first();
-            return {
-              completedAtDayOfSprint,
-              storyPoints: datum.sum("storyPoints")
-            };
-          })
-          .filter(({ completedAtDayOfSprint }) => {
-            if (!hideWeekends) {
-              return true;
+          const data = collect(fullSprint)
+            .map(dayOfSprint => {
+              const datum =
+                dataGroupedByDayOfSprint[dayOfSprint] ||
+                collect([
+                  {
+                    completedAtDayOfSprint: dayOfSprint,
+                    storyPoints: 0
+                  }
+                ]);
+              const { completedAtDayOfSprint } = datum.first();
+              return {
+                completedAtDayOfSprint,
+                storyPoints: datum.sum("storyPoints")
+              };
+            })
+            .filter(({ completedAtDayOfSprint }) => {
+              if (!hideWeekends) {
+                return true;
+              }
+              const weekday = convertSprintdayToWeekday(completedAtDayOfSprint);
+              return weekday !== 6 && weekday !== 0;
+            })
+            .sortBy("completedAtDayOfSprint")
+            .map(obj => [obj.completedAtDayOfSprint, obj.storyPoints])
+            .all();
+
+          const results = [
+            { label: `Sprint ${week}`, data, secondaryAxisID: "dailySum" }
+          ];
+
+          if (showBurnUp || showBurnDown) {
+            let startingCummulativeStoryPoints = 0;
+            let cummulativeStoryPoints = startingCummulativeStoryPoints;
+            let label = "Burn Up";
+            let operation = storyPoints => cummulativeStoryPoints + storyPoints;
+
+            if (showBurnDown) {
+              startingCummulativeStoryPoints = committedStoryPoints;
+              cummulativeStoryPoints = startingCummulativeStoryPoints;
+              label = "Burn Down";
+              operation = storyPoints => cummulativeStoryPoints - storyPoints;
             }
-            const weekday = convertSprintdayToWeekday(completedAtDayOfSprint);
-            return weekday !== 6 && weekday !== 0;
-          })
-          .sortBy("completedAtDayOfSprint")
-          .map(obj => [obj.completedAtDayOfSprint, obj.storyPoints])
-          .all();
 
-        const results = [
-          { label: `Sprint ${week}`, data, secondaryAxisID: "dailySum" }
-        ];
+            const sumOfStoryPointsAcrossWeek = {
+              label,
+              data: [
+                [-1, startingCummulativeStoryPoints],
+                ...data.map(([weekday, storyPoints]) => {
+                  cummulativeStoryPoints = operation(storyPoints);
+                  return [weekday, cummulativeStoryPoints];
+                })
+              ],
+              secondaryAxisID: "cummulativeSum"
+            };
+            results.unshift(sumOfStoryPointsAcrossWeek);
+          }
 
-        if (showBurnUp) {
-          let totalStoryPoints = 0;
-          const sumOfStoryPointsAcrossWeek = {
-            label: `Burn Up`,
-            data: [
-              ...data.map(([weekday, storyPoints]) => {
-                totalStoryPoints += storyPoints;
-                return [weekday, totalStoryPoints];
-              })
-            ],
-            secondaryAxisID: "cummulativeSum"
-          };
-          results.unshift(sumOfStoryPointsAcrossWeek);
+          return results;
         }
-
-        return results;
-      })
+      )
       .flat();
 
     return [...sumOfStoryPointsByDay];
-  }, [showBurnUp, sprintTasks, hideWeekends, convertSprintdayToWeekday]);
+  }, [
+    showBurnUp,
+    showBurnDown,
+    sprintTasks,
+    hideWeekends,
+    convertSprintdayToWeekday
+  ]);
 
   const series = useCallback(
     (series, index) => {
-      if (showBurnUp && index % 2 === 0) {
+      if ((showBurnUp || showBurnDown) && index % 2 === 0) {
         return { type: "line", position: "bottom" };
       }
       switch (index) {
@@ -103,7 +131,7 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
           return { type: "bar", position: "bottom" };
       }
     },
-    [showBurnUp]
+    [showBurnUp, showBurnDown]
   );
   const axes = useMemo(
     () => [
@@ -112,9 +140,11 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
         type: "ordinal",
         position: "bottom",
         format: d =>
-          moment()
-            .weekday(convertSprintdayToWeekday(d))
-            .format("dddd")
+          d < 0
+            ? ""
+            : moment()
+                .weekday(convertSprintdayToWeekday(d))
+                .format("dddd")
       },
       {
         id: "dailySum",
