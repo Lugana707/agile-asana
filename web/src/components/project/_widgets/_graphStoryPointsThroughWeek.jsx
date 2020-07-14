@@ -93,9 +93,9 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
               label,
               data: [
                 [-1, startingCummulativeStoryPoints],
-                ...data.map(([weekday, storyPoints]) => {
+                ...data.map(([sprintDay, storyPoints]) => {
                   cummulativeStoryPoints = operation(storyPoints);
-                  return [weekday, cummulativeStoryPoints];
+                  return [sprintDay, cummulativeStoryPoints];
                 })
               ],
               secondaryAxisID: "cummulativeSum"
