@@ -48,7 +48,8 @@ const Show = ({ match }) => {
           <div className="h-100" style={{ minHeight: "300px" }}>
             <ProjectWidgetGraphStoryPointsThroughWeek
               sprints={sprintsMemo}
-              showBurnDown
+              showBurnUp={archived}
+              showBurnDown={!archived}
             />
           </div>
         </Col>
