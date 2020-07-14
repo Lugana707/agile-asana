@@ -84,6 +84,7 @@ const Backlog = () => {
             <Col xs={12}>
               <hr />
               <Table
+                id="backlog-forecast"
                 loading={loading}
                 data={tasks}
                 row={TableRow}

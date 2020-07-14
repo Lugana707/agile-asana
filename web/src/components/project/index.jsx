@@ -78,6 +78,7 @@ const Projects = () => {
       <Row>
         <Col>
           <Table
+            id="sprints"
             loading={loading}
             data={asanaProjectTasks}
             row={TableRow}

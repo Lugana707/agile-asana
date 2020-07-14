@@ -46,7 +46,12 @@ const Tasks = ({ match }) => {
     <Container>
       <Row>
         <Col>
-          <Table loading={loading} data={completedTasks} row={TableRow} />
+          <Table
+            id={asanaProjectTasks.name}
+            loading={loading}
+            data={completedTasks}
+            row={TableRow}
+          />
         </Col>
       </Row>
     </Container>
