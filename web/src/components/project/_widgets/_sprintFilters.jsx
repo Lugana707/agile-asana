@@ -17,12 +17,7 @@ const SprintFilters = ({ sprints, setSprints }) => {
 
   useEffect(() => {
     setSprints(sprintCollection.whereBetween("week", sprintRange).all());
-  }, [sprintCollection, sprintRange]);
-
-  const filteredProjectTasks = useMemo(
-    () => sprintCollection.whereBetween("week", sprintRange).all(),
-    [sprintCollection, sprintRange]
-  );
+  }, [setSprints, sprintCollection, sprintRange]);
 
   const marks = useMemo(
     () =>
