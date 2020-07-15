@@ -1,38 +1,25 @@
 import React, { useMemo, useCallback } from "react";
 import { Chart } from "react-charts";
-import { useSelector } from "react-redux";
 
-const GraphStoryPointsTrend = () => {
-  const { loading, asanaProjectTasks = [] } = useSelector(
-    state => state.asanaProjectTasks
-  );
-
-  const projectTasks = (asanaProjectTasks || []).filter(
-    ({ archived }) => !!archived
-  );
-
+const GraphStoryPointsTrend = ({ sprints }) => {
   const data = useMemo(
     () => [
       {
         label: "3 Week Average",
-        data: projectTasks
+        data: sprints
           .map(obj => [obj.week, obj.runningAverageCompletedStoryPoints])
           .reverse()
       },
       {
         label: "Committed Story Points",
-        data: projectTasks
-          .map(obj => [obj.week, obj.committedStoryPoints])
-          .reverse()
+        data: sprints.map(obj => [obj.week, obj.committedStoryPoints]).reverse()
       },
       {
         label: "Completed Story Points",
-        data: projectTasks
-          .map(obj => [obj.week, obj.completedStoryPoints])
-          .reverse()
+        data: sprints.map(obj => [obj.week, obj.completedStoryPoints]).reverse()
       }
     ],
-    [projectTasks]
+    [sprints]
   );
 
   const series = useCallback((series, index) => {
@@ -52,10 +39,6 @@ const GraphStoryPointsTrend = () => {
     ],
     []
   );
-
-  if (loading) {
-    return <div className="loading-spinner centre" />;
-  }
 
   return <Chart data={data} series={series} axes={axes} tooltip dark />;
 };

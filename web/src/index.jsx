@@ -1,15 +1,10 @@
-import React, { StrictMode } from "react";
+import React from "react";
 import { render } from "react-dom";
 import "./styles/index.scss";
 import App from "./app";
 
 const renderApp = rootElement => {
-  render(
-    <StrictMode>
-      <App />
-    </StrictMode>,
-    document.getElementById(rootElement)
-  );
+  render(<App />, document.getElementById(rootElement));
 };
 
 export default renderApp;
