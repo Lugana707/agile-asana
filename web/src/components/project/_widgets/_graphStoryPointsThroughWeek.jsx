@@ -78,29 +78,50 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
 
           if (showBurnUp || showBurnDown) {
             let startingCummulativeStoryPoints = 0;
-            let cummulativeStoryPoints = startingCummulativeStoryPoints;
             let label = "Burn Up";
-            let operation = storyPoints => cummulativeStoryPoints + storyPoints;
+            let operation = (runningTotal, storyPoints) =>
+              runningTotal + storyPoints;
 
             if (showBurnDown) {
               startingCummulativeStoryPoints = committedStoryPoints;
-              cummulativeStoryPoints = startingCummulativeStoryPoints;
               label = "Burn Down";
-              operation = storyPoints => cummulativeStoryPoints - storyPoints;
+              operation = (runningTotal, storyPoints) =>
+                runningTotal - storyPoints;
             }
 
-            const sumOfStoryPointsAcrossWeek = {
-              label,
-              data: [
-                [-1, startingCummulativeStoryPoints],
-                ...data.map(([sprintDay, storyPoints]) => {
-                  cummulativeStoryPoints = operation(storyPoints);
-                  return [sprintDay, cummulativeStoryPoints];
-                })
-              ],
+            let cummulativeStoryPoints = startingCummulativeStoryPoints;
+            let trendStoryPoints = startingCummulativeStoryPoints;
+
+            const trend = {
+              label: "Ideal Trend",
+              data: [[-1, startingCummulativeStoryPoints]],
               secondaryAxisID: "cummulativeSum"
             };
+            const sumOfStoryPointsAcrossWeek = {
+              label,
+              data: [[-1, startingCummulativeStoryPoints]],
+              secondaryAxisID: "cummulativeSum"
+            };
+
+            data.forEach(([sprintDay, storyPoints]) => {
+              cummulativeStoryPoints = operation(
+                cummulativeStoryPoints,
+                storyPoints
+              );
+              sumOfStoryPointsAcrossWeek.data.push([
+                sprintDay,
+                cummulativeStoryPoints
+              ]);
+
+              trendStoryPoints = operation(
+                trendStoryPoints,
+                committedStoryPoints / data.length
+              );
+              trend.data.push([sprintDay, trendStoryPoints]);
+            });
+
             results.unshift(sumOfStoryPointsAcrossWeek);
+            results.unshift(trend);
           }
 
           return results;
@@ -119,7 +140,7 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
 
   const series = useCallback(
     (series, index) => {
-      if ((showBurnUp || showBurnDown) && index % 2 === 0) {
+      if ((showBurnUp || showBurnDown) && index < 2) {
         return { type: "line", position: "bottom" };
       }
       switch (index) {
