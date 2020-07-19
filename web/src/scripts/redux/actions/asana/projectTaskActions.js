@@ -204,41 +204,64 @@ const loadProjectTasks = ({ asanaProjects, asanaBacklog }) => {
     try {
       dispatch({ type: SET_LOADING_RAW_PROJECT_TASKS, loading: true });
 
+      const getTags = async () => {
+        const url = `${ASANA_API_URL}/tags`;
+        jsLogger.trace("Getting tags from API...", { url });
+
+        const { data } = await axios.get(url);
+        jsLogger.trace("Gotten tags from API!", { data });
+
+        const tags = data.data.reduce(
+          (accumulator, { gid, ...tag }) => ({
+            ...accumulator,
+            [gid]: { ...tag, gid }
+          }),
+          {}
+        );
+        jsLogger.trace("Processed tags!", { tags });
+
+        return tags;
+      };
+      const tagHashSet = await getTags();
+
       const getProjectTasksFromApi = async ({ sections, ...project }) => {
         jsLogger.debug("Getting project tasks from API...", {
           sections,
           project
         });
 
+        const getProjectTaskSectionsFromApi = async ({ gid, ...section }) => {
+          const url = `${ASANA_API_URL}/sections/${gid}/tasks`;
+          jsLogger.trace("Getting project tasks from API...", {
+            url,
+            sectionGid: gid
+          });
+
+          const { data } = await axios.get(url, {
+            params: {
+              opt_fields: [
+                "projects",
+                "name",
+                "completed_at",
+                "started_at",
+                "custom_fields",
+                "tags"
+              ].join(",")
+            }
+          });
+
+          const tasks = data.data.map(task => ({
+            ...task,
+            tags: task.tags.map(tag => ({ ...tagHashSet[tag.gid] })),
+            section: { gid, ...section }
+          }));
+          jsLogger.debug("Gotten project tasks from API!", { tasks });
+
+          return tasks;
+        };
+
         const tasks = await Promise.all(
-          sections.map(async ({ gid, ...section }) => {
-            const url = `${ASANA_API_URL}/sections/${gid}/tasks`;
-            jsLogger.trace("Getting project tasks from API...", {
-              url,
-              sectionGid: gid
-            });
-
-            const { data } = await axios.get(url, {
-              params: {
-                opt_fields: [
-                  "projects",
-                  "name",
-                  "completed_at",
-                  "started_at",
-                  "custom_fields"
-                ].join(",")
-              }
-            });
-
-            const combined = data.data.map(task => ({
-              ...task,
-              section: { gid, ...section }
-            }));
-
-            jsLogger.trace("Gotten project tasks from API!", combined);
-
-            return combined;
-          })
+          sections.map(async section => getProjectTaskSectionsFromApi(section))
         );
 
         const combined = {
