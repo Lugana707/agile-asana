@@ -8,9 +8,9 @@ import Header from "./components/_header";
 import Footer from "./components/_footer";
 import Home from "./components/home";
 import Backlog from "./components/backlog/index";
-import Projects from "./components/project/index";
-import ProjectShow from "./components/project/show";
-import ProjectTasks from "./components/project/tasks";
+import Sprints from "./components/sprint/index";
+import SprintShow from "./components/sprint/show";
+import SprintTasks from "./components/sprint/tasks";
 import Settings from "./components/settings/index";
 
 axios.interceptors.response.use(null, error => {
@@ -31,12 +31,12 @@ function App() {
           <Switch>
             <Route exact path="/" component={Home} />
             <Route exact path="/backlog" component={Backlog} />
-            <Route exact path="/project" component={Projects} />
-            <Route exact path="/project/:projectGid" component={ProjectShow} />
+            <Route exact path="/sprint" component={Sprints} />
+            <Route exact path="/sprint/:projectGid" component={SprintShow} />
             <Route
               exact
-              path="/project/:projectGid/task"
-              component={ProjectTasks}
+              path="/sprint/:projectGid/task"
+              component={SprintTasks}
             />
             <Route exact path="/settings" component={Settings} />
           </Switch>

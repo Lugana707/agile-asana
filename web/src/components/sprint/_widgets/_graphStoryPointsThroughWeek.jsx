@@ -17,10 +17,10 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
 
   const hideWeekends = true;
 
-  const sprintTasks = useMemo(
-    () => sprints || (asanaProjectTasks || []).filter(obj => obj.archived),
-    [sprints, asanaProjectTasks]
-  );
+  const sprintTasks = useMemo(() => sprints || asanaProjectTasks || [], [
+    sprints,
+    asanaProjectTasks
+  ]);
 
   const data = useMemo(() => {
     const sumOfStoryPointsByDay = sprintTasks

@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Button, Container, Row, Col } from "react-bootstrap";
-import { useSelector, useDispatch } from "react-redux";
-import { loadProjects } from "../../scripts/redux/actions/asana/projectActions";
+import { useSelector } from "react-redux";
 import { LinkContainer } from "react-router-bootstrap";
 import Table from "../_library/_table";
 
@@ -9,14 +8,6 @@ const Projects = () => {
   const { loading, asanaProjectTasks = [] } = useSelector(
     state => state.asanaProjectTasks
   );
-
-  const dispatch = useDispatch();
-  useEffect(() => {
-    if (asanaProjectTasks) {
-      return;
-    }
-    dispatch(loadProjects());
-  }, [asanaProjectTasks, dispatch]);
 
   const TableRow = ({ data }) => {
     const {
@@ -39,7 +30,7 @@ const Projects = () => {
       <>
         <td className="align-middle">
           <LinkContainer
-            to={`/project/${gid}`}
+            to={`/sprint/${gid}`}
             className={archived ? "" : "text-danger"}
           >
             <Button variant="link">Week {week}</Button>

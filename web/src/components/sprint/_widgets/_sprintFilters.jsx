@@ -3,25 +3,37 @@ import { Range } from "rc-slider";
 import collect from "collect.js";
 
 const SprintFilters = ({ sprints, setSprints }) => {
-  const sprintCollection = useMemo(() => collect(sprints), [sprints]);
+  const sprintCollection = useMemo(
+    () =>
+      collect(sprints)
+        .pluck("week")
+        .sort(),
+    [sprints]
+  );
 
   const [minSprint, maxSprint] = useMemo(
-    () => [sprintCollection.min("week"), sprintCollection.max("week")],
+    () => [sprintCollection.min(), sprintCollection.max()],
     [sprintCollection]
   );
   const [sprintRange, setSprintRange] = useState([0, 0]);
 
   useEffect(() => {
-    setSprintRange([maxSprint - 6, maxSprint]);
-  }, [maxSprint]);
+    const lastSprint = sprintCollection.last() || {};
+    const lastCompletedSprint = maxSprint - (!!lastSprint.archived ? 0 : 1);
+    setSprintRange([lastCompletedSprint - 6, lastCompletedSprint]);
+  }, [sprintCollection, maxSprint]);
 
   useEffect(() => {
-    setSprints(sprintCollection.whereBetween("week", sprintRange).all());
-  }, [setSprints, sprintCollection, sprintRange]);
+    setSprints(
+      collect(sprints)
+        .whereBetween("week", sprintRange)
+        .all()
+    );
+  }, [setSprints, sprints, sprintRange]);
 
   const marks = useMemo(
     () =>
-      sprintCollection.pluck("week").reduce(
+      sprintCollection.reduce(
         (accumulator, currentValue) => ({
           [currentValue]: currentValue,
           ...accumulator

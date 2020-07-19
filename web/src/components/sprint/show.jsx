@@ -12,7 +12,7 @@ import { LinkContainer } from "react-router-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
-import ProjectWidgetGraphStoryPointsThroughWeek from "../project/_widgets/_graphStoryPointsThroughWeek";
+import ProjectWidgetGraphStoryPointsThroughWeek from "./_widgets/_graphStoryPointsThroughWeek";
 
 const Show = ({ match }) => {
   const { projectGid } = match.params;
@@ -99,7 +99,7 @@ const Show = ({ match }) => {
               </ListGroupItem>
             </ListGroup>
             <Card.Footer className="text-right">
-              <LinkContainer to={`/project/${projectGidMemo}/task`}>
+              <LinkContainer to={`/sprint/${projectGidMemo}/task`}>
                 <Button className="mr-2">Tasks</Button>
               </LinkContainer>
               <a

@@ -2,24 +2,31 @@ import React, { useMemo, useCallback } from "react";
 import { Chart } from "react-charts";
 
 const GraphStoryPointsTrend = ({ sprints }) => {
+  const sprintTasks = useMemo(() => sprints || [], [sprints]);
+
   const data = useMemo(
     () => [
       {
         label: "3 Week Average",
-        data: sprints
+        data: sprintTasks
+          .filter(({ archived }) => !!archived)
           .map(obj => [obj.week, obj.runningAverageCompletedStoryPoints])
           .reverse()
       },
       {
         label: "Committed Story Points",
-        data: sprints.map(obj => [obj.week, obj.committedStoryPoints]).reverse()
+        data: sprintTasks
+          .map(obj => [obj.week, obj.committedStoryPoints])
+          .reverse()
       },
       {
         label: "Completed Story Points",
-        data: sprints.map(obj => [obj.week, obj.completedStoryPoints]).reverse()
+        data: sprintTasks
+          .map(obj => [obj.week, obj.completedStoryPoints])
+          .reverse()
       }
     ],
-    [sprints]
+    [sprintTasks]
   );
 
   const series = useCallback((series, index) => {

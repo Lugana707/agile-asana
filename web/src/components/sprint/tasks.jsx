@@ -1,22 +1,13 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import moment from "moment";
-import { loadProjects } from "../../scripts/redux/actions/asana/projectActions";
 import Table from "../_library/_table";
 
 const Tasks = ({ match }) => {
-  const { loading, asanaProjectTasks, timestamp } = useSelector(
+  const { loading, asanaProjectTasks } = useSelector(
     state => state.asanaProjectTasks
   );
-
-  const dispatch = useDispatch();
-  useEffect(() => {
-    if (asanaProjectTasks) {
-      return;
-    }
-    dispatch(loadProjects());
-  }, [asanaProjectTasks, dispatch, timestamp]);
 
   const { projectGid } = match.params;
   const projectGidMemo = useMemo(() => decodeURIComponent(projectGid), [
