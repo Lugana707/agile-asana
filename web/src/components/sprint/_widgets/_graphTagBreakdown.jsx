@@ -5,31 +5,6 @@ import collect from "collect.js";
 const GraphStoryPointsTrend = ({ sprints }) => {
   const sprintTasks = useMemo(() => sprints || [], [sprints]);
 
-  const oldData = useMemo(
-    () => [
-      {
-        label: "3 Week Average",
-        data: sprintTasks
-          .filter(({ archived }) => !!archived)
-          .map(obj => [obj.week, obj.runningAverageCompletedStoryPoints])
-          .reverse()
-      },
-      {
-        label: "Committed Story Points",
-        data: sprintTasks
-          .map(obj => [obj.week, obj.committedStoryPoints])
-          .reverse()
-      },
-      {
-        label: "Completed Story Points",
-        data: sprintTasks
-          .map(obj => [obj.week, obj.completedStoryPoints])
-          .reverse()
-      }
-    ],
-    [sprintTasks]
-  );
-
   const data = useMemo(() => {
     const sprintTasksCollection = collect(sprintTasks).sortBy("week");
     return sprintTasksCollection
