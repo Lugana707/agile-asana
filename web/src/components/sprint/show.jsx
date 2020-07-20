@@ -12,7 +12,8 @@ import { LinkContainer } from "react-router-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
-import ProjectWidgetGraphStoryPointsThroughWeek from "./_widgets/_graphStoryPointsThroughWeek";
+import SprintWidgetGraphStoryPointsThroughWeek from "./_widgets/_graphStoryPointsThroughWeek";
+import SprintWidgetGraphTagBreakdown from "./_widgets/_graphTagBreakdown";
 
 const Show = ({ match }) => {
   const { projectGid } = match.params;
@@ -44,13 +45,22 @@ const Show = ({ match }) => {
   return (
     <Container>
       <Row>
-        <Col xs={{ order: "last", span: 12 }} md={{ order: "first" }}>
+        <Col
+          xs={{ order: "last", span: 12 }}
+          md={{ order: "first", span: 12 }}
+          className="pb-4"
+        >
           <div className="h-100" style={{ minHeight: "300px" }}>
-            <ProjectWidgetGraphStoryPointsThroughWeek
+            <SprintWidgetGraphStoryPointsThroughWeek
               sprints={sprintsMemo}
               showBurnUp={archived}
               showBurnDown={!archived}
             />
+          </div>
+        </Col>
+        <Col xs={12} md={7}>
+          <div className="h-100" style={{ minHeight: "300px " }}>
+            <SprintWidgetGraphTagBreakdown sprints={sprintsMemo} />
           </div>
         </Col>
         <Col

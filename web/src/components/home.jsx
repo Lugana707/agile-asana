@@ -2,8 +2,9 @@ import React, { useState, useMemo } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import SprintFilters from "./sprint/_widgets/_sprintFilters";
-import ProjectWidgetGraphStoryPointsTrend from "./sprint/_widgets/_graphStoryPointsTrend";
-import ProjectWidgetGraphStoryPointsThroughWeek from "./sprint/_widgets/_graphStoryPointsThroughWeek";
+import SprintWidgetGraphStoryPointsTrend from "./sprint/_widgets/_graphStoryPointsTrend";
+import SprintWidgetGraphStoryPointsThroughWeek from "./sprint/_widgets/_graphStoryPointsThroughWeek";
+import SprintWidgetGraphTagBreakdown from "./sprint/_widgets/_graphTagBreakdown";
 
 const Home = () => {
   const { loading, asanaProjectTasks = [] } = useSelector(
@@ -30,13 +31,16 @@ const Home = () => {
         <Col xs={12} className="pb-4">
           <SprintFilters sprints={projectTasks} setSprints={setSprints} />
         </Col>
-        <Col xs="12" style={{ height: "40vw" }}>
-          <ProjectWidgetGraphStoryPointsTrend sprints={sprintsForDisplay} />
+        <Col xs={12} style={{ height: "40vw" }}>
+          <SprintWidgetGraphStoryPointsTrend sprints={sprintsForDisplay} />
         </Col>
-        <Col xs="12" style={{ height: "40vw" }}>
-          <ProjectWidgetGraphStoryPointsThroughWeek
-            sprints={sprintsForDisplay.filter(({ archived }) => !!archived)}
+        <Col xs={12} md={6} style={{ height: "40vw" }}>
+          <SprintWidgetGraphStoryPointsThroughWeek
+            sprints={sprintsForDisplay}
           />
+        </Col>
+        <Col xs={12} md={6} style={{ height: "40vw" }}>
+          <SprintWidgetGraphTagBreakdown sprints={sprintsForDisplay} />
         </Col>
       </Row>
     </Container>
