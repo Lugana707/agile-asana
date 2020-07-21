@@ -30,13 +30,13 @@ const Header = () => {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav>
-            <LinkContainer to="/backlog">
-              <Nav.Link>Backlog</Nav.Link>
+            <LinkContainer to="/sprint">
+              <Nav.Link>Sprints</Nav.Link>
             </LinkContainer>
           </Nav>
           <Nav>
-            <LinkContainer to="/sprint">
-              <Nav.Link>Sprints</Nav.Link>
+            <LinkContainer to="/backlog">
+              <Nav.Link>Backlog</Nav.Link>
             </LinkContainer>
           </Nav>
           <Nav className="mr-auto">
