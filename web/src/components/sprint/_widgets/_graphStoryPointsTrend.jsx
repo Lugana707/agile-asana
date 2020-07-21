@@ -42,7 +42,7 @@ const GraphStoryPointsTrend = ({ sprints }) => {
   const axes = useMemo(
     () => [
       { primary: true, type: "ordinal", position: "bottom" },
-      { position: "left", type: "linear", stacked: false }
+      { position: "left", type: "linear", stacked: false, hardMin: 0 }
     ],
     []
   );
