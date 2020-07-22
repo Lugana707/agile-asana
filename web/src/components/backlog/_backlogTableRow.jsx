@@ -12,7 +12,7 @@ const BacklogTableRow = ({ data }) => {
           href={`https://app.asana.com/0/${project.gid}/${gid}/f`}
           rel="noopener noreferrer"
           target="_blank"
-          className="btn btn-link"
+          className="btn btn-link text-left"
         >
           <span>{name} </span>
         </a>
