@@ -28,7 +28,7 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
         ({
           week,
           completedTasks,
-          startedAt,
+          createdAt,
           dueOn,
           sprintLength,
           committedStoryPoints
@@ -104,14 +104,20 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
             };
 
             data.forEach(([sprintDay, storyPoints]) => {
-              cummulativeStoryPoints = operation(
-                cummulativeStoryPoints,
-                storyPoints
-              );
-              sumOfStoryPointsAcrossWeek.data.push([
-                sprintDay,
-                cummulativeStoryPoints
-              ]);
+              if (
+                moment(createdAt)
+                  .add("days", sprintDay)
+                  .isBefore(moment())
+              ) {
+                cummulativeStoryPoints = operation(
+                  cummulativeStoryPoints,
+                  storyPoints
+                );
+                sumOfStoryPointsAcrossWeek.data.push([
+                  sprintDay,
+                  cummulativeStoryPoints
+                ]);
+              }
 
               trendStoryPoints = operation(
                 trendStoryPoints,
