@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Badge } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import Table from "../_library/_table";
+import BacklogTableRow from "./_backlogTableRow";
 
 const Backlog = ({ forecastStoryPoints }) => {
   const { loading, refined } = useSelector(state => state.backlogTasks);
@@ -34,16 +35,6 @@ const Backlog = ({ forecastStoryPoints }) => {
       }, []);
   }, [refined, forecastStoryPoints, currentSprint]);
 
-  const TableRow = ({ data }) => {
-    const { name, storyPoints } = data;
-    return (
-      <>
-        <td className="align-middle">{name}</td>
-        <td className="align-middle text-right">{storyPoints}</td>
-      </>
-    );
-  };
-
   return (
     <>
       {forecast.map((tasks, index) => (
@@ -52,21 +43,20 @@ const Backlog = ({ forecastStoryPoints }) => {
             <h2>Sprint {index + 1 + currentSprint.week}</h2>
           </Col>
           <Col xs={4} className="text-right">
-            <span className="badge badge-info p-2">
+            <Badge variant="info" className="p-2">
               {tasks.reduce(
                 (accumulator, { storyPoints = 0 }) => accumulator + storyPoints,
                 0
               )}
-            </span>
+            </Badge>
           </Col>
           <Col xs={12}>
             <hr />
             <Table
-              id="backlog-forecast"
+              id="backlog__forecast"
               loading={loading}
               data={tasks}
-              row={TableRow}
-              columns={false}
+              row={BacklogTableRow}
             />
           </Col>
         </Row>

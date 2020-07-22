@@ -28,44 +28,50 @@ const processProjectTasksForProject = (
   { tasks, ...project },
   { sprintStartDay = 2 }
 ) => {
-  const parsedTasks = tasks.map(({ custom_fields, completed_at, ...task }) => {
-    let mergeFields = { completed_at };
+  const parsedTasks = tasks.map(
+    ({ custom_fields, completed_at, due_on, ...task }) => {
+      let mergeFields = { completed_at, due_on };
 
-    jsLogger.trace("Processing task custom fields...", { custom_fields });
-    mergeFields = {
-      ...mergeFields,
-      ...custom_fields.reduce(
-        (accumulator, { name, number_value, enum_value }) => ({
-          [camelcase(name)]: number_value || enum_value,
-          ...accumulator
-        }),
-        {}
-      )
-    };
-
-    if (completed_at) {
-      jsLogger.trace("Processing task for sprint metrics...", {
-        completed_at,
-        sprintStartDay
-      });
-      const completedAt = moment(completed_at);
-      const completedAtDayOfSprint = completedAt.diff(
-        project.createdAt,
-        "days"
-      );
-
+      jsLogger.trace("Processing task custom fields...", { custom_fields });
       mergeFields = {
         ...mergeFields,
-        completedAt,
-        completedAtDayOfSprint
+        ...custom_fields.reduce(
+          (accumulator, { name, number_value, enum_value }) => ({
+            [camelcase(name)]: number_value || enum_value,
+            ...accumulator
+          }),
+          {}
+        )
+      };
+
+      if (due_on) {
+        mergeFields = { ...mergeFields, dueOn: moment(due_on) };
+      }
+
+      if (completed_at) {
+        jsLogger.trace("Processing task for sprint metrics...", {
+          completed_at,
+          sprintStartDay
+        });
+        const completedAt = moment(completed_at);
+        const completedAtDayOfSprint = completedAt.diff(
+          project.createdAt,
+          "days"
+        );
+
+        mergeFields = {
+          ...mergeFields,
+          completedAt,
+          completedAtDayOfSprint
+        };
+      }
+
+      return {
+        ...task,
+        ...mergeFields
       };
     }
-
-    return {
-      ...task,
-      ...mergeFields
-    };
-  });
+  );
 
   return {
     ...project,
@@ -245,7 +251,8 @@ const loadProjectTasks = ({ asanaProjects, asanaBacklog }) => {
                 "completed_at",
                 "started_at",
                 "custom_fields",
-                "tags"
+                "tags",
+                "due_on"
               ].join(",")
             }
           });

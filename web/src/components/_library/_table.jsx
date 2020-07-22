@@ -1,8 +1,17 @@
 import React from "react";
+import { Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSkull } from "@fortawesome/free-solid-svg-icons";
 
-export default ({ id, row: Row, columns, data, loading, noDataText }) => {
+export default ({
+  id,
+  row: Row,
+  columns,
+  data,
+  loading,
+  noDataText,
+  variant = "dark"
+}) => {
   if (loading && (!data || !data.length)) {
     return (
       <div className="col-12">
@@ -26,7 +35,7 @@ export default ({ id, row: Row, columns, data, loading, noDataText }) => {
 
   return (
     <div className="col-12 text-left table-responsive">
-      <table className="table table-striped table-dark">
+      <Table striped variant={variant}>
         {columns && (
           <thead>
             <tr>
@@ -43,7 +52,7 @@ export default ({ id, row: Row, columns, data, loading, noDataText }) => {
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 };

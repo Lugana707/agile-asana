@@ -33,9 +33,7 @@ const Backlog = () => {
         </Container>
       </Jumbotron>
       <Container>
-        <Row>
-          <TasksDueSoon />
-        </Row>
+        <TasksDueSoon hideIfNoData />
         <Forecast forecastStoryPoints={runningAverageCompletedStoryPoints} />
       </Container>
     </>
