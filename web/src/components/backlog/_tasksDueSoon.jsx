@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Row, Col, Alert, Badge } from "react-bootstrap";
+import { Row, Col, Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamation } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
@@ -30,7 +30,7 @@ const TasksDueSoon = ({ className, hideIfNoData }) => {
         )
         .sortBy("dueOn")
         .all(),
-    [unrefined, refined]
+    [unrefined, refined, currentSprint.gid]
   );
 
   if (tasksDueSoon.length === 0 && hideIfNoData) {
