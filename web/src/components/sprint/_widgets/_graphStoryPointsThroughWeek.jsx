@@ -106,7 +106,7 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
             data.forEach(([sprintDay, storyPoints]) => {
               if (
                 moment(createdAt)
-                  .add("days", sprintDay)
+                  .add(sprintDay, "days")
                   .isBefore(moment())
               ) {
                 cummulativeStoryPoints = operation(
