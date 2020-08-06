@@ -194,7 +194,7 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
         format: d => Math.round(d, 0)
       }
     ],
-    [showBurnUp]
+    [showBurnUp, maxStoryPoints]
   );
 
   if (loading) {
