@@ -5,7 +5,6 @@ import collect from "collect.js";
 import moment from "moment";
 
 const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
-  //const { sprintStartDay = 2 } = useSelector(state => state.settings);
   const { loading, asanaProjectTasks } = useSelector(
     state => state.asanaProjectTasks
   );
@@ -16,6 +15,18 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
     sprints,
     asanaProjectTasks
   ]);
+
+  const maxStoryPoints = useMemo(
+    () =>
+      showBurnUp || showBurnDown
+        ? collect(sprints)
+            .map(({ committedStoryPoints, completedStoryPoints }) =>
+              Math.max(committedStoryPoints, completedStoryPoints)
+            )
+            .max()
+        : undefined,
+    [sprints, showBurnUp, showBurnDown]
+  );
 
   const data = useMemo(() => {
     const sumOfStoryPointsByDay = sprintTasks
@@ -170,6 +181,7 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
         position: "left",
         type: "linear",
         hardMin: 0,
+        hardMax: maxStoryPoints,
         format: d => Math.round(d, 0),
         stacked: !showBurnUp
       },
@@ -178,6 +190,7 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
         position: "right",
         type: "linear",
         hardMin: 0,
+        hardMax: maxStoryPoints,
         format: d => Math.round(d, 0)
       }
     ],
