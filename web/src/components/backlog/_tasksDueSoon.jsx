@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Row, Col, Alert } from "react-bootstrap";
+import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamation } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";

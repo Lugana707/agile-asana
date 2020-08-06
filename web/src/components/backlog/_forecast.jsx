@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { Badge } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import Table from "../_library/_table";
