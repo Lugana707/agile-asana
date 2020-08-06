@@ -82,15 +82,18 @@ const Show = ({ match }) => {
                     <span className="text-warning"> (In Progress)</span>
                   )}
                 </span>
-                <span className="text-muted float-right">
-                  {moment(dueOn).format("YYYY-MM-DD")}
-                </span>
               </Card.Title>
               <Card.Subtitle className="text-muted">
-                <span>{name}</span>
-                <span className="float-right">
-                  <span>to </span>
-                  <span>{moment(startOn).format("YYYY-MM-DD")}</span>
+                <span className="d-block">{name}</span>
+                <hr />
+                <span className="d-block">
+                  <span className="font-weight-bold">
+                    {moment(startOn).format("MMM D")}
+                  </span>
+                  <span> to </span>
+                  <span className="font-weight-bold">
+                    {moment(dueOn).format("MMM D")}
+                  </span>
                 </span>
               </Card.Subtitle>
             </Card.Body>
