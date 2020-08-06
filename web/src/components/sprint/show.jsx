@@ -12,6 +12,7 @@ import { LinkContainer } from "react-router-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
+import moment from "moment";
 import SprintWidgetGraphStoryPointsThroughWeek from "./_widgets/_graphStoryPointsThroughWeek";
 import SprintWidgetGraphTagBreakdown from "./_widgets/_graphTagBreakdown";
 
@@ -36,6 +37,8 @@ const Show = ({ match }) => {
   const {
     name,
     week,
+    startOn,
+    dueOn,
     committedStoryPoints,
     completedStoryPoints,
     runningAverageCompletedStoryPoints,
@@ -71,14 +74,25 @@ const Show = ({ match }) => {
           <Card bg="dark" text="light" className="text-left h-100">
             <Card.Body>
               <Card.Title>
-                <span>Sprint {week}</span>
-                {archived ? (
-                  <span className="text-success"> Completed</span>
-                ) : (
-                  <span className="text-warning"> (In Progress)</span>
-                )}
+                <span>
+                  <span>Sprint {week}</span>
+                  {archived ? (
+                    <span className="text-success"> Completed</span>
+                  ) : (
+                    <span className="text-warning"> (In Progress)</span>
+                  )}
+                </span>
+                <span className="text-muted float-right">
+                  {moment(dueOn).format("YYYY-MM-DD")}
+                </span>
               </Card.Title>
-              <Card.Subtitle className="text-muted">{name}</Card.Subtitle>
+              <Card.Subtitle className="text-muted">
+                <span>{name}</span>
+                <span className="float-right">
+                  <span>to </span>
+                  <span>{moment(startOn).format("YYYY-MM-DD")}</span>
+                </span>
+              </Card.Subtitle>
             </Card.Body>
             <ListGroup className="list-group-flush">
               <ListGroupItem variant="info">

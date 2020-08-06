@@ -4,7 +4,6 @@ import {
   Jumbotron,
   Alert,
   Button,
-  ButtonGroup,
   Row,
   Col,
   Form,
@@ -19,18 +18,15 @@ import {
   faInfoCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
-import moment from "moment";
 import { updateSettings } from "../../scripts/redux/actions/settingsActions";
 
 const Settings = ({ history }) => {
   const asanaDeveloperConsoleUrl = "https://app.asana.com/0/developer-console";
 
-  const { loading, asanaApiKey, sprintStartDay = 2 } = useSelector(
-    state => state.settings
-  );
+  const { loading, asanaApiKey } = useSelector(state => state.settings);
   const [settings, setSettings] = useReducer(
     (accumulator, currentValue) => ({ ...accumulator, ...currentValue }),
-    { asanaApiKey, sprintStartDay }
+    { asanaApiKey }
   );
 
   const dispatch = useDispatch();
@@ -45,12 +41,6 @@ const Settings = ({ history }) => {
   const ApiKeyTooltip = props => (
     <Tooltip id="api-key-tooltip" {...props}>
       this will be used to get data from Asana
-    </Tooltip>
-  );
-
-  const SprintStartDayTooltip = props => (
-    <Tooltip id="api-key-tooltip" {...props}>
-      this will be used when presenting data
     </Tooltip>
   );
 
@@ -100,35 +90,6 @@ const Settings = ({ history }) => {
                   }
                   required
                 />
-              </Form.Group>
-            </Row>
-            <Row>
-              <Form.Group as={Col} xs="12" controlId="formSprintStartDay">
-                <Form.Label>
-                  <span className="pr-2">First Day of Sprint</span>
-                  <OverlayTrigger
-                    placement="right"
-                    delay={{ show: 250, hide: 400 }}
-                    overlay={SprintStartDayTooltip}
-                  >
-                    <FontAwesomeIcon icon={faInfoCircle} />
-                  </OverlayTrigger>
-                </Form.Label>
-                <div>
-                  <ButtonGroup aria-label="First Day of Sprint">
-                    {moment.weekdays().map((weekday, index) => (
-                      <Button
-                        key={index}
-                        variant={
-                          index === sprintStartDay ? "primary" : "secondary"
-                        }
-                        onClick={() => setSettings({ sprintStartDay: index })}
-                      >
-                        {weekday}
-                      </Button>
-                    ))}
-                  </ButtonGroup>
-                </div>
               </Form.Group>
             </Row>
             <hr />

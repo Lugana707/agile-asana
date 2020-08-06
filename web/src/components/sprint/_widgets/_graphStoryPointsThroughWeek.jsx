@@ -5,14 +5,9 @@ import collect from "collect.js";
 import moment from "moment";
 
 const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
-  const { sprintStartDay = 2 } = useSelector(state => state.settings);
+  //const { sprintStartDay = 2 } = useSelector(state => state.settings);
   const { loading, asanaProjectTasks } = useSelector(
     state => state.asanaProjectTasks
-  );
-
-  const convertSprintdayToWeekday = useCallback(
-    sprintday => (sprintday + sprintStartDay) % 7,
-    [sprintStartDay]
   );
 
   const hideWeekends = true;
@@ -28,20 +23,23 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
         ({
           week,
           completedTasks,
-          createdAt,
-          dueOn,
+          startOn,
           sprintLength,
           committedStoryPoints
         }) => {
           const fullSprint = new Array(sprintLength + 1)
-            .fill(0)
-            .map((_, index) => index);
+            .fill(moment(startOn).weekday())
+            .map((startDay, index) => startDay + index);
 
           const dataGroupedByDayOfSprint = collect(completedTasks)
             .filter(
               obj =>
                 obj.completedAtDayOfSprint !== undefined && !!obj.storyPoints
             )
+            .map(task => ({
+              ...task,
+              completedAtDayOfSprint: task.completedAtDayOfSprint
+            }))
             .groupBy("completedAtDayOfSprint")
             .all();
 
@@ -65,7 +63,7 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
               if (!hideWeekends) {
                 return true;
               }
-              const weekday = convertSprintdayToWeekday(completedAtDayOfSprint);
+              const weekday = completedAtDayOfSprint % 7;
               return weekday !== 6 && weekday !== 0;
             })
             .sortBy("completedAtDayOfSprint")
@@ -105,8 +103,8 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
 
             data.forEach(([sprintDay, storyPoints]) => {
               if (
-                moment(createdAt)
-                  .add(sprintDay, "days")
+                moment(startOn)
+                  .add(sprintDay - moment(startOn).weekday(), "days")
                   .isBefore(moment())
               ) {
                 cummulativeStoryPoints = operation(
@@ -136,13 +134,7 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
       .flat();
 
     return [...sumOfStoryPointsByDay];
-  }, [
-    showBurnUp,
-    showBurnDown,
-    sprintTasks,
-    hideWeekends,
-    convertSprintdayToWeekday
-  ]);
+  }, [showBurnUp, showBurnDown, sprintTasks, hideWeekends]);
 
   const series = useCallback(
     (series, index) => {
@@ -170,7 +162,7 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
           d < 0
             ? ""
             : moment()
-                .weekday(convertSprintdayToWeekday(d))
+                .weekday(d)
                 .format("dddd")
       },
       {
@@ -189,7 +181,7 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
         format: d => Math.round(d, 0)
       }
     ],
-    [showBurnUp, convertSprintdayToWeekday]
+    [showBurnUp]
   );
 
   if (loading) {

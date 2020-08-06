@@ -24,12 +24,9 @@ const sumStoryPoints = projectTasks =>
     0
   );
 
-const processProjectTasksForProject = (
-  { tasks, ...project },
-  { sprintStartDay = 2 }
-) => {
+const processProjectTasksForProject = ({ tasks, ...project }) => {
   const parsedTasks = tasks.map(
-    ({ custom_fields, completed_at, due_on, ...task }) => {
+    ({ custom_fields, completed_at, due_on, start_on, ...task }) => {
       let mergeFields = { completed_at, due_on };
 
       jsLogger.trace("Processing task custom fields...", { custom_fields });
@@ -45,19 +42,19 @@ const processProjectTasksForProject = (
       };
 
       if (due_on) {
-        mergeFields = { ...mergeFields, dueOn: moment(due_on) };
+        const dueOn = moment(due_on);
+        mergeFields = { ...mergeFields, dueOn };
       }
 
       if (completed_at) {
         jsLogger.trace("Processing task for sprint metrics...", {
-          completed_at,
-          sprintStartDay
+          project,
+          completed_at
         });
         const completedAt = moment(completed_at);
-        const completedAtDayOfSprint = completedAt.diff(
-          project.createdAt,
-          "days"
-        );
+        const completedAtDayOfSprint =
+          moment(project.createdAt).weekday() +
+          completedAt.diff(project.createdAt, "days");
 
         mergeFields = {
           ...mergeFields,

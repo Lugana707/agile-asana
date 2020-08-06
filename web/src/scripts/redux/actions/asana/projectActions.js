@@ -29,16 +29,25 @@ const processProjects = ({ rawProjects }) => {
 
       const asanaProjects = rawProjects
         .filter(({ name }) => matchKanban.test(name))
-        .map(({ name, due_on, created_at, ...project }) => {
+        .map(({ name, start_on, due_on, created_at, ...project }) => {
+          const startOn = moment(start_on || created_at);
           const createdAt = moment(created_at);
           const dueOn = moment(due_on);
 
+          const week = parseInt(
+            name.replace(/.+ Kanban Week /u, "").trim(),
+            10
+          );
+
+          const sprintLength = dueOn.diff(startOn.format("YYYY-MM-DD"), "days");
+
           return {
             name,
-            week: parseInt(name.replace(/.+ Kanban Week /u, "").trim(), 10),
+            week,
+            startOn,
             createdAt,
             dueOn,
-            sprintLength: dueOn.diff(createdAt.format("YYYY-MM-DD"), "days"),
+            sprintLength,
             ...project
           };
         });
@@ -94,7 +103,13 @@ const loadProjects = () => {
 
         const { data } = await axios.get(url, {
           params: {
-            opt_fields: ["sections", "name", "created_at", "due_on"].join(","),
+            opt_fields: [
+              "sections",
+              "name",
+              "created_at",
+              "due_on",
+              "start_on"
+            ].join(","),
             archived
           },
           validateStatus: status => status === 200
