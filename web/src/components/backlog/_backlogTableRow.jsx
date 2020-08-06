@@ -53,7 +53,7 @@ const BacklogTableRow = ({ data }) => {
           </span>
         )}
       </td>
-      <td className={`align-middle text-${variant}`}>
+      <td className={`align-middle text-${variant} text-nowrap`}>
         {dueOn && dueOn.fromNow()}
       </td>
       <td className="align-middle text-right">

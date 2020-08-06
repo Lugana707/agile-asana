@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Row, Col, Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamation } from "@fortawesome/free-solid-svg-icons";
@@ -9,6 +9,8 @@ import Table from "../_library/_table";
 import BacklogTableRow from "./_backlogTableRow";
 
 const TasksDueSoon = ({ className, hideIfNoData }) => {
+  const [show, setShow] = useState(true);
+
   const { loading, unrefined, refined } = useSelector(
     state => state.backlogTasks
   );
@@ -33,34 +35,33 @@ const TasksDueSoon = ({ className, hideIfNoData }) => {
     [unrefined, refined, currentSprint.gid]
   );
 
-  if (tasksDueSoon.length === 0 && hideIfNoData) {
+  if ((tasksDueSoon.length === 0 && hideIfNoData) || !show) {
     return <div />;
   }
 
   return (
-    <Row className={`${className} text-left`}>
-      <Col xs={8} className="text-danger">
-        <h2>Due Soon</h2>
-      </Col>
-      <Col xs={4} className="text-danger text-right">
-        <h2>
-          <FontAwesomeIcon icon={faExclamation} />
-        </h2>
-      </Col>
-      <Col xs={12}>
-        <Alert variant="danger">
-          The following tasks may not be prioritised high in the backlog!
-        </Alert>
-      </Col>
-      <Col xs={12} className="text-left">
+    <Alert
+      className="text-left"
+      variant="danger"
+      onClose={() => setShow(false)}
+      dismissible
+    >
+      <Alert.Heading>
+        <FontAwesomeIcon icon={faExclamation} />
+        <span className="pl-2">Due Soon</span>
+      </Alert.Heading>
+      <p>The following tasks may not be prioritised high in the backlog!</p>
+      <hr />
+      <p className="mb-0">
         <Table
           id="backlog__tasks-due-soon"
+          variant="dark"
           loading={loading}
           data={tasksDueSoon}
           row={BacklogTableRow}
         />
-      </Col>
-    </Row>
+      </p>
+    </Alert>
   );
 };
 

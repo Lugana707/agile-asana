@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
-import { Row, Col, Badge } from "react-bootstrap";
+import { Badge } from "react-bootstrap";
 import { useSelector } from "react-redux";
+import moment from "moment";
 import Table from "../_library/_table";
 import BacklogTableRow from "./_backlogTableRow";
 
@@ -32,36 +33,53 @@ const Backlog = ({ forecastStoryPoints }) => {
         tasks[index] = (accumulator[index] || []).concat([currentValue]);
 
         return tasks;
-      }, []);
+      }, [])
+      .map((tasks, index) => [
+        {
+          className: "bg-info",
+          sprintNumber: index + 1 + currentSprint.week,
+          storyPoints: tasks.reduce(
+            (accumulator, { storyPoints = 0 }) => accumulator + storyPoints,
+            0
+          )
+        },
+        ...tasks
+      ])
+      .flat();
   }, [refined, forecastStoryPoints, currentSprint]);
 
+  const ForecastTableRow = parameters => {
+    const { data, index } = parameters;
+
+    if (data.sprintNumber) {
+      const { sprintNumber, storyPoints } = data;
+      return (
+        <>
+          <td className="align-middle text-left">
+            <h4>Sprint {sprintNumber}</h4>
+          </td>
+          <td className="align-middle text-left text-nowrap">
+            {moment(currentSprint.dueOn)
+              .add(index + 1, "weeks")
+              .format("YYYY-MM-DD")}
+          </td>
+          <td className="align-middle text-right">
+            <h4>{storyPoints}</h4>
+          </td>
+        </>
+      );
+    }
+
+    return BacklogTableRow(parameters);
+  };
+
   return (
-    <>
-      {forecast.map((tasks, index) => (
-        <Row key={index}>
-          <Col xs={8} className="text-left">
-            <h2>Sprint {index + 1 + currentSprint.week}</h2>
-          </Col>
-          <Col xs={4} className="text-right">
-            <Badge variant="info" className="p-2">
-              {tasks.reduce(
-                (accumulator, { storyPoints = 0 }) => accumulator + storyPoints,
-                0
-              )}
-            </Badge>
-          </Col>
-          <Col xs={12}>
-            <hr />
-            <Table
-              id="backlog__forecast"
-              loading={loading}
-              data={tasks}
-              row={BacklogTableRow}
-            />
-          </Col>
-        </Row>
-      ))}
-    </>
+    <Table
+      id="backlog__forecast"
+      loading={loading}
+      data={forecast}
+      row={ForecastTableRow}
+    />
   );
 };
 

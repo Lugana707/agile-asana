@@ -1,5 +1,5 @@
 import React from "react";
-import { Table } from "react-bootstrap";
+import { Col, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSkull } from "@fortawesome/free-solid-svg-icons";
 
@@ -34,8 +34,8 @@ export default ({
   }
 
   return (
-    <div className="col-12 text-left table-responsive">
-      <Table striped variant={variant}>
+    <Col xs={12} className="text-left">
+      <Table striped responsive variant={variant} borderless>
         {columns && (
           <thead>
             <tr>
@@ -47,12 +47,12 @@ export default ({
         )}
         <tbody>
           {data.map((datum, index) => (
-            <tr key={`${id}-${index}`}>
-              <Row data={datum} />
+            <tr key={`${id}-${index}`} className={datum.className}>
+              <Row data={datum} index={index} />
             </tr>
           ))}
         </tbody>
       </Table>
-    </div>
+    </Col>
   );
 };
