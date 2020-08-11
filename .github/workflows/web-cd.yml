@@ -1,10 +1,10 @@
-name: web-deploy
+name: Web CD
 
 on:
   push:
-    branches: [master]
+    branches: master
     paths:
-      - ".github/workflows/web.deploy.yml"
+      - ".github/workflows/web-cd.yml"
       - "web/**"
 
 env:
