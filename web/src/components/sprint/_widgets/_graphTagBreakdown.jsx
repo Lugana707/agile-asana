@@ -38,7 +38,8 @@ const GraphStoryPointsTrend = ({ sprints }) => {
       {
         primary: true,
         type: "ordinal",
-        position: "bottom"
+        position: "bottom",
+        show: sprints.length > 1
       },
       {
         position: "left",
@@ -47,7 +48,7 @@ const GraphStoryPointsTrend = ({ sprints }) => {
         hardMin: 0
       }
     ],
-    [sprintTasks]
+    [sprints.length, sprintTasks]
   );
 
   return <Chart data={data} series={series} axes={axes} tooltip dark />;
