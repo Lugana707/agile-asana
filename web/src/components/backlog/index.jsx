@@ -32,7 +32,7 @@ const Backlog = () => {
           </p>
         </Container>
       </Jumbotron>
-      <Container>
+      <Container fluid>
         <TasksDueSoon hideIfNoData />
         <ForecastTable />
       </Container>
