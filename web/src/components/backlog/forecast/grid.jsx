@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
-import { Container, Row, Col, Card, Badge } from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import collect from "collect.js";
 import moment from "moment";
 import Table from "../../_library/_table";
 import BacklogTableRow from "../_backlogTableRow";
@@ -16,11 +15,6 @@ const BacklogForecastTable = () => {
     () => (currentSprint || {}).runningAverageCompletedStoryPoints,
     [currentSprint]
   );
-
-  const tagMap = {
-    Bug: "danger",
-    "Technical Debt": "warning"
-  };
 
   const forecast = useMemo(() => {
     let index = 0;
