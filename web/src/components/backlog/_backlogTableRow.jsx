@@ -33,7 +33,7 @@ const BacklogTableRow = ({ data }) => {
 
   return (
     <>
-      <td className="align-middle text-right col-1">
+      <td className="align-middle text-right w-10">
         {storyPoints ? (
           storyPoints
         ) : (
@@ -64,7 +64,7 @@ const BacklogTableRow = ({ data }) => {
       <td className={`align-middle text-${variant} text-nowrap`}>
         {dueOn && dueOn.fromNow()}
       </td>
-      <td className="align-middle col-1">
+      <td className="align-middle">
         <a
           href={`https://app.asana.com/0/${project.gid}/${gid}/f`}
           rel="noopener noreferrer"
