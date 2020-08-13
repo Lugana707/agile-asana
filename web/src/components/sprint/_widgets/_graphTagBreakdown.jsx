@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo } from "react";
 import { Chart } from "react-charts";
 import collect from "collect.js";
 
@@ -27,8 +27,8 @@ const GraphStoryPointsTrend = ({ sprints }) => {
       .all();
   }, [sprintTasks]);
 
-  const series = useCallback(
-    (series, index) => ({
+  const series = useMemo(
+    () => ({
       type: "bar"
     }),
     []
