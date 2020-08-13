@@ -6,6 +6,7 @@ import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { Button, Form, FormControl } from "react-bootstrap";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
 import Logo from "../logo.png";
 import { loadProjects } from "../scripts/redux/actions/asana/projectActions";
 
@@ -29,17 +30,21 @@ const Header = () => {
         </LinkContainer>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav>
+          <Nav className="mr-auto">
             <LinkContainer to="/sprint">
               <Nav.Link>Sprints</Nav.Link>
             </LinkContainer>
-          </Nav>
-          <Nav>
-            <LinkContainer to="/backlog">
-              <Nav.Link>Backlog</Nav.Link>
-            </LinkContainer>
-          </Nav>
-          <Nav className="mr-auto">
+            <NavDropdown title="Forecast" id="nav-dropdown">
+              <LinkContainer to="/backlog">
+                <NavDropdown.Item>Backlog</NavDropdown.Item>
+              </LinkContainer>
+              <LinkContainer to="/backlog/forecast/table">
+                <NavDropdown.Item>Forecast Table</NavDropdown.Item>
+              </LinkContainer>
+              <LinkContainer to="/backlog/forecast/grid">
+                <NavDropdown.Item>Forecast Grid</NavDropdown.Item>
+              </LinkContainer>
+            </NavDropdown>
             <LinkContainer to="/settings">
               <Nav.Link>Settings</Nav.Link>
             </LinkContainer>
