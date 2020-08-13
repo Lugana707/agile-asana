@@ -1,20 +1,24 @@
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment";
-import Table from "../_library/_table";
-import BacklogTableRow from "./_backlogTableRow";
+import Table from "../../_library/_table";
+import BacklogTableRow from "../_backlogTableRow";
 
-const Backlog = ({ forecastStoryPoints }) => {
+const BacklogForecastTable = () => {
   const { loading, refined } = useSelector(state => state.backlogTasks);
   const { asanaProjectTasks } = useSelector(state => state.asanaProjectTasks);
 
   const sprints = useMemo(() => asanaProjectTasks || [], [asanaProjectTasks]);
   const currentSprint = useMemo(() => sprints[0], [sprints]);
+  const forecastStoryPoints = useMemo(
+    () => (currentSprint || {}).runningAverageCompletedStoryPoints,
+    [currentSprint]
+  );
 
   const forecast = useMemo(() => {
     let index = 0;
     let totalStoryPoints = 0;
-    return refined
+    return (refined || [])
       .filter(
         ({ projects }) =>
           !projects.map(({ gid }) => gid).includes(currentSprint.gid)
@@ -47,6 +51,10 @@ const Backlog = ({ forecastStoryPoints }) => {
       .flat();
   }, [refined, forecastStoryPoints, currentSprint]);
 
+  if (!asanaProjectTasks) {
+    return <div />;
+  }
+
   const ForecastTableRow = parameters => {
     const { data, index } = parameters;
 
@@ -54,13 +62,13 @@ const Backlog = ({ forecastStoryPoints }) => {
       const { sprintNumber, storyPoints } = data;
       return (
         <>
-          <td className="align-middle text-left">
-            <h4>Sprint {sprintNumber}</h4>
-          </td>
-          <td className="align-middle text-left text-nowrap">
-            {moment(currentSprint.dueOn)
-              .add(index + 1, "weeks")
-              .format("YYYY-MM-DD")}
+          <td className="align-middle text-left" colspan="3">
+            <h4 className="d-inline">Sprint {sprintNumber}</h4>
+            <span className="pl-3">
+              {moment(currentSprint.dueOn)
+                .add(index + 1, "weeks")
+                .format("YYYY-MM-DD")}
+            </span>
           </td>
           <td className="align-middle text-right">
             <h4>{storyPoints}</h4>
@@ -82,4 +90,4 @@ const Backlog = ({ forecastStoryPoints }) => {
   );
 };
 
-export default Backlog;
+export default BacklogForecastTable;

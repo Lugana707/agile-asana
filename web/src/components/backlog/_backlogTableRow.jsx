@@ -1,7 +1,10 @@
 import React from "react";
 import { Badge } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestion } from "@fortawesome/free-solid-svg-icons";
+import {
+  faQuestion,
+  faExternalLinkAlt
+} from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import moment from "moment";
 
@@ -30,17 +33,22 @@ const BacklogTableRow = ({ data }) => {
 
   return (
     <>
+      <td className="align-middle text-right col-1">
+        {storyPoints ? (
+          storyPoints
+        ) : (
+          <FontAwesomeIcon
+            className={`text-${variant || "warning"}`}
+            icon={faQuestion}
+          />
+        )}
+      </td>
       <td className="align-middle">
-        <a
-          href={`https://app.asana.com/0/${project.gid}/${gid}/f`}
-          rel="noopener noreferrer"
-          target="_blank"
-          className="btn btn-link text-left d-block"
-        >
-          <span>{name} </span>
-        </a>
-        {tags.length > 0 && (
-          <span className="ml-3">
+        <span className="text-left d-block">
+          <span>{name}</span>
+        </span>
+        {sortedTags.length > 0 && (
+          <span className="ml-1">
             {sortedTags.map((name, index) => (
               <Badge
                 key={index}
@@ -56,15 +64,15 @@ const BacklogTableRow = ({ data }) => {
       <td className={`align-middle text-${variant} text-nowrap`}>
         {dueOn && dueOn.fromNow()}
       </td>
-      <td className="align-middle text-right">
-        {storyPoints ? (
-          storyPoints
-        ) : (
-          <FontAwesomeIcon
-            className={`text-${variant || "warning"}`}
-            icon={faQuestion}
-          />
-        )}
+      <td className="align-middle col-1">
+        <a
+          href={`https://app.asana.com/0/${project.gid}/${gid}/f`}
+          rel="noopener noreferrer"
+          target="_blank"
+          className="btn btn-secondary"
+        >
+          <FontAwesomeIcon icon={faExternalLinkAlt} />
+        </a>
       </td>
     </>
   );
