@@ -1,13 +1,5 @@
 import React, { useMemo } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Badge,
-  ListGroup,
-  ListGroupItem
-} from "react-bootstrap";
+import { Container, Row, Col, Card, Badge } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import collect from "collect.js";
 import moment from "moment";
@@ -82,47 +74,6 @@ const BacklogForecastTable = () => {
           <Card.Subtitle className="text-muted">
             <span className="text-nowrap">{storyPoints} story points</span>
           </Card.Subtitle>
-        </Card.Body>
-      </Card>
-    );
-  };
-
-  const TaskCard = ({ data }) => {
-    const { gid, name, dueOn, storyPoints, projects, tags } = data;
-
-    const sortedTags = collect(tags)
-      .pluck("name")
-      .sort()
-      .all();
-    const [project] = projects;
-
-    return (
-      <Card bg="light" className="text-dark text-left">
-        <Card.Body>
-          <Card.Subtitle>{name}</Card.Subtitle>
-          <Card.Text>{dueOn && dueOn.fromNow()}</Card.Text>
-          <Card.Text>
-            {tags.length > 0 && (
-              <span className="ml-3">
-                {sortedTags.map((name, index) => (
-                  <Badge
-                    key={index}
-                    variant={tagMap[name] || "secondary"}
-                    className="mr-1"
-                  >
-                    {name}
-                  </Badge>
-                ))}
-              </span>
-            )}
-          </Card.Text>
-          <Card.Link
-            href={`https://app.asana.com/0/${project.gid}/${gid}/f`}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Asana
-          </Card.Link>
         </Card.Body>
       </Card>
     );
