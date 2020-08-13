@@ -26,8 +26,8 @@ const Home = () => {
   }
 
   return (
-    <Container className="">
-      <Row>
+    <Container fluid>
+      <Row className="mr-4">
         <Col xs={12} className="pb-4">
           <SprintFilters sprints={projectTasks} setSprints={setSprints} />
         </Col>
