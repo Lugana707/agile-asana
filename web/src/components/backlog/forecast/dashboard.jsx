@@ -2,8 +2,7 @@ import React, { useMemo } from "react";
 import { Container, Jumbotron } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import ForecastGrid from "./grid";
-import TasksDueSoon from "../alerts/tasksDueSoon";
-import AlertsGrid from "../alerts/grid";
+import TasksAtRiskCardAndTable from "../alerts/_tasksAtRiskCardAndTable";
 
 const Backlog = () => {
   const { asanaProjectTasks = [] } = useSelector(
@@ -33,10 +32,7 @@ const Backlog = () => {
           </p>
         </Container>
       </Jumbotron>
-      <Container fluid hidden>
-        <TasksDueSoon hideIfNoData />
-      </Container>
-      <AlertsGrid hideIfNoData />
+      <TasksAtRiskCardAndTable hideIfNoData />
       <ForecastGrid />
     </>
   );

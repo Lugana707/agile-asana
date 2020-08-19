@@ -7,7 +7,7 @@ import moment from "moment";
 import collect from "collect.js";
 import SprintCardAndTable from "../../_library/_sprintCardAndTable";
 
-const BacklogForecastTable = ({ hideIfNoData }) => {
+const TasksAtRiskCardAndTable = ({ hideIfNoData }) => {
   const { unrefined, refined } = useSelector(state => state.backlogTasks);
   const { asanaProjectTasks } = useSelector(state => state.asanaProjectTasks);
 
@@ -62,4 +62,4 @@ const BacklogForecastTable = ({ hideIfNoData }) => {
   );
 };
 
-export default BacklogForecastTable;
+export default TasksAtRiskCardAndTable;
