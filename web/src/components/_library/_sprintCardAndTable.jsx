@@ -6,10 +6,10 @@ import SprintTaskTableRow from "./_sprintTaskTableRow";
 
 const determineVariants = variant => {
   if (variant === "danger") {
-    return { card: "danger", table: "dark" };
+    return { card: "danger", table: "dark", subtitle: "warning" };
   }
 
-  return { card: "dark" };
+  return { card: "dark", subtitle: "muted" };
 };
 
 const SprintCardAndTable = ({ title, sprint, variant }) => {
@@ -27,7 +27,7 @@ const SprintCardAndTable = ({ title, sprint, variant }) => {
               <span>{title || moment(finishedOn).format("YYYY-MM-DD")}</span>
             </Card.Title>
             {!!storyPoints && (
-              <Card.Subtitle className="text-muted">
+              <Card.Subtitle className={`text-${variants.subtitle}`}>
                 <span className="text-nowrap">{storyPoints} story points</span>
               </Card.Subtitle>
             )}

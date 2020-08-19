@@ -9,22 +9,30 @@ import SprintCardAndTable from "../../_library/_sprintCardAndTable";
 
 const TasksAtRiskCardAndTable = ({ hideIfNoData }) => {
   const { unrefined, refined } = useSelector(state => state.backlogTasks);
-  const { asanaProjectTasks } = useSelector(state => state.asanaProjectTasks);
+  const { sprints } = useSelector(state => state.sprints);
 
-  const sprints = useMemo(() => asanaProjectTasks || [], [asanaProjectTasks]);
-  const currentSprint = useMemo(() => sprints[0], [sprints]);
+  const [currentSprint] = useMemo(
+    () => sprints.filter(({ state }) => state === "ACTIVE"),
+    [sprints]
+  );
 
   const tasksDueSoon = useMemo(
     () =>
       collect(unrefined || [])
-        .concat(refined || [])
+        .merge(refined || [])
         .filter()
-        .filter(task => !!task.dueOn)
-        .filter(task => task.dueOn.isBefore(moment().add(14, "days")))
-        .filter(
-          ({ projects }) =>
-            !projects.map(({ gid }) => gid).includes(currentSprint.gid)
-        )
+        .where("dueOn")
+        .filter(({ dueOn }) => dueOn.isBefore(moment().add(14, "days")))
+        .filter(({ gid, dueOn, projects }) => {
+          const sprint = collect(sprints)
+            .filter(sprint => collect(sprint.tasks).contains("gid", gid))
+            .first();
+          if (sprint) {
+            console.log("Hello sprint!", { sprint });
+            return dueOn.isBefore(sprint.finishedOn);
+          }
+          return true;
+        })
         .sortBy("dueOn")
         .all(),
     [unrefined, refined, currentSprint.gid]
@@ -40,6 +48,7 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData }) => {
   }
 
   const sprint = {
+    uuid: false,
     number: (
       <span className="text-warning">
         <FontAwesomeIcon icon={faExclamation} />
