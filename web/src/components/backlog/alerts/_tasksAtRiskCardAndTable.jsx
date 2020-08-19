@@ -28,7 +28,6 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData }) => {
             .filter(sprint => collect(sprint.tasks).contains("gid", gid))
             .first();
           if (sprint) {
-            console.log("Hello sprint!", { sprint });
             return dueOn.isBefore(sprint.finishedOn);
           }
           return true;
