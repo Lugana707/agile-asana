@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Container, Jumbotron } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import ForecastGrid from "./forecast/grid";
-import TasksDueSoon from "./_tasksDueSoon";
+import TasksDueSoon from "./alerts/tasksDueSoon";
 
 const Backlog = () => {
   const { asanaProjectTasks = [] } = useSelector(

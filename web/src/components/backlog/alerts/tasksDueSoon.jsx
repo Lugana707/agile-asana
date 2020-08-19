@@ -5,8 +5,8 @@ import { faExclamation } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import collect from "collect.js";
 import moment from "moment";
-import Table from "../_library/_table";
-import BacklogTableRow from "./_backlogTableRow";
+import Table from "../../_library/_table";
+import BacklogTableRow from "../_backlogTableRow";
 
 const TasksDueSoon = ({ className, hideIfNoData }) => {
   const [show, setShow] = useState(true);
