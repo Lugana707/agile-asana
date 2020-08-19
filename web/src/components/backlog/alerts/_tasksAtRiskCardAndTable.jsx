@@ -11,11 +11,6 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData }) => {
   const { unrefined, refined } = useSelector(state => state.backlogTasks);
   const { sprints } = useSelector(state => state.sprints);
 
-  const [currentSprint] = useMemo(
-    () => sprints.filter(({ state }) => state === "ACTIVE"),
-    [sprints]
-  );
-
   const tasksDueSoon = useMemo(
     () =>
       collect(unrefined || [])
@@ -34,7 +29,7 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData }) => {
         })
         .sortBy("dueOn")
         .all(),
-    [unrefined, refined, currentSprint.gid]
+    [unrefined, refined, sprints]
   );
 
   const storyPoints = useMemo(
