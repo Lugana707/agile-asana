@@ -7,7 +7,7 @@ import DataIntegrity from "./components/_dataIntegrity";
 import Header from "./components/_header";
 import Footer from "./components/_footer";
 import Home from "./components/home";
-import Backlog from "./components/backlog/index";
+import BacklogForecastDashboard from "./components/backlog/forecast/dashboard";
 import BacklogForecastGrid from "./components/backlog/forecast/grid";
 import Sprints from "./components/sprint/index";
 import SprintShow from "./components/sprint/show";
@@ -31,7 +31,11 @@ function App() {
           <Header />
           <Switch>
             <Route exact path="/" component={Home} />
-            <Route exact path="/backlog" component={Backlog} />
+            <Route
+              exact
+              path="/backlog/forecast/dashboard"
+              component={BacklogForecastDashboard}
+            />
             <Route
               exact
               path="/backlog/forecast/grid"

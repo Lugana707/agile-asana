@@ -1,9 +1,9 @@
 import React, { useMemo } from "react";
 import { Container, Jumbotron } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import ForecastGrid from "./forecast/grid";
-import TasksDueSoon from "./alerts/tasksDueSoon";
-import AlertsGrid from "./alerts/grid";
+import ForecastGrid from "./grid";
+import TasksDueSoon from "../alerts/tasksDueSoon";
+import AlertsGrid from "../alerts/grid";
 
 const Backlog = () => {
   const { asanaProjectTasks = [] } = useSelector(
@@ -23,7 +23,7 @@ const Backlog = () => {
     <>
       <Jumbotron fluid className="bg-primary text-left">
         <Container>
-          <h1>Backlog / Refined</h1>
+          <h1>Forecast / Dashboard</h1>
           <p>
             <span>Forecasting with </span>
             <span className="font-weight-bold">

@@ -35,8 +35,8 @@ const Header = () => {
               <Nav.Link>Sprints</Nav.Link>
             </LinkContainer>
             <NavDropdown title="Forecast" id="nav-dropdown">
-              <LinkContainer to="/backlog">
-                <NavDropdown.Item>Backlog</NavDropdown.Item>
+              <LinkContainer to="/backlog/forecast/dashboard">
+                <NavDropdown.Item>Dashboard</NavDropdown.Item>
               </LinkContainer>
               <LinkContainer to="/backlog/forecast/grid">
                 <NavDropdown.Item>Grid</NavDropdown.Item>
