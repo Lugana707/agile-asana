@@ -56,6 +56,30 @@ const processBacklogIntoForecastedSprints = ({ sprints, refined }) => {
     }));
 };
 
+const processProjectIntoSprint = ({ project }) => {
+  Logger.debug("Processing project into sprint...", { project });
+
+  const {
+    gid,
+    week,
+    tasks,
+    dueOn,
+    startOn,
+    runningAverageCompletedStoryPoints
+  } = project;
+
+  return {
+    uuid: gid,
+    number: week,
+    state: project.archived ? "COMPLETED" : "ACTIVE",
+    storyPoints: undefined,
+    startOn,
+    finishedOn: dueOn,
+    averageCompletedStoryPoints: runningAverageCompletedStoryPoints,
+    tasks
+  };
+};
+
 const processBacklogAndProjectsFromAsana = ({ refined, projects }) => {
   return async dispatch => {
     dispatch({ type: SET_LOADING_SPRINTS, loading: true });
@@ -82,30 +106,6 @@ const processBacklogAndProjectsFromAsana = ({ refined, projects }) => {
     });
 
     dispatch({ type: SET_LOADING_SPRINTS, loading: false });
-  };
-};
-
-const processProjectIntoSprint = ({ project }) => {
-  Logger.debug("Processing project into sprint...", { project });
-
-  const {
-    gid,
-    week,
-    tasks,
-    dueOn,
-    startOn,
-    runningAverageCompletedStoryPoints
-  } = project;
-
-  return {
-    uuid: gid,
-    number: week,
-    state: project.archived ? "COMPLETED" : "ACTIVE",
-    storyPoints: undefined,
-    startOn,
-    finishedOn: dueOn,
-    averageCompletedStoryPoints: runningAverageCompletedStoryPoints,
-    tasks
   };
 };
 
