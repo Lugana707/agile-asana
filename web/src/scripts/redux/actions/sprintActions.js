@@ -2,7 +2,6 @@ import Logger from "js-logger";
 import moment from "moment";
 
 const SET_LOADING_SPRINTS = "SET_LOADING_SPRINTS";
-const SUCCESS_LOADING_SPRINTS = "SUCCESS_LOADING_SPRINTS";
 const DELETE_SPRINT = "DELETE_SPRINT";
 const ADD_SPRINT = "ADD_SPRINT";
 
@@ -16,7 +15,7 @@ const processBacklogIntoForecastedSprints = ({ sprints, refined }) => {
     refined
   });
 
-  let index = 0;
+  let taskIndex = 0;
   let totalStoryPoints = 0;
 
   return refined
@@ -29,12 +28,12 @@ const processBacklogIntoForecastedSprints = ({ sprints, refined }) => {
       totalStoryPoints = totalStoryPoints + storyPoints;
 
       if (totalStoryPoints >= forecastStoryPoints) {
-        index = index + 1;
+        taskIndex = taskIndex + 1;
         totalStoryPoints = storyPoints;
       }
 
       let tasks = [...accumulator];
-      tasks[index] = (accumulator[index] || []).concat([currentValue]);
+      tasks[taskIndex] = (accumulator[taskIndex] || []).concat([currentValue]);
 
       return tasks;
     }, [])
@@ -55,6 +54,35 @@ const processBacklogIntoForecastedSprints = ({ sprints, refined }) => {
       averageCompletedStoryPoints: false,
       tasks
     }));
+};
+
+const processBacklogAndProjectsFromAsana = ({ refined, projects }) => {
+  return async dispatch => {
+    dispatch({ type: SET_LOADING_SPRINTS, loading: true });
+
+    Logger.info("TODO: Processing projects into historic sprints...", {
+      projects
+    });
+    const sprints = projects.map(project => {
+      const sprint = processProjectIntoSprint({ project });
+      dispatch({ type: DELETE_SPRINT, value: sprint, loading: true });
+      dispatch({ type: ADD_SPRINT, value: sprint, loading: true });
+      return sprint;
+    });
+
+    Logger.info("Processing backlog into forecasted sprints...", {
+      refined
+    });
+    processBacklogIntoForecastedSprints({
+      sprints,
+      refined
+    }).forEach(sprint => {
+      dispatch({ type: DELETE_SPRINT, value: sprint, loading: true });
+      dispatch({ type: ADD_SPRINT, value: sprint, loading: true });
+    });
+
+    dispatch({ type: SET_LOADING_SPRINTS, loading: false });
+  };
 };
 
 const processProjectIntoSprint = ({ project }) => {
@@ -98,35 +126,6 @@ const reprocessSprints = () => {
         projects
       })
     );
-  };
-};
-
-const processBacklogAndProjectsFromAsana = ({ refined, projects }) => {
-  return async dispatch => {
-    dispatch({ type: SET_LOADING_SPRINTS, loading: true });
-
-    Logger.info("TODO: Processing projects into historic sprints...", {
-      projects
-    });
-    const sprints = projects.map(project => {
-      const sprint = processProjectIntoSprint({ project });
-      dispatch({ type: DELETE_SPRINT, value: sprint, loading: true });
-      dispatch({ type: ADD_SPRINT, value: sprint, loading: true });
-      return sprint;
-    });
-
-    Logger.info("Processing backlog into forecasted sprints...", {
-      refined
-    });
-    processBacklogIntoForecastedSprints({
-      sprints,
-      refined
-    }).forEach(sprint => {
-      dispatch({ type: DELETE_SPRINT, value: sprint, loading: true });
-      dispatch({ type: ADD_SPRINT, value: sprint, loading: true });
-    });
-
-    dispatch({ type: SET_LOADING_SPRINTS, loading: false });
   };
 };
 
