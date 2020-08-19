@@ -30,8 +30,9 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData }) => {
     [unrefined, refined, currentSprint.gid]
   );
 
-  const storyPoints = useMemo(() =>
-    collect(tasksDueSoon).sum(({ storyPoints = 0 }) => storyPoints)
+  const storyPoints = useMemo(
+    () => collect(tasksDueSoon).sum(({ storyPoints = 0 }) => storyPoints),
+    [tasksDueSoon]
   );
 
   if (tasksDueSoon.length === 0 && hideIfNoData) {
