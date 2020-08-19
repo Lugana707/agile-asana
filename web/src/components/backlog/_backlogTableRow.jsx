@@ -14,7 +14,7 @@ const BacklogTableRow = ({ data }) => {
     "Technical Debt": "warning"
   };
 
-  const { gid, name, dueOn, storyPoints, projects, tags, className } = data;
+  const { gid, name, dueOn, storyPoints, projects, tags } = data;
   const sortedTags = collect(tags)
     .pluck("name")
     .sort()

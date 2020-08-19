@@ -17,8 +17,6 @@ const BacklogForecastTable = () => {
     return <div />;
   }
 
-  const [currentSprint] = sprints;
-
   const SprintCard = ({ data, index }) => {
     const { number, storyPoints, finishedOn } = data;
 
