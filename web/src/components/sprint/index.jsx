@@ -27,7 +27,7 @@ const Projects = () => {
           );
 
     return (
-      <>
+      <tr key={gid}>
         <td className="align-middle">
           <LinkContainer
             to={`/sprint/${gid}`}
@@ -56,7 +56,7 @@ const Projects = () => {
             (In Progress)
           </td>
         )}
-      </>
+      </tr>
     );
   };
 

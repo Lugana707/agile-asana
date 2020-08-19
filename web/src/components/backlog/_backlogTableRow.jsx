@@ -14,7 +14,7 @@ const BacklogTableRow = ({ data }) => {
     "Technical Debt": "warning"
   };
 
-  const { gid, name, dueOn, storyPoints, projects, tags } = data;
+  const { gid, name, dueOn, storyPoints, projects, tags, className } = data;
   const sortedTags = collect(tags)
     .pluck("name")
     .sort()
@@ -32,8 +32,8 @@ const BacklogTableRow = ({ data }) => {
   }
 
   return (
-    <>
-      <td className="align-middle text-right w-10">
+    <tr key={gid} className="d-flex pr-1">
+      <td className="align-middle text-center col-1">
         {storyPoints ? (
           storyPoints
         ) : (
@@ -43,7 +43,7 @@ const BacklogTableRow = ({ data }) => {
           />
         )}
       </td>
-      <td className="align-middle">
+      <td className="align-middle col" colSpan={dueOn ? 2 : 1}>
         <span className="text-left d-block">
           <span>{name}</span>
         </span>
@@ -61,10 +61,12 @@ const BacklogTableRow = ({ data }) => {
           </span>
         )}
       </td>
-      <td className={`align-middle text-${variant} text-nowrap`}>
-        {dueOn && dueOn.fromNow()}
-      </td>
-      <td className="align-middle">
+      {dueOn && (
+        <td className={`align-middle text-${variant} text-nowrap col-2`}>
+          {dueOn && dueOn.fromNow()}
+        </td>
+      )}
+      <td className="align-middle col-1">
         <a
           href={`https://app.asana.com/0/${project.gid}/${gid}/f`}
           rel="noopener noreferrer"
@@ -74,7 +76,7 @@ const BacklogTableRow = ({ data }) => {
           <FontAwesomeIcon icon={faExternalLinkAlt} />
         </a>
       </td>
-    </>
+    </tr>
   );
 };
 
