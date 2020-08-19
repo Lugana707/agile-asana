@@ -9,7 +9,6 @@ import Footer from "./components/_footer";
 import Home from "./components/home";
 import Backlog from "./components/backlog/index";
 import BacklogForecastGrid from "./components/backlog/forecast/grid";
-import BacklogForecastTable from "./components/backlog/forecast/table";
 import Sprints from "./components/sprint/index";
 import SprintShow from "./components/sprint/show";
 import SprintTasks from "./components/sprint/tasks";
@@ -37,11 +36,6 @@ function App() {
               exact
               path="/backlog/forecast/grid"
               component={BacklogForecastGrid}
-            />
-            <Route
-              exact
-              path="/backlog/forecast/table"
-              component={BacklogForecastTable}
             />
             <Route exact path="/sprint" component={Sprints} />
             <Route exact path="/sprint/:projectGid" component={SprintShow} />

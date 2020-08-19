@@ -52,7 +52,7 @@ const TasksDueSoon = ({ className, hideIfNoData }) => {
       </Alert.Heading>
       <p>The following tasks may not be prioritised high in the backlog!</p>
       <hr />
-      <p className="mb-0">
+      <div className="mb-0">
         <Table
           id="backlog__tasks-due-soon"
           variant="dark"
@@ -60,7 +60,7 @@ const TasksDueSoon = ({ className, hideIfNoData }) => {
           data={tasksDueSoon}
           row={BacklogTableRow}
         />
-      </p>
+      </div>
     </Alert>
   );
 };

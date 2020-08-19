@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Container, Jumbotron } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import ForecastTable from "./forecast/table";
+import ForecastGrid from "./forecast/grid";
 import TasksDueSoon from "./_tasksDueSoon";
 
 const Backlog = () => {
@@ -34,8 +34,8 @@ const Backlog = () => {
       </Jumbotron>
       <Container fluid>
         <TasksDueSoon hideIfNoData />
-        <ForecastTable />
       </Container>
+      <ForecastGrid />
     </>
   );
 };
