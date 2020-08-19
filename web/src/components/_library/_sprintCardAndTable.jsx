@@ -4,19 +4,19 @@ import moment from "moment";
 import Table from "./_table";
 import SprintTaskTableRow from "./_sprintTaskTableRow";
 
-const SprintCardAndTable = ({ sprint }) => {
+const SprintCardAndTable = ({ title, sprint, variant }) => {
   const { tasks, number, storyPoints, finishedOn } = sprint;
 
   return (
     <>
       <Col key={number} xs={3} className="pr-1">
-        <Card bg="dark" text="light" className="text-left h-100">
+        <Card bg={variant || "dark"} text="light" className="text-left h-100">
           <Card.Body>
             <Card.Title>
               <h1 className="float-right text-info">{number}</h1>
-              <span>{moment(finishedOn).format("YYYY-MM-DD")}</span>
+              <span>{title || moment(finishedOn).format("YYYY-MM-DD")}</span>
             </Card.Title>
-            {storyPoints && (
+            {!!storyPoints && (
               <Card.Subtitle className="text-muted">
                 <span className="text-nowrap">{storyPoints} story points</span>
               </Card.Subtitle>
@@ -25,7 +25,12 @@ const SprintCardAndTable = ({ sprint }) => {
         </Card>
       </Col>
       <Col className="pl-1">
-        <Table className="mt-1 mb-1" data={tasks} row={SprintTaskTableRow} />
+        <Table
+          className="mt-1 mb-1"
+          data={tasks}
+          row={SprintTaskTableRow}
+          variant={variant}
+        />
       </Col>
     </>
   );
