@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import collect from "collect.js";
 import moment from "moment";
 import Table from "../../_library/_table";
-import BacklogTableRow from "../_backlogTableRow";
+import SprintTaskTableRow from "../../_library/_sprintTaskTableRow";
 
 const TasksDueSoon = ({ className, hideIfNoData }) => {
   const [show, setShow] = useState(true);
@@ -58,7 +58,7 @@ const TasksDueSoon = ({ className, hideIfNoData }) => {
           variant="dark"
           loading={loading}
           data={tasksDueSoon}
-          row={BacklogTableRow}
+          row={SprintTaskTableRow}
         />
       </div>
     </Alert>

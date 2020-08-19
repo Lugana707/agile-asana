@@ -8,7 +8,7 @@ import {
 import collect from "collect.js";
 import moment from "moment";
 
-const BacklogTableRow = ({ data }) => {
+const SprintTaskTableRow = ({ data }) => {
   const tagMap = {
     Bug: "danger",
     "Technical Debt": "warning"
@@ -80,4 +80,4 @@ const BacklogTableRow = ({ data }) => {
   );
 };
 
-export default BacklogTableRow;
+export default SprintTaskTableRow;
