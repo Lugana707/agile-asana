@@ -49,7 +49,7 @@ export default ({
       )}
       <tbody>
         {data.map((datum, index) => (
-          <Row data={datum} index={index} />
+          <Row key={index} data={datum} index={index} />
         ))}
       </tbody>
     </Table>
