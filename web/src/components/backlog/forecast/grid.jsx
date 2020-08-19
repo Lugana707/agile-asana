@@ -6,64 +6,30 @@ import Table from "../../_library/_table";
 import BacklogTableRow from "../_backlogTableRow";
 
 const BacklogForecastTable = () => {
-  const { loading, refined } = useSelector(state => state.backlogTasks);
-  const { asanaProjectTasks } = useSelector(state => state.asanaProjectTasks);
+  const { sprints, loading } = useSelector(state => state.sprints);
 
-  const sprints = useMemo(() => asanaProjectTasks || [], [asanaProjectTasks]);
-  const currentSprint = useMemo(() => sprints[0], [sprints]);
-  const forecastStoryPoints = useMemo(
-    () => (currentSprint || {}).runningAverageCompletedStoryPoints,
-    [currentSprint]
+  const forecast = useMemo(
+    () => sprints.filter(({ state }) => state === "FORECAST"),
+    [sprints]
   );
 
-  const forecast = useMemo(() => {
-    let index = 0;
-    let totalStoryPoints = 0;
-    return (refined || [])
-      .filter(
-        ({ projects }) =>
-          !projects.map(({ gid }) => gid).includes(currentSprint.gid)
-      )
-      .reduce((accumulator, currentValue) => {
-        const { storyPoints = 0 } = currentValue;
-        totalStoryPoints = totalStoryPoints + storyPoints;
-
-        if (totalStoryPoints >= forecastStoryPoints) {
-          index = index + 1;
-          totalStoryPoints = storyPoints;
-        }
-
-        let tasks = [...accumulator];
-        tasks[index] = (accumulator[index] || []).concat([currentValue]);
-
-        return tasks;
-      }, [])
-      .map((tasks, index) => ({
-        week: index + 1 + currentSprint.week,
-        storyPoints: tasks.reduce(
-          (accumulator, { storyPoints = 0 }) => accumulator + storyPoints,
-          0
-        ),
-        tasks
-      }));
-  }, [refined, forecastStoryPoints, currentSprint]);
-
-  if (!asanaProjectTasks) {
+  if (!sprints) {
     return <div />;
   }
 
+  const [currentSprint] = sprints;
+
   const SprintCard = ({ data, index }) => {
-    const { week, storyPoints } = data;
-    const completedOn = moment(currentSprint.dueOn)
-      .add(index + 1, "weeks")
-      .format("YYYY-MM-DD");
+    const { number, storyPoints, finishedOn } = data;
 
     return (
       <Card bg="dark" text="light" className="text-left h-100">
         <Card.Body>
-          <Card.Title className="float-left">{completedOn}</Card.Title>
+          <Card.Title className="float-left">
+            {moment(finishedOn).format("YYYY-MM-DD")}
+          </Card.Title>
           <Card.Title as="h1" className="float-right text-info">
-            {week}
+            {number}
           </Card.Title>
           <Card.Subtitle className="text-muted">
             <span className="text-nowrap">{storyPoints} story points</span>

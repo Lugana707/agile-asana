@@ -5,6 +5,7 @@ import axios from "axios";
 import jsLogger from "js-logger";
 import { loadProjects } from "../scripts/redux/actions/asana/projectActions";
 import { reprocessAllTasks } from "../scripts/redux/actions/asana/projectTaskActions";
+import { reprocessSprints } from "../scripts/redux/actions/sprintActions";
 
 const DataIntegrity = ({ history }) => {
   const { loading } = useSelector(state => state.globalReducer);
@@ -41,6 +42,7 @@ const DataIntegrity = ({ history }) => {
       dispatch(loadProjects());
     } else {
       dispatch(reprocessAllTasks());
+      dispatch(reprocessSprints());
     }
   }, [
     loading,

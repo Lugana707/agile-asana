@@ -36,6 +36,7 @@ const initialiseReduxStore = preloadedState => {
     asanaProjects: crudReducer("asanaProjects"),
     rawProjectTasks: crudReducer("rawProjectTasks"),
     asanaProjectTasks: crudReducer("asanaProjectTasks"),
+    sprints: crudReducer("sprints", "number", { loading: false, sprints: [] }),
     settings: objectReducer("settings")
   });
 
