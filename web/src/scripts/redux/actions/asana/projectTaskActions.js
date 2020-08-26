@@ -2,6 +2,7 @@ import axios from "axios";
 import jsLogger from "js-logger";
 import camelcase from "camelcase";
 import moment from "moment";
+import collect from "collect.js";
 import { ASANA_API_URL } from "../../../api";
 
 const RUNNING_AVERAGE_WEEK_COUNT = 3;
@@ -271,7 +272,10 @@ const loadProjectTasks = ({ asanaProjects, asanaBacklog }) => {
         const combined = {
           sections,
           ...project,
-          tasks: tasks.flat()
+          tasks: collect(tasks)
+            .flat()
+            .unique("gid")
+            .all()
         };
 
         jsLogger.debug("Gotten project tasks!", combined);

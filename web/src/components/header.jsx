@@ -8,7 +8,7 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Logo from "../logo.png";
-import { loadProjects } from "../scripts/redux/actions/asana/projectActions";
+import { loadAll } from "../scripts/redux/actions/asanaActions";
 
 const Header = () => {
   const { loading } = useSelector(state => state.globalReducer);
@@ -51,10 +51,7 @@ const Header = () => {
             <Button variant="outline-info">Search</Button>
           </Form>
           <Nav className="navbar-right">
-            <Nav.Link
-              onClick={() => dispatch(loadProjects())}
-              disabled={loading}
-            >
+            <Nav.Link onClick={() => dispatch(loadAll())} disabled={loading}>
               <FontAwesomeIcon icon={faRedo} size="1x" spin={loading} />
               <span> Reload Data</span>
             </Nav.Link>

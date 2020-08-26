@@ -3,15 +3,16 @@ import { withRouter } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import jsLogger from "js-logger";
-import { loadProjects } from "../scripts/redux/actions/asana/projectActions";
-import { reprocessAllTasks } from "../scripts/redux/actions/asana/projectTaskActions";
-import { reprocessSprints } from "../scripts/redux/actions/sprintActions";
+import { loadAll } from "../scripts/redux/actions/asanaActions";
+import { processSprints } from "../scripts/redux/actions/sprintActions";
 
 const DataIntegrity = ({ history }) => {
   const { loading } = useSelector(state => state.globalReducer);
   const { asanaApiKey } = useSelector(state => state.settings);
-  const { rawProjectTasks } = useSelector(state => state.rawProjectTasks);
-  const { rawBacklogTasks } = useSelector(state => state.rawBacklogTasks);
+  const { asanaTags } = useSelector(state => state.asanaTags);
+  const { asanaProjects } = useSelector(state => state.asanaProjects);
+  const { asanaSections } = useSelector(state => state.asanaSections);
+  const { asanaTasks } = useSelector(state => state.asanaTasks);
 
   const dispatch = useDispatch();
 
@@ -38,19 +39,20 @@ const DataIntegrity = ({ history }) => {
       return;
     } else if (!asanaApiKey) {
       history.push("/settings");
-    } else if (!rawProjectTasks && !rawBacklogTasks) {
-      dispatch(loadProjects());
+    } else if (!asanaTags || !asanaProjects || !asanaSections || !asanaTasks) {
+      dispatch(loadAll());
     } else {
-      dispatch(reprocessAllTasks());
-      dispatch(reprocessSprints());
+      dispatch(processSprints());
     }
   }, [
     loading,
     asanaApiKey,
     history,
     dispatch,
-    rawProjectTasks,
-    rawBacklogTasks
+    asanaTags,
+    asanaProjects,
+    asanaSections,
+    asanaTasks
   ]);
 
   return <div />;

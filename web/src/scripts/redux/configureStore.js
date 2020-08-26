@@ -14,7 +14,13 @@ import objectReducer from "./reducers/objectReducer";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["rawBacklogTasks", "rawProjects", "rawProjectTasks", "settings"]
+  whitelist: [
+    "asanaTags",
+    "asanaProjects",
+    "asanaSections",
+    "asanaTasks",
+    "settings"
+  ]
 };
 
 const initialiseReduxStore = preloadedState => {
@@ -30,12 +36,10 @@ const initialiseReduxStore = preloadedState => {
 
   const rootReducer = combineReducers({
     globalReducer,
-    rawBacklogTasks: objectReducer("rawBacklogTasks"),
-    backlogTasks: objectReducer("backlogTasks"),
-    rawProjects: crudReducer("rawProjects"),
-    asanaProjects: crudReducer("asanaProjects"),
-    rawProjectTasks: crudReducer("rawProjectTasks"),
-    asanaProjectTasks: crudReducer("asanaProjectTasks"),
+    asanaTags: crudReducer("asanaTags", "gid"),
+    asanaProjects: crudReducer("asanaProjects", "gid"),
+    asanaSections: crudReducer("asanaSections", "gid"),
+    asanaTasks: crudReducer("asanaTasks", "gid"),
     sprints: crudReducer("sprints", "number", { loading: false, sprints: [] }),
     settings: objectReducer("settings")
   });

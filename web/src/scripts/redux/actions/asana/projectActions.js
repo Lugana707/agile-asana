@@ -115,9 +115,15 @@ const loadProjects = () => {
           validateStatus: status => status === 200
         });
 
+        const matchKanban = MATCH_PROJECT_KANBAN;
+        const matchBacklog = MATCH_PROJECT_BACKLOG;
+
         return Promise.all(
           data.data
             .map(project => ({ ...project, archived }))
+            .filter(
+              ({ name }) => matchKanban.test(name) || matchBacklog.test(name)
+            )
             .map(async project => ({
               ...project,
               sections: await getSections(project)
