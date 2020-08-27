@@ -14,22 +14,25 @@ const SprintTaskTableRow = ({ data }) => {
     "Technical Debt": "warning"
   };
 
-  const { gid, name, dueOn, storyPoints, projects, tags } = data;
+  const { gid, name, dueOn, storyPoints, sprints, tags } = data;
+
+  const [sprintUUID] = sprints;
   const sortedTags = collect(tags)
-    .pluck("name")
     .sort()
     .all();
-  const [project] = projects;
 
-  let variant = "";
-  if (dueOn) {
-    const now = moment();
-    if (dueOn.isBefore(now.add(7, "days"))) {
-      variant = "danger";
-    } else if (dueOn.isBefore(now.add(14, "days"))) {
-      variant = "warning";
+  const computeVariant = dueOn => {
+    if (dueOn) {
+      const now = moment();
+      if (dueOn.isBefore(now.add(7, "days"))) {
+        return "danger";
+      } else if (dueOn.isBefore(now.add(14, "days"))) {
+        return "warning";
+      }
     }
-  }
+    return "";
+  };
+  const variant = computeVariant(dueOn);
 
   return (
     <tr key={gid} className="d-flex pr-1">
@@ -63,12 +66,12 @@ const SprintTaskTableRow = ({ data }) => {
       </td>
       {dueOn && (
         <td className={`align-middle text-${variant} text-nowrap col-2`}>
-          {dueOn && dueOn.fromNow()}
+          {dueOn.fromNow()}
         </td>
       )}
       <td className="align-middle col-1">
         <a
-          href={`https://app.asana.com/0/${project.gid}/${gid}/f`}
+          href={`https://app.asana.com/0/${sprintUUID}/${gid}/f`}
           rel="noopener noreferrer"
           target="_blank"
           className="btn btn-secondary"

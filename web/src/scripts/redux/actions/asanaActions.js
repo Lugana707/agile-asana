@@ -120,7 +120,7 @@ const loadTags = async dispatch => {
   }
 };
 
-const loadProjects = async (dispatch, { asanaSections }) => {
+const loadProjects = async dispatch => {
   try {
     dispatch({ type: SET_LOADING_ASANA_PROJECTS, loading: true });
 
@@ -192,6 +192,7 @@ const loadTasks = async (dispatch, { asanaSections, asanaTags }) => {
             .where("gid", task.gid)
             .pluck("sections")
             .flatten(1)
+            .pluck("name")
             .all(),
           projects: collect(projects)
             .pluck("gid")

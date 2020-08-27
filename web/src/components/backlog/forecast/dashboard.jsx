@@ -2,21 +2,25 @@ import React, { useMemo } from "react";
 import { Container, Jumbotron } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import ForecastGrid from "./grid";
+import collect from "collect.js";
 import TasksAtRiskCardAndTable from "../alerts/_tasksAtRiskCardAndTable";
 
 const Backlog = () => {
-  const { asanaProjectTasks = [] } = useSelector(
-    state => state.asanaProjectTasks
-  );
-  const sprints = useMemo(() => asanaProjectTasks || [], [asanaProjectTasks]);
+  const { sprints } = useSelector(state => state.sprints);
 
-  if (!asanaProjectTasks) {
+  const averageCompletedStoryPoints = useMemo(() => {
+    const currentSprint = collect(sprints)
+      .where("state", "ACTIVE")
+      .first();
+    if (currentSprint) {
+      return currentSprint.averageCompetedStoryPoints;
+    }
+    return 0;
+  }, [sprints]);
+
+  if (!sprints) {
     return <div />;
   }
-
-  const [{ runningAverageCompletedStoryPoints }] = sprints.filter(
-    sprint => sprint.archived
-  );
 
   return (
     <>
@@ -26,7 +30,7 @@ const Backlog = () => {
           <p>
             <span>Forecasting with </span>
             <span className="font-weight-bold">
-              {runningAverageCompletedStoryPoints} story points
+              {averageCompletedStoryPoints} story points
             </span>
             <span> per sprint.</span>
           </p>

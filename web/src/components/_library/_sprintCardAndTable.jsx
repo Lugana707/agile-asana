@@ -13,7 +13,7 @@ const determineVariants = variant => {
 };
 
 const SprintCardAndTable = ({ title, sprint, variant }) => {
-  const { tasks, number, storyPoints, finishedOn } = sprint;
+  const { tasks, number, storyPoints, completedAt } = sprint;
 
   const variants = determineVariants(variant);
 
@@ -24,7 +24,7 @@ const SprintCardAndTable = ({ title, sprint, variant }) => {
           <Card.Body>
             <Card.Title>
               <h1 className="float-right text-info">{number}</h1>
-              <span>{title || moment(finishedOn).format("YYYY-MM-DD")}</span>
+              <span>{title || completedAt.format("YYYY-MM-DD")}</span>
             </Card.Title>
             {!!storyPoints && (
               <Card.Subtitle className={`text-${variants.subtitle}`}>

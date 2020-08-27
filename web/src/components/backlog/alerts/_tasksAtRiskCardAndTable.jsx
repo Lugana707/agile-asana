@@ -8,32 +8,42 @@ import collect from "collect.js";
 import SprintCardAndTable from "../../_library/_sprintCardAndTable";
 
 const TasksAtRiskCardAndTable = ({ hideIfNoData }) => {
-  const { unrefined, refined } = useSelector(state => state.backlogTasks);
+  const { unrefinedBacklogTasks } = useSelector(
+    state => state.unrefinedBacklogTasks
+  );
+  const { refinedBacklogTasks } = useSelector(
+    state => state.refinedBacklogTasks
+  );
   const { sprints } = useSelector(state => state.sprints);
 
   const tasksDueSoon = useMemo(
     () =>
-      collect(unrefined || [])
-        .merge(refined || [])
+      collect(unrefinedBacklogTasks || [])
+        .merge(refinedBacklogTasks || [])
         .filter()
         .where("dueOn")
         .filter(({ dueOn }) => dueOn.isBefore(moment().add(14, "days")))
-        .filter(({ gid, dueOn, projects }) => {
+        .filter(({ uuid, dueOn }) => {
           const sprint = collect(sprints)
-            .filter(sprint => collect(sprint.tasks).contains("gid", gid))
+            .where("state", "FORECAST")
+            .filter(sprint => collect(sprint.tasks).contains("uuid", uuid))
             .first();
           if (sprint) {
-            return dueOn.isBefore(sprint.finishedOn);
+            return dueOn.isBefore(sprint.completedAt);
           }
           return true;
         })
         .sortBy("dueOn")
         .all(),
-    [unrefined, refined, sprints]
+    [unrefinedBacklogTasks, refinedBacklogTasks, sprints]
   );
 
   const storyPoints = useMemo(
-    () => collect(tasksDueSoon).sum(({ storyPoints = 0 }) => storyPoints),
+    () =>
+      collect(tasksDueSoon)
+        .pluck("storyPoints")
+        .filter()
+        .sum(),
     [tasksDueSoon]
   );
 
