@@ -5,39 +5,35 @@ import { LinkContainer } from "react-router-bootstrap";
 import Table from "../_library/_table";
 
 const Projects = () => {
-  const { loading, asanaProjectTasks = [] } = useSelector(
-    state => state.asanaProjectTasks
-  );
+  const { loading, sprints = [] } = useSelector(state => state.sprints);
 
   const TableRow = ({ data }) => {
     const {
-      gid,
-      week,
+      uuid,
+      number,
+      storyPoints,
       completedStoryPoints,
-      committedStoryPoints,
-      runningAverageCompletedStoryPoints,
-      archived
+      averageCompletedStoryPoints,
+      state
     } = data;
 
     const percentageComplete =
-      committedStoryPoints === 0
+      storyPoints === 0
         ? false
-        : Math.round(
-            (completedStoryPoints / parseFloat(committedStoryPoints)) * 100
-          );
+        : Math.round((completedStoryPoints / parseFloat(storyPoints)) * 100);
 
     return (
-      <tr key={gid}>
+      <tr key={uuid}>
         <td className="align-middle">
           <LinkContainer
-            to={`/sprint/${gid}`}
-            className={archived ? "" : "text-danger"}
+            to={`/sprint/${uuid}`}
+            className={state === "COMPLETED" ? "" : "text-danger"}
           >
-            <Button variant="link">Week {week}</Button>
+            <Button variant="link">Week {number}</Button>
           </LinkContainer>
         </td>
-        <td className="text-center align-middle">{committedStoryPoints}</td>
-        {archived ? (
+        <td className="text-center align-middle">{storyPoints}</td>
+        {state === "COMPLETED" ? (
           <>
             <td className="text-center align-middle">
               <span>{completedStoryPoints}</span>
@@ -48,7 +44,7 @@ const Projects = () => {
               )}
             </td>
             <td className="text-center align-middle">
-              {runningAverageCompletedStoryPoints}
+              {averageCompletedStoryPoints}
             </td>
           </>
         ) : (
@@ -60,7 +56,7 @@ const Projects = () => {
     );
   };
 
-  if (!asanaProjectTasks) {
+  if (!sprints) {
     return <div />;
   }
 
@@ -71,7 +67,7 @@ const Projects = () => {
           <Table
             id="sprints"
             loading={loading}
-            data={asanaProjectTasks}
+            data={sprints}
             row={TableRow}
             columns={["", "Committed", "Completed", "", "3 Week Average"]}
           />
