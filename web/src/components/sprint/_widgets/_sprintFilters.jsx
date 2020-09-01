@@ -6,7 +6,7 @@ const SprintFilters = ({ sprints, setSprints }) => {
   const sprintCollection = useMemo(
     () =>
       collect(sprints)
-        .pluck("week")
+        .pluck("number")
         .sort(),
     [sprints]
   );
@@ -19,14 +19,15 @@ const SprintFilters = ({ sprints, setSprints }) => {
 
   useEffect(() => {
     const lastSprint = sprintCollection.last() || {};
-    const lastCompletedSprint = maxSprint - (!!lastSprint.archived ? 0 : 1);
+    const lastCompletedSprint =
+      maxSprint - (lastSprint.state === "COMPLETED" ? 0 : 1);
     setSprintRange([lastCompletedSprint - 6, lastCompletedSprint]);
   }, [sprintCollection, maxSprint]);
 
   useEffect(() => {
     setSprints(
       collect(sprints)
-        .whereBetween("week", sprintRange)
+        .whereBetween("number", sprintRange)
         .all()
     );
   }, [setSprints, sprints, sprintRange]);

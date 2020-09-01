@@ -32,7 +32,6 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
 
   const data = useMemo(() => {
     const sumOfStoryPointsByDay = sprintCollection
-      .dump()
       .map(
         ({
           number,

@@ -3,7 +3,7 @@ import { Chart } from "react-charts";
 import collect from "collect.js";
 
 const GraphStoryPointsTrend = ({ sprints = [] }) => {
-  const sprintsCollection = collect(sprints);
+  const sprintsCollection = collect(sprints).sortByDesc("week");
 
   const data = useMemo(
     () => [
@@ -18,14 +18,14 @@ const GraphStoryPointsTrend = ({ sprints = [] }) => {
       {
         label: "Committed Story Points",
         data: sprintsCollection
-          .map(obj => [obj.number, obj.committedStoryPoints])
+          .map(obj => [obj.number, obj.storyPoints])
           .reverse()
           .all()
       },
       {
         label: "Completed Story Points",
         data: sprintsCollection
-          .map(obj => [obj.number, obj.storyPoints])
+          .map(obj => [obj.number, obj.completedStoryPoints])
           .reverse()
           .all()
       }

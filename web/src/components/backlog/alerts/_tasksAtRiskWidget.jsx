@@ -6,29 +6,32 @@ import moment from "moment";
 import collect from "collect.js";
 
 const TasksAtRiskCardAndTable = () => {
-  const { unrefined, refined } = useSelector(state => state.backlogTasks);
   const { sprints } = useSelector(state => state.sprints);
-
-  const tasksDueSoonCount = useMemo(
-    () =>
-      collect(unrefined || [])
-        .merge(refined || [])
-        .filter()
-        .where("dueOn")
-        .filter(({ dueOn }) => dueOn.isBefore(moment().add(14, "days")))
-        .filter(({ gid, dueOn, projects }) => {
-          const sprint = collect(sprints)
-            .filter(sprint => collect(sprint.tasks).contains("gid", gid))
-            .first();
-          if (sprint) {
-            return dueOn.isBefore(sprint.finishedOn);
-          }
-          return true;
-        })
-        .sortBy("dueOn")
-        .count(),
-    [unrefined, refined, sprints]
+  const { refinedBacklogTasks } = useSelector(
+    state => state.refinedBacklogTasks
   );
+  const { unrefinedBacklogTasks } = useSelector(
+    state => state.unrefinedBacklogTasks
+  );
+
+  const tasksDueSoonCount = useMemo(() => {
+    return collect(unrefinedBacklogTasks || [])
+      .merge(refinedBacklogTasks || [])
+      .filter()
+      .where("dueOn")
+      .filter(({ dueOn }) => dueOn.isBefore(moment().add(14, "days")))
+      .filter(({ gid, dueOn, projects }) => {
+        const sprint = collect(sprints)
+          .filter(sprint => collect(sprint.tasks).contains("gid", gid))
+          .first();
+        if (sprint) {
+          return dueOn.isBefore(sprint.finishedOn);
+        }
+        return true;
+      })
+      .sortBy("dueOn")
+      .count();
+  }, [unrefinedBacklogTasks, refinedBacklogTasks, sprints]);
 
   return (
     <LinkContainer to="/backlog/forecast/dashboard" className="btn p-0">

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
+import collect from "collect.js";
 import SprintFilters from "./sprint/_widgets/_sprintFilters";
 import SprintWidgetGraphStoryPointsTrend from "./sprint/_widgets/_graphStoryPointsTrend";
 import SprintWidgetGraphStoryPointsThroughWeek from "./sprint/_widgets/_graphStoryPointsThroughWeek";
@@ -8,21 +9,24 @@ import SprintWidgetGraphTagBreakdown from "./sprint/_widgets/_graphTagBreakdown"
 import TasksAtRiskWidget from "./backlog/alerts/_tasksAtRiskWidget";
 
 const Home = () => {
-  const { loading, asanaProjectTasks = [] } = useSelector(
-    state => state.asanaProjectTasks
+  const state = useSelector(state => state.sprints);
+
+  const historicSprints = useMemo(
+    () =>
+      collect(state.sprints)
+        .where("state", "!==", "FORECAST")
+        .sortBy("number")
+        .all(),
+    [state.sprints]
   );
 
-  const projectTasks = useMemo(() => asanaProjectTasks || [], [
-    asanaProjectTasks
-  ]);
-
-  const [sprints, setSprints] = useState(projectTasks);
+  const [sprints, setSprints] = useState(historicSprints);
   const sprintsForDisplay = useMemo(
-    () => (sprints.length === 0 ? projectTasks : sprints),
-    [projectTasks, sprints]
+    () => (sprints.length === 0 ? historicSprints : sprints),
+    [historicSprints, sprints]
   );
 
-  if (loading) {
+  if (state.loading) {
     return <div className="loading-spinner centre" />;
   }
 
@@ -35,7 +39,7 @@ const Home = () => {
       </Row>
       <Row>
         <Col xs={12} className="pb-4">
-          <SprintFilters sprints={projectTasks} setSprints={setSprints} />
+          <SprintFilters sprints={historicSprints} setSprints={setSprints} />
         </Col>
       </Row>
       <Row className="mr-4">

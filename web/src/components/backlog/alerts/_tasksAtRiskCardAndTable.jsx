@@ -8,13 +8,13 @@ import collect from "collect.js";
 import SprintCardAndTable from "../../_library/_sprintCardAndTable";
 
 const TasksAtRiskCardAndTable = ({ hideIfNoData }) => {
+  const { sprints } = useSelector(state => state.sprints);
   const { unrefinedBacklogTasks } = useSelector(
     state => state.unrefinedBacklogTasks
   );
   const { refinedBacklogTasks } = useSelector(
     state => state.refinedBacklogTasks
   );
-  const { sprints } = useSelector(state => state.sprints);
 
   const tasksDueSoon = useMemo(
     () =>
