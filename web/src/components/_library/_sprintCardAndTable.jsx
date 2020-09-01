@@ -1,6 +1,5 @@
 import React from "react";
 import { Col, Card } from "react-bootstrap";
-import moment from "moment";
 import Table from "./_table";
 import SprintTaskTableRow from "./_sprintTaskTableRow";
 

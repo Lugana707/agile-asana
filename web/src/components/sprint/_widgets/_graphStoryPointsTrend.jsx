@@ -30,7 +30,7 @@ const GraphStoryPointsTrend = ({ sprints = [] }) => {
           .all()
       }
     ],
-    [sprints]
+    [sprintsCollection]
   );
 
   const series = useCallback((series, index) => {

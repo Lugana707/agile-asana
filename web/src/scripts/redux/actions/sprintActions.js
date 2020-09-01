@@ -186,7 +186,7 @@ const processProjectIntoSprint = ({
 const postProcessProjectIntoSprint = ({ sprint, sprints }) => {
   const averageCompletedStoryPoints = collect(sprints)
     .sortByDesc("number")
-    .take(3)
+    .take(RUNNING_AVERAGE_WEEK_COUNT)
     .pluck("completedStoryPoints")
     .median();
 
