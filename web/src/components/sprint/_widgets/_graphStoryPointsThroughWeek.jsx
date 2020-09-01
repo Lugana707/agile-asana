@@ -7,27 +7,23 @@ import moment from "moment";
 const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
   const { loading, ...state } = useSelector(state => state.sprints);
 
-  const completedSprints = useMemo(
-    () =>
-      collect(state.sprints)
-        .where("state", "COMPLETED")
-        .all(),
-    [state.sprints]
-  );
-
   const hideWeekends = true;
 
-  const sprintTasks = useMemo(() => sprints || completedSprints, [
-    sprints,
-    completedSprints
-  ]);
+  const sprintCollection = useMemo(() => {
+    if (sprints) {
+      return collect(sprints);
+    }
+    return collect(state.sprints)
+      .where("state", "COMPLETED")
+      .all();
+  }, [sprints, state.sprints]);
 
   const maxStoryPoints = useMemo(
     () =>
       showBurnUp || showBurnDown
         ? collect(sprints)
-            .map(({ committedStoryPoints, completedStoryPoints }) =>
-              Math.max(committedStoryPoints, completedStoryPoints)
+            .map(({ storyPoints, completedStoryPoints }) =>
+              Math.max(storyPoints, completedStoryPoints)
             )
             .max()
         : undefined,
@@ -35,28 +31,23 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
   );
 
   const data = useMemo(() => {
-    const sumOfStoryPointsByDay = sprintTasks
+    const sumOfStoryPointsByDay = sprintCollection
+      .dump()
       .map(
         ({
-          week,
-          completedTasks,
+          number,
+          tasksCompleted,
           startOn,
           sprintLength,
-          committedStoryPoints
+          storyPoints: committedStoryPoints
         }) => {
           const fullSprint = new Array(sprintLength + 1)
             .fill(moment(startOn).weekday())
             .map((startDay, index) => startDay + index);
 
-          const dataGroupedByDayOfSprint = collect(completedTasks)
-            .filter(
-              obj =>
-                obj.completedAtDayOfSprint !== undefined && !!obj.storyPoints
-            )
-            .map(task => ({
-              ...task,
-              completedAtDayOfSprint: task.completedAtDayOfSprint
-            }))
+          const dataGroupedByDayOfSprint = collect(tasksCompleted)
+            .where("completedAtDayOfSprint")
+            .where("storyPoints")
             .groupBy("completedAtDayOfSprint")
             .all();
 
@@ -88,7 +79,7 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
             .all();
 
           const results = [
-            { label: `Sprint ${week}`, data, secondaryAxisID: "dailySum" }
+            { label: `Sprint ${number}`, data, secondaryAxisID: "dailySum" }
           ];
 
           if (showBurnUp || showBurnDown) {
@@ -148,10 +139,10 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
           return results;
         }
       )
-      .flat();
+      .flatten(1);
 
     return [...sumOfStoryPointsByDay];
-  }, [showBurnUp, showBurnDown, sprintTasks, hideWeekends]);
+  }, [showBurnUp, showBurnDown, sprintCollection, hideWeekends]);
 
   const series = useCallback(
     (series, index) => {

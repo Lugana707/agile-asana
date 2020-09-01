@@ -39,7 +39,7 @@ const Show = ({ match }) => {
     storyPoints,
     completedStoryPoints,
     averageCompletedStoryPoints,
-    archived
+    state
   } = sprintMemo;
 
   return (
@@ -53,8 +53,8 @@ const Show = ({ match }) => {
           <div className="h-100" style={{ minHeight: "300px" }}>
             <SprintWidgetGraphStoryPointsThroughWeek
               sprints={[sprintMemo]}
-              showBurnUp={archived}
-              showBurnDown={!archived}
+              showBurnUp={state === "COMPLETED"}
+              showBurnDown={state === "ACTIVE"}
             />
           </div>
         </Col>
@@ -73,7 +73,7 @@ const Show = ({ match }) => {
               <Card.Title>
                 <span>
                   <span>Sprint {number}</span>
-                  {archived ? (
+                  {state === "COMPLETED" ? (
                     <span className="text-success"> Completed</span>
                   ) : (
                     <span className="text-warning"> (In Progress)</span>

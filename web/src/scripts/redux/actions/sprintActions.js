@@ -142,6 +142,10 @@ const processProjectIntoSprint = ({
     collect(task.sprints).contains(gid)
   );
 
+  const tasksCompletedCollection = tasksCollection
+    .filter(task => !!task.completedAt)
+    .where("mostRecentSprint", gid);
+
   const sumStoryPoints = tasks =>
     tasks
       .pluck("storyPoints")
@@ -149,11 +153,7 @@ const processProjectIntoSprint = ({
       .sum();
 
   const storyPoints = sumStoryPoints(tasksCollection);
-  const completedStoryPoints = sumStoryPoints(
-    tasksCollection
-      .filter(task => !!task.completedAt)
-      .where("mostRecentSprint", gid)
-  );
+  const completedStoryPoints = sumStoryPoints(tasksCompletedCollection);
 
   const week = parseInt(name.replace(/.+ Kanban Week /u, "").trim(), 10);
 
@@ -178,7 +178,8 @@ const processProjectIntoSprint = ({
     startOn,
     finishedOn,
     sprintLength,
-    tasks: tasksCollection.all()
+    tasks: tasksCollection.all(),
+    tasksCompleted: tasksCompletedCollection.all()
   };
 };
 
@@ -186,7 +187,6 @@ const postProcessProjectIntoSprint = ({ sprint, sprints }) => {
   const averageCompletedStoryPoints = collect(sprints)
     .sortByDesc("number")
     .take(3)
-    .dump()
     .pluck("completedStoryPoints")
     .median();
 

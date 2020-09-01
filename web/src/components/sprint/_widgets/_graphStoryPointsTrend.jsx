@@ -1,32 +1,36 @@
 import React, { useMemo, useCallback } from "react";
 import { Chart } from "react-charts";
+import collect from "collect.js";
 
-const GraphStoryPointsTrend = ({ sprints }) => {
-  const sprintTasks = useMemo(() => sprints || [], [sprints]);
+const GraphStoryPointsTrend = ({ sprints = [] }) => {
+  const sprintsCollection = collect(sprints);
 
   const data = useMemo(
     () => [
       {
         label: "3 Week Average",
-        data: sprintTasks
-          .filter(({ archived }) => !!archived)
-          .map(obj => [obj.week, obj.runningAverageCompletedStoryPoints])
+        data: sprintsCollection
+          .filter(({ state }) => state === "COMPLETED")
+          .map(obj => [obj.number, obj.averageCompletedStoryPoints])
           .reverse()
+          .all()
       },
       {
         label: "Committed Story Points",
-        data: sprintTasks
-          .map(obj => [obj.week, obj.committedStoryPoints])
+        data: sprintsCollection
+          .map(obj => [obj.number, obj.committedStoryPoints])
           .reverse()
+          .all()
       },
       {
         label: "Completed Story Points",
-        data: sprintTasks
-          .map(obj => [obj.week, obj.completedStoryPoints])
+        data: sprintsCollection
+          .map(obj => [obj.number, obj.storyPoints])
           .reverse()
+          .all()
       }
     ],
-    [sprintTasks]
+    [sprints]
   );
 
   const series = useCallback((series, index) => {
