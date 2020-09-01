@@ -5,15 +5,21 @@ import collect from "collect.js";
 import moment from "moment";
 
 const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
-  const { loading, asanaProjectTasks } = useSelector(
-    state => state.asanaProjectTasks
+  const { loading, ...state } = useSelector(state => state.sprints);
+
+  const completedSprints = useMemo(
+    () =>
+      collect(state.sprints)
+        .where("state", "COMPLETED")
+        .all(),
+    [state.sprints]
   );
 
   const hideWeekends = true;
 
-  const sprintTasks = useMemo(() => sprints || asanaProjectTasks || [], [
+  const sprintTasks = useMemo(() => sprints || completedSprints, [
     sprints,
-    asanaProjectTasks
+    completedSprints
   ]);
 
   const maxStoryPoints = useMemo(

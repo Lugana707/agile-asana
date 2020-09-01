@@ -15,7 +15,7 @@ const SUCCESS_LOADING_REFINED_BACKLOG_TASKS =
 const SUCCESS_LOADING_UNREFINED_BACKLOG_TASKS =
   "SUCCESS_LOADING_UNREFINEDBACKLOGTASKS";
 
-const processTasks = ({ asanaTasks }) =>
+const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
   collect(asanaTasks)
     .map(
       ({
@@ -38,6 +38,37 @@ const processTasks = ({ asanaTasks }) =>
         sprints: projects
       })
     )
+    .map(task => {
+      const mostRecentSprint = collect(task.sprints)
+        .map(uuid => asanaProjectsCollection.firstWhere("gid", uuid))
+        .filter()
+        .sortBy(({ created_at }) => moment(created_at).unix())
+        .pluck("gid")
+        .last();
+
+      return {
+        ...task,
+        mostRecentSprint
+      };
+    })
+    .map(task => {
+      const { completedAt, mostRecentSprint } = task;
+      if (completedAt && mostRecentSprint) {
+        const asanaProject = asanaProjectsCollection.firstWhere(
+          "gid",
+          mostRecentSprint
+        );
+        const completedAtDayOfSprint =
+          moment(asanaProject.created_at).weekday() +
+          completedAt.diff(asanaProject.created_at, "days");
+        return {
+          ...task,
+          completedAtDayOfSprint
+        };
+      }
+
+      return task;
+    })
     .all();
 
 const processBacklogIntoForecastedSprints = ({
@@ -119,17 +150,24 @@ const processProjectIntoSprint = ({
 
   const storyPoints = sumStoryPoints(tasksCollection);
   const completedStoryPoints = sumStoryPoints(
-    tasksCollection.filter(
-      task =>
-        !!collect(task.sprints)
-          .map(uuid => asanaProjectsCollection.firstWhere("gid", uuid))
-          .filter()
-          .sortByDesc(({ created_at }) => moment(created_at).unix())
-          .firstWhere("gid", gid)
-    )
+    tasksCollection
+      .filter(task => !!task.completedAt)
+      .where("mostRecentSprint", gid)
   );
 
   const week = parseInt(name.replace(/.+ Kanban Week /u, "").trim(), 10);
+
+  if (week === 35) {
+    Logger.debug("Hello processProjectIntoSprint!", {
+      tasksCollection,
+      completedStoryPoints,
+      storyPoints
+    });
+  }
+
+  const finishedOn = moment(due_on);
+  const startOn = moment(start_on || created_at);
+  const sprintLength = finishedOn.diff(startOn.format("YYYY-MM-DD"), "days");
 
   return {
     uuid: gid,
@@ -137,8 +175,9 @@ const processProjectIntoSprint = ({
     state: archived ? "COMPLETED" : "ACTIVE",
     storyPoints,
     completedStoryPoints,
-    startOn: moment(start_on || created_at),
-    finishedOn: moment(due_on),
+    startOn,
+    finishedOn,
+    sprintLength,
     tasks: tasksCollection.all()
   };
 };
@@ -177,7 +216,9 @@ const processSprints = () => {
         .filter(({ name }) => matchBacklog.test(name))
         .first();
 
-      const tasksCollection = collect(processTasks({ asanaTasks }));
+      const tasksCollection = collect(
+        processTasks({ asanaTasks, asanaProjectsCollection })
+      );
 
       Logger.info("Processing projects into historic sprints...", {
         asanaProjectsCollection,

@@ -13,37 +13,34 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import moment from "moment";
+import collect from "collect.js";
 import SprintWidgetGraphStoryPointsThroughWeek from "./_widgets/_graphStoryPointsThroughWeek";
 import SprintWidgetGraphTagBreakdown from "./_widgets/_graphTagBreakdown";
 
 const Show = ({ match }) => {
-  const { projectGid } = match.params;
-  const projectGidMemo = useMemo(() => decodeURIComponent(projectGid), [
-    projectGid
+  const { uuid } = match.params;
+
+  const { sprints } = useSelector(state => state.sprints);
+
+  const sprintMemo = useMemo(() => collect(sprints).firstWhere("uuid", uuid), [
+    sprints,
+    uuid
   ]);
 
-  const { asanaProjectTasks } = useSelector(state => state.asanaProjectTasks);
-  const sprintsMemo = useMemo(
-    () => (asanaProjectTasks || []).filter(({ gid }) => gid === projectGidMemo),
-    [asanaProjectTasks, projectGidMemo]
-  );
-
-  const [sprint] = sprintsMemo;
-
-  if (!sprint) {
+  if (!sprintMemo) {
     return <div className="loading-spinner centre" />;
   }
 
   const {
     name,
-    week,
+    number,
     startOn,
     dueOn,
-    committedStoryPoints,
+    storyPoints,
     completedStoryPoints,
-    runningAverageCompletedStoryPoints,
+    averageCompletedStoryPoints,
     archived
-  } = sprint;
+  } = sprintMemo;
 
   return (
     <Container>
@@ -55,7 +52,7 @@ const Show = ({ match }) => {
         >
           <div className="h-100" style={{ minHeight: "300px" }}>
             <SprintWidgetGraphStoryPointsThroughWeek
-              sprints={sprintsMemo}
+              sprints={[sprintMemo]}
               showBurnUp={archived}
               showBurnDown={!archived}
             />
@@ -63,7 +60,7 @@ const Show = ({ match }) => {
         </Col>
         <Col xs={12} md={7}>
           <div className="h-100" style={{ minHeight: "300px " }}>
-            <SprintWidgetGraphTagBreakdown sprints={sprintsMemo} />
+            <SprintWidgetGraphTagBreakdown sprints={[sprintMemo]} />
           </div>
         </Col>
         <Col
@@ -75,7 +72,7 @@ const Show = ({ match }) => {
             <Card.Body>
               <Card.Title>
                 <span>
-                  <span>Sprint {week}</span>
+                  <span>Sprint {number}</span>
                   {archived ? (
                     <span className="text-success"> Completed</span>
                   ) : (
@@ -100,25 +97,23 @@ const Show = ({ match }) => {
             <ListGroup className="list-group-flush">
               <ListGroupItem variant="info">
                 <span className="font-weight-bold">
-                  {runningAverageCompletedStoryPoints}
+                  {averageCompletedStoryPoints}
                 </span>
                 <span> three week avg. story points</span>
               </ListGroupItem>
               <ListGroupItem
                 variant={
-                  committedStoryPoints <= runningAverageCompletedStoryPoints
+                  storyPoints <= averageCompletedStoryPoints
                     ? "success"
                     : "warning"
                 }
               >
-                <span className="font-weight-bold">{committedStoryPoints}</span>
+                <span className="font-weight-bold">{storyPoints}</span>
                 <span> committed story points</span>
               </ListGroupItem>
               <ListGroupItem
                 variant={
-                  completedStoryPoints >= committedStoryPoints
-                    ? "success"
-                    : "danger"
+                  completedStoryPoints >= storyPoints ? "success" : "danger"
                 }
               >
                 <span className="font-weight-bold">{completedStoryPoints}</span>
@@ -126,11 +121,11 @@ const Show = ({ match }) => {
               </ListGroupItem>
             </ListGroup>
             <Card.Footer className="text-right">
-              <LinkContainer to={`/sprint/${projectGidMemo}/task`}>
+              <LinkContainer to={`/sprint/${uuid}/task`}>
                 <Button className="mr-2">Tasks</Button>
               </LinkContainer>
               <a
-                href={`https://app.asana.com/0/${projectGidMemo}/board`}
+                href={`https://app.asana.com/0/${uuid}/board`}
                 rel="noopener noreferrer"
                 target="_blank"
                 className="btn btn-secondary"

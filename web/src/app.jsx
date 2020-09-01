@@ -42,12 +42,8 @@ function App() {
               component={BacklogForecastGrid}
             />
             <Route exact path="/sprint" component={Sprints} />
-            <Route exact path="/sprint/:projectGid" component={SprintShow} />
-            <Route
-              exact
-              path="/sprint/:projectGid/task"
-              component={SprintTasks}
-            />
+            <Route exact path="/sprint/:uuid" component={SprintShow} />
+            <Route exact path="/sprint/:uuid/task" component={SprintTasks} />
             <Route exact path="/settings" component={Settings} />
           </Switch>
           <Footer />
