@@ -90,8 +90,8 @@ const processBacklogIntoForecastedSprints = ({
 
   return refinedBacklogTasks
     .filter(
-      ({ sprints }) =>
-        !collect(sprints)
+      task =>
+        !collect(task.sprints)
           .pluck("uuid")
           .filter()
           .contains(currentSprint.uuid)
@@ -146,8 +146,8 @@ const processProjectIntoSprint = ({
     .filter(task => !!task.completedAt)
     .where("mostRecentSprint", gid);
 
-  const sumStoryPoints = tasks =>
-    tasks
+  const sumStoryPoints = collection =>
+    collection
       .pluck("storyPoints")
       .filter()
       .sum();
