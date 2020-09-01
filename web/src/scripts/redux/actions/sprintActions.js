@@ -184,8 +184,9 @@ const processProjectIntoSprint = ({
 
 const postProcessProjectIntoSprint = ({ sprint, sprints }) => {
   const averageCompletedStoryPoints = collect(sprints)
-    .sortBy("number")
+    .sortByDesc("number")
     .take(3)
+    .dump()
     .pluck("completedStoryPoints")
     .median();
 
