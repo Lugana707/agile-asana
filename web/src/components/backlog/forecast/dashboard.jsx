@@ -13,7 +13,7 @@ const Backlog = () => {
       .where("state", "ACTIVE")
       .first();
     if (currentSprint) {
-      return currentSprint.averageCompetedStoryPoints;
+      return currentSprint.averageCompletedStoryPoints || "?";
     }
     return 0;
   }, [sprints]);
