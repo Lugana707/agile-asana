@@ -1,11 +1,11 @@
-name: On Update Master
+name: Master Updated
 
 on:
   push:
     branches: master
 
 jobs:
-  tag-cd:
+  master-updated:
     runs-on: ubuntu-latest
 
     steps:
