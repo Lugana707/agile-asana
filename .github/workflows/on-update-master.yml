@@ -1,11 +1,11 @@
-name: Tag CD
+name: On Update Master
 
 on:
   push:
     branches: master
 
 jobs:
-  build:
+  tag-cd:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,3 +16,7 @@ jobs:
         uses: mathieudutour/github-tag-action@v4.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release Drafter
+        uses: release-drafter/release-drafter@v5.11.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
