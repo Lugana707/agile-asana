@@ -21,6 +21,7 @@ const Report = ({match}) => {
   const {
     name,
     number,
+    tasksCompleted,
     startOn,
     dueOn,
     storyPoints,
@@ -54,7 +55,14 @@ const Report = ({match}) => {
         </Row>
         <Row>
           <Col>
-            <h2>__ Commitments Met</h2>
+            <h2>{tasksCompleted.length} Commitments Met</h2>
+            <ol>
+              {collect(tasksCompleted).dump().where("tags", "!==", []).map(task => (
+                <li>
+                  {task.name}
+                </li>
+              ))}
+            </ol>
           </Col>
         </Row>
     </Container>
