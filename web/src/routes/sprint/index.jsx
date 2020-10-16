@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Container, Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { LinkContainer } from "react-router-bootstrap";
-import Table from "../_library/_table";
+import Table from "../../components/_library/_table";
 
 const Projects = () => {
   const { loading, sprints = [] } = useSelector(state => state.sprints);

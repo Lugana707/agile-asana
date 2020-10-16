@@ -9,9 +9,10 @@ import Footer from "./components/footer";
 import Home from "./components/home";
 import BacklogForecastDashboard from "./components/backlog/forecast/dashboard";
 import BacklogForecastGrid from "./components/backlog/forecast/grid";
-import Sprints from "./components/sprint/index";
-import SprintShow from "./components/sprint/show";
-import SprintTasks from "./components/sprint/tasks";
+import Sprints from "./routes/sprint/index";
+import SprintShow from "./routes/sprint/show";
+import SprintTasks from "./routes/sprint/tasks";
+import SprintReport from "./routes/sprint/report";
 import Settings from "./components/settings/index";
 
 axios.interceptors.response.use(null, error => {
@@ -44,6 +45,7 @@ function App() {
             <Route exact path="/sprint" component={Sprints} />
             <Route exact path="/sprint/:uuid" component={SprintShow} />
             <Route exact path="/sprint/:uuid/task" component={SprintTasks} />
+            <Route exact path="/sprint/:uuid/report" component={SprintReport} />
             <Route exact path="/settings" component={Settings} />
           </Switch>
           <Footer />

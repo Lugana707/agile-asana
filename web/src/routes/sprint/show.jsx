@@ -14,8 +14,8 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import collect from "collect.js";
-import SprintWidgetGraphStoryPointsThroughWeek from "./_widgets/_graphStoryPointsThroughWeek";
-import SprintWidgetGraphTagBreakdown from "./_widgets/_graphTagBreakdown";
+import SprintWidgetGraphStoryPointsThroughWeek from "../../components/sprint/widgets/graphStoryPointsThroughWeek";
+import SprintWidgetGraphTagBreakdown from "../../components/sprint/widgets/graphTagBreakdown";
 
 const Show = ({ match }) => {
   const { uuid } = match.params;

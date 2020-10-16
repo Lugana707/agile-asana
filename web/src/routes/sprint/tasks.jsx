@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import moment from "moment";
-import Table from "../_library/_table";
+import Table from "../../components/_library/_table";
 
 const Tasks = ({ match }) => {
   const { loading, asanaProjectTasks } = useSelector(
