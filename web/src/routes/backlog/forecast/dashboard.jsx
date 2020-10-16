@@ -3,7 +3,7 @@ import { Container, Jumbotron } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import ForecastGrid from "./grid";
 import collect from "collect.js";
-import TasksAtRiskCardAndTable from "../alerts/_tasksAtRiskCardAndTable";
+import TasksAtRiskCardAndTable from "../../../components/backlog/alerts/tasksAtRiskCardAndTable";
 
 const Backlog = () => {
   const { sprints } = useSelector(state => state.sprints);

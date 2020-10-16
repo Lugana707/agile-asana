@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Container, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import SprintCardAndTable from "../../_library/_sprintCardAndTable";
+import SprintCardAndTable from "../../../components/_library/_sprintCardAndTable";
 
 const BacklogForecastTable = () => {
   const { sprints } = useSelector(state => state.sprints);
