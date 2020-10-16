@@ -13,7 +13,7 @@ import Sprints from "./routes/sprint/index";
 import SprintShow from "./routes/sprint/show";
 import SprintTasks from "./routes/sprint/tasks";
 import SprintReport from "./routes/sprint/report";
-import Settings from "./components/settings/index";
+import Settings from "./routes/settings";
 
 axios.interceptors.response.use(null, error => {
   if (error.response && error.response.status === 401) {
