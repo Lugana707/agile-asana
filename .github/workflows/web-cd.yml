@@ -20,7 +20,7 @@ jobs:
         working-directory: web
         run: |
           DOCKER_BUILDKIT=1 docker build \
-            -t www-opencolumnist-com/web:latest \
+            -t asana-agile/web:latest \
             --build-arg BUILDKIT_INLINE_CACHE=1 \
             --target release \
             .
