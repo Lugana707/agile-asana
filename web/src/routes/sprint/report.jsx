@@ -30,17 +30,7 @@ const Report = ({ match }) => {
     return <div className="loading-spinner centre" />;
   }
 
-  const {
-    number,
-    tasks,
-    tasksCompleted,
-    startOn,
-    dueOn,
-    storyPoints,
-    completedStoryPoints,
-    averageCompletedStoryPoints,
-    state
-  } = sprint;
+  const { number, tasks, tasksCompleted } = sprint;
 
   const commitmentsMet = collect(tasksCompleted).where("tags.length");
   const unplannedWork = collect(tasks).filter(({ tags }) =>
