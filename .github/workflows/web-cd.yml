@@ -10,32 +10,23 @@ on:
 env:
   AWS_S3_BUCKET: "asana.albon.me"
 
-defaults:
-  run:
-    working-directory: web
-
 jobs:
-  build-and-deploy:
+  build-test-deploy:
     runs-on: ubuntu-latest
-
-    container: node:12-alpine
-
     steps:
-      - uses: actions/checkout@v2.3.2
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2.1.0
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-            ${{ runner.os }}-yarn-
-      - run: yarn install --immutable
-      - run: yarn test
-      - run: yarn build
+      - name: Checkout
+        uses: actions/checkout@v2.3.2
+      - name: Build & Test
+        working-directory: web
+        run: |
+          DOCKER_BUILDKIT=1 docker build \
+            -t www-opencolumnist-com/web:latest \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --target release \
+            .
+          docker create -ti --name dummy asana-agile/web:latest sh
+          docker cp dummy:/build .
+          docker rm -fv dummy
       - name: S3 Sync
         uses: jakejarvis/s3-sync-action@v0.5.1
         with:
