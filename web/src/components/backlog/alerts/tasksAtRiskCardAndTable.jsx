@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamation } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import collect from "collect.js";
-import SprintCardAndTable from "../../_library/_sprintCardAndTable";
+import SprintCardAndTable from "../../library/sprintCardAndTable";
 
 const TasksAtRiskCardAndTable = ({ hideIfNoData }) => {
   const { sprints } = useSelector(state => state.sprints);

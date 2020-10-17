@@ -6,13 +6,14 @@ import DataProvider from "./dataProvider";
 import DataIntegrity from "./components/dataIntegrity";
 import Header from "./components/header";
 import Footer from "./components/footer";
-import Home from "./components/home";
-import BacklogForecastDashboard from "./components/backlog/forecast/dashboard";
-import BacklogForecastGrid from "./components/backlog/forecast/grid";
-import Sprints from "./components/sprint/index";
-import SprintShow from "./components/sprint/show";
-import SprintTasks from "./components/sprint/tasks";
-import Settings from "./components/settings/index";
+import Home from "./routes/home";
+import BacklogForecastDashboard from "./routes/backlog/forecast/dashboard";
+import BacklogForecastGrid from "./routes/backlog/forecast/grid";
+import Sprints from "./routes/sprint/index";
+import SprintShow from "./routes/sprint/show";
+import SprintTasks from "./routes/sprint/tasks";
+import SprintReport from "./routes/sprint/report";
+import Settings from "./routes/settings";
 
 axios.interceptors.response.use(null, error => {
   if (error.response && error.response.status === 401) {
@@ -44,6 +45,7 @@ function App() {
             <Route exact path="/sprint" component={Sprints} />
             <Route exact path="/sprint/:uuid" component={SprintShow} />
             <Route exact path="/sprint/:uuid/task" component={SprintTasks} />
+            <Route exact path="/sprint/:uuid/report" component={SprintReport} />
             <Route exact path="/settings" component={Settings} />
           </Switch>
           <Footer />

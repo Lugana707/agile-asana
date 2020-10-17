@@ -1,7 +1,7 @@
 import React from "react";
 import { Col, Card } from "react-bootstrap";
-import Table from "./_table";
-import SprintTaskTableRow from "./_sprintTaskTableRow";
+import Table from "./table";
+import SprintTaskTableRow from "./sprintTaskTableRow";
 
 const determineVariants = variant => {
   if (variant === "danger") {

@@ -14,8 +14,8 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import collect from "collect.js";
-import SprintWidgetGraphStoryPointsThroughWeek from "./_widgets/_graphStoryPointsThroughWeek";
-import SprintWidgetGraphTagBreakdown from "./_widgets/_graphTagBreakdown";
+import SprintWidgetGraphStoryPointsThroughWeek from "../../components/sprint/widgets/graphStoryPointsThroughWeek";
+import SprintWidgetGraphTagBreakdown from "../../components/sprint/widgets/graphTagBreakdown";
 
 const Show = ({ match }) => {
   const { uuid } = match.params;
@@ -121,16 +121,23 @@ const Show = ({ match }) => {
               </ListGroupItem>
             </ListGroup>
             <Card.Footer className="text-right">
+              <LinkContainer to={`/sprint/${uuid}/report`}>
+                <Button size="sm" className="mr-1">
+                  Report
+                </Button>
+              </LinkContainer>
               <LinkContainer to={`/sprint/${uuid}/task`}>
-                <Button className="mr-2">Tasks</Button>
+                <Button size="sm" className="mr-1">
+                  Tasks
+                </Button>
               </LinkContainer>
               <a
                 href={`https://app.asana.com/0/${uuid}/board`}
                 rel="noopener noreferrer"
                 target="_blank"
-                className="btn btn-secondary"
+                className="btn btn-secondary btn-sm"
               >
-                <span>Asana </span>
+                <span className="pr-1">Asana</span>
                 <FontAwesomeIcon icon={faExternalLinkAlt} />
               </a>
             </Card.Footer>

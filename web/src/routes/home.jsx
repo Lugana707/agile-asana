@@ -2,11 +2,11 @@ import React, { useState, useMemo } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import collect from "collect.js";
-import SprintFilters from "./sprint/_widgets/_sprintFilters";
-import SprintWidgetGraphStoryPointsTrend from "./sprint/_widgets/_graphStoryPointsTrend";
-import SprintWidgetGraphStoryPointsThroughWeek from "./sprint/_widgets/_graphStoryPointsThroughWeek";
-import SprintWidgetGraphTagBreakdown from "./sprint/_widgets/_graphTagBreakdown";
-import TasksAtRiskWidget from "./backlog/alerts/_tasksAtRiskWidget";
+import SprintFilters from "../components/sprint/widgets/sprintFilters";
+import SprintWidgetGraphStoryPointsTrend from "../components//sprint/widgets/graphStoryPointsTrend";
+import SprintWidgetGraphStoryPointsThroughWeek from "../components/sprint/widgets/graphStoryPointsThroughWeek";
+import SprintWidgetGraphTagBreakdown from "../components/sprint/widgets/graphTagBreakdown";
+import TasksAtRiskWidget from "../components/backlog/alerts/tasksAtRiskWidget";
 
 const Home = () => {
   const state = useSelector(state => state.sprints);
