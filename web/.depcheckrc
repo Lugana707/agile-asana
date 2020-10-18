@@ -1,6 +1,5 @@
 ignores: [
   "node-sass",
-  "boostrap",
   "@fortawesome/free-brands-svg-icons",
   "@fortawesome/free-regular-svg-icons",
   "@testing-library/user-event"

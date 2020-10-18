@@ -18,7 +18,6 @@
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.19.2",
     "axios-progress-bar": "^1.2.0",
-    "boostrap": "^2.0.0",
     "bootstrap": "^4.5.0",
     "camelcase": "^6.0.0",
     "collect.js": "^4.27.4",
