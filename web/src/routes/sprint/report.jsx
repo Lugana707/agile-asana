@@ -55,7 +55,7 @@ const Report = ({ match }) => {
               target="_blank"
               className="btn btn-link text-left text-light p-0"
             >
-              <li>
+              <li className="d-block">
                 <span className="pl-1 pr-1">{name}</span>
                 <FontAwesomeIcon icon={faExternalLinkAlt} />
               </li>
