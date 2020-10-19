@@ -53,9 +53,9 @@ const Report = ({ match }) => {
               href={`https://app.asana.com/0/${mostRecentSprint}/${uuid}/f`}
               rel="noopener noreferrer"
               target="_blank"
-              className="btn btn-link text-left text-light p-0"
+              className="btn btn-link text-left text-light p-0 d-block"
             >
-              <li className="d-block">
+              <li>
                 <span className="pl-1 pr-1">{name}</span>
                 <FontAwesomeIcon icon={faExternalLinkAlt} />
               </li>
