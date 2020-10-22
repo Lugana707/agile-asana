@@ -1,13 +1,17 @@
 import React, { useMemo } from "react";
 import { Container, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
+import collect from "collect.js";
 import SprintCardAndTable from "../../../components/library/sprintCardAndTable";
 
 const BacklogForecastTable = () => {
   const { sprints } = useSelector(state => state.sprints);
 
   const forecast = useMemo(
-    () => sprints.filter(({ state }) => state === "FORECAST"),
+    () =>
+      collect(sprints)
+        .where("state", "FORECAST")
+        .sortBy("week"),
     [sprints]
   );
 
