@@ -33,7 +33,7 @@ const Home = () => {
   return (
     <Container fluid>
       <Row>
-        <Col xs={4} className="pb-4">
+        <Col xs={4} lg={2} className="pb-4">
           <TasksAtRiskWidget />
         </Col>
       </Row>
@@ -43,15 +43,15 @@ const Home = () => {
         </Col>
       </Row>
       <Row className="mr-4">
-        <Col xs={12} style={{ height: "40vw" }}>
+        <Col xs={12} lg={4} style={{ height: "50vh" }}>
           <SprintWidgetGraphStoryPointsTrend sprints={sprintsForDisplay} />
         </Col>
-        <Col xs={12} md={6} style={{ height: "40vw" }}>
+        <Col xs={12} md={6} lg={4} style={{ height: "50vh" }}>
           <SprintWidgetGraphStoryPointsThroughWeek
             sprints={sprintsForDisplay}
           />
         </Col>
-        <Col xs={12} md={6} style={{ height: "40vw" }}>
+        <Col xs={12} md={6} lg={4} style={{ height: "50vh" }}>
           <SprintWidgetGraphTagBreakdown sprints={sprintsForDisplay} />
         </Col>
       </Row>
