@@ -85,44 +85,38 @@ const processBacklogIntoForecastedSprints = ({
     refinedBacklogTasks
   });
 
-  let taskIndex = 0;
-  let totalStoryPoints = 0;
-
-  return refinedBacklogTasks
-    .filter(
-      task =>
-        !collect(task.sprints)
-          .pluck("uuid")
-          .filter()
-          .contains(currentSprint.uuid)
-    )
+  return collect(refinedBacklogTasks)
+    .where("mostRecentSprint", "!==", currentSprint.uuid)
+    .where("storyPoints")
     .reduce((accumulator, currentValue) => {
-      const { storyPoints = 0 } = currentValue;
-      totalStoryPoints = totalStoryPoints + storyPoints;
+      const storyPoints = currentValue.storyPoints || 0;
+      let sprint = accumulator.firstWhere(
+        "storyPoints",
+        "<=",
+        forecastStoryPoints - storyPoints
+      );
 
-      if (totalStoryPoints >= forecastStoryPoints) {
-        taskIndex = taskIndex + 1;
-        totalStoryPoints = storyPoints;
+      if (!sprint) {
+        sprint = { storyPoints: 0, tasks: [] };
+        accumulator.push(sprint);
       }
 
-      let tasks = [...accumulator];
-      tasks[taskIndex] = (accumulator[taskIndex] || []).concat([currentValue]);
+      sprint.tasks.push(currentValue);
+      sprint.storyPoints += storyPoints;
 
-      return tasks;
-    }, [])
-    .map((tasks, index) => ({
+      return accumulator;
+    }, collect([]))
+    .map(({ tasks, storyPoints }, index) => ({
       uuid: false,
       number: index + 1 + currentSprint.number,
       state: "FORECAST",
-      storyPoints: collect(tasks)
-        .pluck("storyPoints")
-        .filter()
-        .sum(),
+      storyPoints,
       startOn: moment(currentSprint.startOn).add(index + 1, "weeks"),
       completedAt: moment(currentSprint.completedAt).add(index + 1, "weeks"),
       averageCompletedStoryPoints: false,
       tasks
-    }));
+    }))
+    .all();
 };
 
 const processProjectIntoSprint = ({
