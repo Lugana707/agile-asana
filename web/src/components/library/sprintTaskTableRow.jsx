@@ -9,9 +9,21 @@ import collect from "collect.js";
 import moment from "moment";
 
 const SprintTaskTableRow = ({ data }) => {
-  const tagMap = {
-    Bug: "danger",
-    "Technical Debt": "warning"
+  const getVariantFromTag = tag => {
+    const map = collect([
+      { key: "feature", value: "success" },
+      { key: "bug", value: "danger" },
+      { key: "debt", value: "warning" }
+    ]);
+
+    const tagLowerCase = tag.toLowerCase();
+
+    return (
+      map
+        .filter(({ key }) => tagLowerCase.includes(key))
+        .pluck("value")
+        .first() || "secondary"
+    );
   };
 
   const { gid, name, dueOn, storyPoints, sprints, tags } = data;
@@ -52,13 +64,13 @@ const SprintTaskTableRow = ({ data }) => {
         </span>
         {sortedTags.length > 0 && (
           <span className="ml-1">
-            {sortedTags.map((name, index) => (
+            {sortedTags.map((tag, index) => (
               <Badge
                 key={index}
-                variant={tagMap[name] || "secondary"}
+                variant={getVariantFromTag(tag)}
                 className="mr-1"
               >
-                {name}
+                {tag}
               </Badge>
             ))}
           </span>
