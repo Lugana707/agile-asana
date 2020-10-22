@@ -7,6 +7,7 @@ import SprintWidgetGraphStoryPointsTrend from "../components//sprint/widgets/gra
 import SprintWidgetGraphStoryPointsThroughWeek from "../components/sprint/widgets/graphStoryPointsThroughWeek";
 import SprintWidgetGraphTagBreakdown from "../components/sprint/widgets/graphTagBreakdown";
 import TasksAtRiskWidget from "../components/backlog/alerts/tasksAtRiskWidget";
+import SprintProgressWidget from "../components/sprint/widgets/progress";
 
 const Home = () => {
   const state = useSelector(state => state.sprints);
@@ -32,8 +33,11 @@ const Home = () => {
 
   return (
     <Container fluid>
-      <Row>
-        <Col xs={4} lg={2} className="pb-4">
+      <Row className="pb-4">
+        <Col xs={4} lg={2}>
+          <SprintProgressWidget />
+        </Col>
+        <Col xs={4} lg={2}>
           <TasksAtRiskWidget />
         </Col>
       </Row>

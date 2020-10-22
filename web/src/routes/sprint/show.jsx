@@ -16,18 +16,19 @@ import moment from "moment";
 import collect from "collect.js";
 import SprintWidgetGraphStoryPointsThroughWeek from "../../components/sprint/widgets/graphStoryPointsThroughWeek";
 import SprintWidgetGraphTagBreakdown from "../../components/sprint/widgets/graphTagBreakdown";
+import SprintProgress from "../../components/sprint/progress";
 
 const Show = ({ match }) => {
   const { uuid } = match.params;
 
   const { sprints } = useSelector(state => state.sprints);
 
-  const sprintMemo = useMemo(() => collect(sprints).firstWhere("uuid", uuid), [
+  const sprint = useMemo(() => collect(sprints).firstWhere("uuid", uuid), [
     sprints,
     uuid
   ]);
 
-  if (!sprintMemo) {
+  if (!sprint) {
     return <div className="loading-spinner centre" />;
   }
 
@@ -40,7 +41,7 @@ const Show = ({ match }) => {
     completedStoryPoints,
     averageCompletedStoryPoints,
     state
-  } = sprintMemo;
+  } = sprint;
 
   return (
     <Container>
@@ -52,15 +53,18 @@ const Show = ({ match }) => {
         >
           <div className="h-100" style={{ minHeight: "300px" }}>
             <SprintWidgetGraphStoryPointsThroughWeek
-              sprints={[sprintMemo]}
+              sprints={[sprint]}
               showBurnUp={state === "COMPLETED"}
               showBurnDown={state === "ACTIVE"}
             />
           </div>
         </Col>
+        <Col xs={12} className="pb-4">
+          <SprintProgress sprint={sprint} showIfComplete />
+        </Col>
         <Col xs={12} md={7}>
           <div className="h-100" style={{ minHeight: "300px " }}>
-            <SprintWidgetGraphTagBreakdown sprints={[sprintMemo]} />
+            <SprintWidgetGraphTagBreakdown sprints={[sprint]} />
           </div>
         </Col>
         <Col
