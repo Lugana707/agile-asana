@@ -26,7 +26,7 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData }) => {
         .filter(({ uuid, dueOn }) => {
           const sprint = collect(sprints)
             .where("state", "FORECAST")
-            .filter(sprint => collect(sprint.tasks).contains("uuid", uuid))
+            .filter(({ tasks }) => collect(tasks).contains("uuid", uuid))
             .first();
           if (sprint) {
             return dueOn.isBefore(sprint.completedAt);
