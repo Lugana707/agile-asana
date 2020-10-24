@@ -226,8 +226,10 @@ const loadTasks = async (dispatch, { asanaSections, asanaTags }) => {
 
 const loadAll = () => {
   return async dispatch => {
-    const asanaTags = await loadTags(dispatch);
-    const asanaProjects = await loadProjects(dispatch);
+    const [asanaTags, asanaProjects] = await Promise.all([
+      loadTags(dispatch),
+      loadProjects(dispatch)
+    ]);
     const asanaSections = await loadSections(dispatch, { asanaProjects });
     await loadTasks(dispatch, { asanaSections, asanaTags });
   };
