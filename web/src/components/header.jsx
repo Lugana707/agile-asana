@@ -1,20 +1,12 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { LinkContainer } from "react-router-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRedo } from "@fortawesome/free-solid-svg-icons";
-import { Button, Form, FormControl } from "react-bootstrap";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Logo from "../logo.png";
-import { loadAll } from "../scripts/redux/actions/asanaActions";
+import UserBadge from "./userBadge";
 
 const Header = () => {
-  const { loading } = useSelector(state => state.globalReducer);
-
-  const dispatch = useDispatch();
-
   const NavLink = ({ children, to }) => (
     <LinkContainer to={to}>
       <Nav.Link>{children}</Nav.Link>
@@ -53,15 +45,10 @@ const Header = () => {
               </NavDropDownItem>
             </NavDropdown>
           </Nav>
-          <Form inline hidden>
-            <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-            <Button variant="outline-info">Search</Button>
-          </Form>
           <Nav className="navbar-right">
-            <NavLink to="/settings">Settings</NavLink>
-            <Nav.Link onClick={() => dispatch(loadAll())} disabled={loading}>
-              <FontAwesomeIcon icon={faRedo} size="1x" spin={loading} />
-            </Nav.Link>
+            <NavLink to="/settings">
+              <UserBadge />
+            </NavLink>
           </Nav>
         </Navbar.Collapse>
       </Navbar>

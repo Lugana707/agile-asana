@@ -17,12 +17,15 @@ import {
   faExternalLinkAlt,
   faInfoCircle
 } from "@fortawesome/free-solid-svg-icons";
+import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { updateSettings } from "../scripts/redux/actions/settingsActions";
+import { loadAll } from "../scripts/redux/actions/asanaActions";
 
 const Settings = ({ history }) => {
   const asanaDeveloperConsoleUrl = "https://app.asana.com/0/developer-console";
 
+  const { loading: globalLoading } = useSelector(state => state.globalReducer);
   const { loading, asanaApiKey } = useSelector(state => state.settings);
   const [settings, setSettings] = useReducer(
     (accumulator, currentValue) => ({ ...accumulator, ...currentValue }),
@@ -50,7 +53,16 @@ const Settings = ({ history }) => {
         <Container>
           <h1>Settings</h1>
           <p>These settings be stored locally using local storage.</p>
-          <Alert variant="info">No data is stored remotely!</Alert>
+          <Alert variant="info">All data is stored locally!</Alert>
+          <hr className="my-4" />
+          <Button
+            variant="secondary"
+            onClick={() => dispatch(loadAll())}
+            disabled={globalLoading}
+          >
+            <FontAwesomeIcon icon={faRedo} size="1x" spin={globalLoading} />
+            <span> Reload Data</span>
+          </Button>
         </Container>
       </Jumbotron>
       <Container>
@@ -92,7 +104,7 @@ const Settings = ({ history }) => {
                 />
               </Form.Group>
             </Row>
-            <hr />
+            <hr className="my-4" />
             <Row>
               <Form.Group as={Col} xs="12">
                 <Button type="submit" variant="warning">

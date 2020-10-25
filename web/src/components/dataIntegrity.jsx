@@ -12,6 +12,7 @@ import {
   lookForNewProjects
 } from "../scripts/redux/actions/asanaActions";
 import { processSprints } from "../scripts/redux/actions/sprintActions";
+import { loadUser } from "../scripts/redux/actions/settingsActions";
 
 const RELOAD_DATA_TIMEOUT_MINUTES = 5;
 
@@ -83,6 +84,10 @@ const DataIntegrity = ({ history }) => {
     dispatch,
     lastCheckedForData
   ]);
+
+  useEffect(() => {
+    dispatch(loadUser());
+  }, [asanaApiKey, dispatch]);
 
   useEffect(() => {
     if (loading) {
