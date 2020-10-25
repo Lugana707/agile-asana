@@ -1,10 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useTimeout } from "@react-hook/timeout";
 import { withRouter } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import jsLogger from "js-logger";
-import { loadAll } from "../scripts/redux/actions/asanaActions";
+import Logger from "js-logger";
+import moment from "moment";
+import collect from "collect.js";
+import { loadAll, reloadProject } from "../scripts/redux/actions/asanaActions";
 import { processSprints } from "../scripts/redux/actions/sprintActions";
+
+const RELOAD_DATA_TIMEOUT_MINUTES = 5;
 
 const DataIntegrity = ({ history }) => {
   const { loading } = useSelector(state => state.globalReducer);
@@ -13,6 +18,8 @@ const DataIntegrity = ({ history }) => {
   const { asanaProjects } = useSelector(state => state.asanaProjects);
   const { asanaSections } = useSelector(state => state.asanaSections);
   const { asanaTasks } = useSelector(state => state.asanaTasks);
+
+  const [lastCheckedForData, setLastCheckedForData] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -28,11 +35,48 @@ const DataIntegrity = ({ history }) => {
         };
       },
       error => {
-        jsLogger.error(error);
+        Logger.error(error);
         return Promise.reject(error);
       }
     );
   }, [asanaApiKey]);
+
+  const [timedOut, startTimeout, resetTimeout] = useTimeout(
+    RELOAD_DATA_TIMEOUT_MINUTES * 60 * 1000
+  );
+
+  useEffect(() => {
+    startTimeout();
+  }, [startTimeout]);
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+
+    if (
+      !timedOut &&
+      moment().diff(lastCheckedForData, "minutes") < RELOAD_DATA_TIMEOUT_MINUTES
+    ) {
+      return;
+    }
+
+    setLastCheckedForData(moment());
+
+    collect(asanaProjects)
+      .sortBy(({ created_at }) => moment(created_at).unix())
+      .take(2)
+      .each(project => dispatch(reloadProject(project)));
+
+    resetTimeout();
+  }, [
+    timedOut,
+    resetTimeout,
+    asanaProjects,
+    loading,
+    dispatch,
+    lastCheckedForData
+  ]);
 
   useEffect(() => {
     if (loading) {
