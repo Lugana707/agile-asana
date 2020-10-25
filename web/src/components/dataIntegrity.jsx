@@ -22,9 +22,13 @@ const DataIntegrity = ({ history }) => {
   const { asanaTags } = useSelector(state => state.asanaTags);
   const { asanaProjects } = useSelector(state => state.asanaProjects);
   const { asanaSections } = useSelector(state => state.asanaSections);
-  const { asanaTasks } = useSelector(state => state.asanaTasks);
+  const { asanaTasks, timestamp: asanaTasksTimestamp } = useSelector(
+    state => state.asanaTasks
+  );
 
-  const [lastCheckedForData, setLastCheckedForData] = useState(false);
+  const [lastCheckedForData, setLastCheckedForData] = useState(
+    moment(asanaTasksTimestamp)
+  );
 
   const dispatch = useDispatch();
 
