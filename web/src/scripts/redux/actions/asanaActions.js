@@ -175,7 +175,7 @@ const loadTasks = async (
   try {
     dispatch({ type: SET_LOADING_ASANA_TASKS, loading: true });
 
-    const tasks = collect(
+    const tasksCollection = collect(
       await Promise.all(asanaSections.map(section => getTasks(section)))
     )
       .flatten(1)
@@ -209,8 +209,10 @@ const loadTasks = async (
       )
       .unique("gid");
 
-    const taskKeyMap = tasks.mapWithKeys(({ gid }) => [gid, true]).all();
-    const merged = tasks.merge(
+    const taskKeyMap = tasksCollection
+      .mapWithKeys(({ gid }) => [gid, true])
+      .all();
+    const merged = tasksCollection.merge(
       asanaTasks.filter(({ gid }) => !taskKeyMap[gid])
     );
 
@@ -274,7 +276,9 @@ const reloadProject = ({ gid }) => {
       .where("gid", gid)
       .pluck("sections")
       .flatten(1)
-      .map(({ gid }) => collect(asanaSections).firstWhere("gid", gid))
+      .map(({ gid: sectionGid }) =>
+        collect(asanaSections).firstWhere("gid", sectionGid)
+      )
       .all();
 
     const asanaTags = await loadTags(dispatch);
