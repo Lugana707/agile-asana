@@ -6,7 +6,11 @@ import axios from "axios";
 import Logger from "js-logger";
 import moment from "moment";
 import collect from "collect.js";
-import { loadAll, reloadProject } from "../scripts/redux/actions/asanaActions";
+import {
+  loadAll,
+  reloadProject,
+  lookForNewProjects
+} from "../scripts/redux/actions/asanaActions";
 import { processSprints } from "../scripts/redux/actions/sprintActions";
 
 const RELOAD_DATA_TIMEOUT_MINUTES = 5;
@@ -67,6 +71,8 @@ const DataIntegrity = ({ history }) => {
       .sortBy(({ created_at }) => moment(created_at).unix())
       .take(2)
       .each(project => dispatch(reloadProject(project)));
+
+    dispatch(lookForNewProjects());
 
     resetTimeout();
   }, [

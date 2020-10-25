@@ -229,7 +229,7 @@ const loadTasks = async (
   }
 };
 
-const lookForNewProjects = ({ forceReload = false }) => {
+const lookForNewProjects = ({ forceReload = false } = {}) => {
   return async (dispatch, getState) => {
     const state = getState();
     const { asanaTasks } = state.asanaTasks;
