@@ -1,5 +1,5 @@
 import axios from "axios";
-import jsLogger from "js-logger";
+import Logger from "js-logger";
 import camelcase from "camelcase";
 import collect from "collect.js";
 import { ASANA_API_URL } from "../../api";
@@ -21,7 +21,7 @@ const MATCH_PROJECT_BACKLOG = /^Product Backlog$/u;
 
 const getProjects = async archived => {
   const url = `${ASANA_API_URL}/projects`;
-  jsLogger.debug("Getting project list from API...", { url, archived });
+  Logger.debug("Getting project list from API...", { url, archived });
 
   const { data } = await axios.get(url, {
     params: {
@@ -39,14 +39,14 @@ const getProjects = async archived => {
   const projects = data.data
     .map(project => ({ ...project, archived }))
     .filter(({ name }) => matchKanban.test(name) || matchBacklog.test(name));
-  jsLogger.debug("Gotten project list from API!", { projects });
+  Logger.debug("Gotten project list from API!", { projects });
 
   return projects;
 };
 
 const getSections = async ({ gid }) => {
   const url = `${ASANA_API_URL}/projects/${gid}/sections`;
-  jsLogger.trace("Getting section list from API...", {
+  Logger.trace("Getting section list from API...", {
     url,
     projectGid: gid
   });
@@ -58,14 +58,14 @@ const getSections = async ({ gid }) => {
     validateStatus: status => status === 200
   });
 
-  jsLogger.trace("Gotten sections!", { data });
+  Logger.trace("Gotten sections!", { data });
 
   return data.data;
 };
 
 const getTasks = async ({ gid, ...section }) => {
   const url = `${ASANA_API_URL}/sections/${gid}/tasks`;
-  jsLogger.trace("Getting project tasks from API...", {
+  Logger.trace("Getting project tasks from API...", {
     url,
     sectionGid: gid
   });
@@ -88,7 +88,7 @@ const getTasks = async ({ gid, ...section }) => {
     ...task,
     sections: [{ gid, ...section }]
   }));
-  jsLogger.debug("Gotten project tasks from API!", { tasks });
+  Logger.debug("Gotten project tasks from API!", { tasks });
 
   return tasks;
 };
@@ -98,10 +98,10 @@ const loadTags = async dispatch => {
     dispatch({ type: SET_LOADING_ASANA_TAGS, loading: true });
 
     const url = `${ASANA_API_URL}/tags`;
-    jsLogger.trace("Getting tags from API...", { url });
+    Logger.trace("Getting tags from API...", { url });
 
     const { data } = await axios.get(url);
-    jsLogger.trace("Gotten tags from API!", { data });
+    Logger.trace("Gotten tags from API!", { data });
 
     const { data: asanaTags } = data;
 
@@ -115,7 +115,7 @@ const loadTags = async dispatch => {
     return asanaTags;
   } catch (error) {
     dispatch({ type: SET_LOADING_ASANA_TAGS, loading: false });
-    jsLogger.error(error.callStack || error);
+    Logger.error(error.callStack || error);
     return false;
   }
 };
@@ -124,9 +124,9 @@ const loadProjects = async dispatch => {
   try {
     dispatch({ type: SET_LOADING_ASANA_PROJECTS, loading: true });
 
-    const asanaProjects = []
-      .concat(await getProjects(true))
-      .concat(await getProjects(false));
+    const asanaProjects = collect(
+      await Promise.all([await getProjects(true), await getProjects(false)])
+    ).flatten(1);
 
     dispatch({
       type: SUCCESS_LOADING_ASANA_PROJECTS,
@@ -138,7 +138,7 @@ const loadProjects = async dispatch => {
     return asanaProjects;
   } catch (error) {
     dispatch({ type: SET_LOADING_ASANA_PROJECTS, loading: false });
-    jsLogger.error(error.callStack || error);
+    Logger.error(error.callStack || error);
     return false;
   }
 };
@@ -163,19 +163,20 @@ const loadSections = async (dispatch, { asanaProjects }) => {
     return asanaSections;
   } catch (error) {
     dispatch({ type: SET_LOADING_ASANA_SECTIONS, loading: false });
-    jsLogger.error(error.callStack || error);
+    Logger.error(error.callStack || error);
     return false;
   }
 };
 
-const loadTasks = async (dispatch, { asanaSections, asanaTags }) => {
+const loadTasks = async (
+  dispatch,
+  { asanaSections, asanaTags, asanaTasks = [] }
+) => {
   try {
     dispatch({ type: SET_LOADING_ASANA_TASKS, loading: true });
 
-    const asanaTasks = collect(
-      await Promise.all(
-        asanaSections.map(async section => await getTasks(section))
-      )
+    const tasks = collect(
+      await Promise.all(asanaSections.map(section => getTasks(section)))
     )
       .flatten(1)
       .map(
@@ -206,33 +207,84 @@ const loadTasks = async (dispatch, { asanaSections, asanaTags }) => {
           )
         })
       )
-      .unique("gid")
-      .all();
+      .unique("gid");
+
+    const taskKeyMap = tasks.mapWithKeys(({ gid }) => [gid, true]).all();
+    const merged = tasks.merge(
+      asanaTasks.filter(({ gid }) => !taskKeyMap[gid])
+    );
 
     dispatch({
       type: SUCCESS_LOADING_ASANA_TASKS,
       loading: false,
-      value: { asanaTasks },
+      value: { asanaTasks: merged.all() },
       timestamp: new Date()
     });
 
     return asanaTasks;
   } catch (error) {
     dispatch({ type: SET_LOADING_ASANA_TASKS, loading: false });
-    jsLogger.error(error.callStack || error);
+    Logger.error(error.callStack || error);
     return false;
   }
 };
 
-const loadAll = () => {
-  return async dispatch => {
+const lookForNewProjects = ({ forceReload = false }) => {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const { asanaTasks } = state.asanaTasks;
+    const currentAsanaProjects = collect(state.asanaProjects.asanaProjects);
+
     const [asanaTags, asanaProjects] = await Promise.all([
       loadTags(dispatch),
-      loadProjects(dispatch)
+      await loadProjects(dispatch)
     ]);
-    const asanaSections = await loadSections(dispatch, { asanaProjects });
-    await loadTasks(dispatch, { asanaSections, asanaTags });
+
+    const newAsanaProjects = collect(asanaProjects).filter(
+      ({ gid }) => !currentAsanaProjects.contains("gid", gid)
+    );
+
+    if (!forceReload && newAsanaProjects.isEmpty()) {
+      Logger.debug("No new projects found!");
+      return false;
+    }
+
+    const asanaSections = await loadSections(dispatch, {
+      asanaProjects: forceReload ? asanaProjects : newAsanaProjects.alL()
+    });
+    await loadTasks(dispatch, { asanaSections, asanaTags, asanaTasks });
   };
 };
 
-export { loadAll };
+const loadAll = () => lookForNewProjects({ forceReload: true });
+
+const reloadProject = ({ gid }) => {
+  return async (dispatch, getState) => {
+    if (!gid) {
+      Logger.error("Cannot reload project, gid is falsey!", { gid });
+      return false;
+    }
+
+    const state = getState();
+    const { asanaProjects } = state.asanaProjects;
+    const { asanaSections } = state.asanaSections;
+    const { asanaTasks } = state.asanaTasks;
+
+    const sections = collect(asanaProjects)
+      .where("gid", gid)
+      .pluck("sections")
+      .flatten(1)
+      .map(({ gid }) => collect(asanaSections).firstWhere("gid", gid))
+      .all();
+
+    const asanaTags = await loadTags(dispatch);
+
+    await loadTasks(dispatch, {
+      asanaSections: sections,
+      asanaTags,
+      asanaTasks
+    });
+  };
+};
+
+export { loadAll, lookForNewProjects, reloadProject };
