@@ -4,7 +4,7 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Logo from "../logo.png";
-import UserBadge from "./userBadge";
+import User from "./user";
 
 const Header = () => {
   const NavLink = ({ children, to }) => (
@@ -47,7 +47,7 @@ const Header = () => {
           </Nav>
           <Nav className="navbar-right">
             <NavLink to="/settings">
-              <UserBadge />
+              <User badge />
             </NavLink>
           </Nav>
         </Navbar.Collapse>

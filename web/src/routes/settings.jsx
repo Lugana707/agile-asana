@@ -19,6 +19,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
+import User from "../components/user";
 import { updateSettings } from "../scripts/redux/actions/settingsActions";
 import { loadAll } from "../scripts/redux/actions/asanaActions";
 
@@ -65,8 +66,15 @@ const Settings = ({ history }) => {
           </Button>
         </Container>
       </Jumbotron>
-      <Container>
-        <Form className="text-left" onSubmit={handleSubmit}>
+      <Container className="text-left">
+        <Row>
+          <Col xs={12}>
+            <span className="pr-2">Currently logged in as</span>
+            <User badge access />
+          </Col>
+        </Row>
+        <hr className="my-4" />
+        <Form onSubmit={handleSubmit}>
           <fieldset disabled={loading}>
             <Row>
               <Form.Group as={Col} xs="12" controlId="formAsanaApiKey">
