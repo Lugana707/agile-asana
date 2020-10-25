@@ -15,6 +15,18 @@ const Header = () => {
 
   const dispatch = useDispatch();
 
+  const NavLink = ({ children, to }) => (
+    <LinkContainer to={to}>
+      <Nav.Link>{children}</Nav.Link>
+    </LinkContainer>
+  );
+
+  const NavDropDownItem = ({ children, to }) => (
+    <LinkContainer to={to}>
+      <NavDropdown.Item>{children}</NavDropdown.Item>
+    </LinkContainer>
+  );
+
   return (
     <header className="header">
       <Navbar collapseOnSelect expand="sm" bg="dark" variant="dark">
@@ -31,29 +43,24 @@ const Header = () => {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
-            <LinkContainer to="/sprint">
-              <Nav.Link>Sprints</Nav.Link>
-            </LinkContainer>
+            <NavLink to="/sprint">Sprints</NavLink>
             <NavDropdown title="Forecast" id="nav-dropdown">
-              <LinkContainer to="/backlog/forecast/dashboard">
-                <NavDropdown.Item>Dashboard</NavDropdown.Item>
-              </LinkContainer>
-              <LinkContainer to="/backlog/forecast/grid">
-                <NavDropdown.Item>Grid</NavDropdown.Item>
-              </LinkContainer>
+              <NavDropDownItem to="/backlog/forecast/dashboard">
+                Dashboard
+              </NavDropDownItem>
+              <NavDropDownItem to="/backlog/forecast/grid">
+                Grid
+              </NavDropDownItem>
             </NavDropdown>
-            <LinkContainer to="/settings">
-              <Nav.Link>Settings</Nav.Link>
-            </LinkContainer>
           </Nav>
           <Form inline hidden>
             <FormControl type="text" placeholder="Search" className="mr-sm-2" />
             <Button variant="outline-info">Search</Button>
           </Form>
           <Nav className="navbar-right">
+            <NavLink to="/settings">Settings</NavLink>
             <Nav.Link onClick={() => dispatch(loadAll())} disabled={loading}>
               <FontAwesomeIcon icon={faRedo} size="1x" spin={loading} />
-              <span> Reload Data</span>
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>
