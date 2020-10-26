@@ -260,10 +260,10 @@ const lookForNewProjects = ({ forceReload = false } = {}) => {
 
 const loadAll = () => lookForNewProjects({ forceReload: true });
 
-const reloadProject = ({ gid }) => {
+const reloadProject = ({ projects }) => {
   return async (dispatch, getState) => {
-    if (!gid) {
-      Logger.error("Cannot reload project, gid is falsey!", { gid });
+    if (!projects || projects.isEmpty()) {
+      Logger.error("Cannot reload project, gid is falsey!", { projects });
       return false;
     }
 
@@ -273,7 +273,7 @@ const reloadProject = ({ gid }) => {
     const { asanaTasks } = state.asanaTasks;
 
     const sections = collect(asanaProjects)
-      .where("gid", gid)
+      .filter(({ gid }) => projects.pluck("gid").contains(gid))
       .pluck("sections")
       .flatten(1)
       .map(({ gid: sectionGid }) =>

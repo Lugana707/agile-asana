@@ -6,11 +6,7 @@ import axios from "axios";
 import Logger from "js-logger";
 import moment from "moment";
 import collect from "collect.js";
-import {
-  loadAll,
-  reloadProject,
-  lookForNewProjects
-} from "../scripts/redux/actions/asanaActions";
+import { loadAll, reloadProject } from "../scripts/redux/actions/asanaActions";
 import { processSprints } from "../scripts/redux/actions/sprintActions";
 import { loadUser } from "../scripts/redux/actions/settingsActions";
 
@@ -72,12 +68,11 @@ const DataIntegrity = ({ history }) => {
 
     setLastCheckedForData(moment());
 
-    collect(asanaProjects)
-      .sortBy(({ created_at }) => moment(created_at).unix())
-      .take(2)
-      .each(project => dispatch(reloadProject(project)));
-
-    dispatch(lookForNewProjects());
+    reloadProject({
+      projects: collect(asanaProjects)
+        .sortBy(({ created_at }) => moment(created_at).unix())
+        .take(2)
+    });
 
     resetTimeout();
   }, [
