@@ -252,7 +252,7 @@ const lookForNewProjects = ({ forceReload = false } = {}) => {
     }
 
     const asanaSections = await loadSections(dispatch, {
-      asanaProjects: forceReload ? asanaProjects : newAsanaProjects.alL()
+      asanaProjects: forceReload ? asanaProjects : newAsanaProjects.all()
     });
     await loadTasks(dispatch, { asanaSections, asanaTags, asanaTasks });
   };
