@@ -82,8 +82,8 @@ const SprintProgress = ({ sprint, showIfComplete = false }) => {
           <ProgressBar
             animated
             now={timeProgress}
-            label={timeProgress >= 50 && `started ${startOn.from(moment())}`}
-          />{" "}
+            label={timeProgress >= 50 && `ends ${finishedOn.from(moment())}`}
+          />
           <ProgressBar
             animated
             now={100 - timeProgress}
