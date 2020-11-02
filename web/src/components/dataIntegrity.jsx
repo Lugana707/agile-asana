@@ -56,14 +56,12 @@ const DataIntegrity = ({ history }) => {
 
   useEffect(() => {
     if (loading) {
-      return;
+      return resetTimeout;
     }
 
-    if (
-      !timedOut &&
-      moment().diff(lastCheckedForData, "minutes") < RELOAD_DATA_TIMEOUT_MINUTES
-    ) {
-      return;
+    const minutesSinceLastReload = moment().diff(lastCheckedForData, "minutes");
+    if (minutesSinceLastReload < RELOAD_DATA_TIMEOUT_MINUTES) {
+      return resetTimeout;
     }
 
     setLastCheckedForData(moment());
@@ -74,7 +72,9 @@ const DataIntegrity = ({ history }) => {
         .take(2)
     });
 
-    resetTimeout();
+    if (timedOut) {
+      return resetTimeout;
+    }
   }, [
     timedOut,
     resetTimeout,
