@@ -36,7 +36,7 @@ const Show = ({ match }) => {
     name,
     number,
     startOn,
-    dueOn,
+    finishedOn,
     storyPoints,
     completedStoryPoints,
     averageCompletedStoryPoints,
@@ -93,7 +93,7 @@ const Show = ({ match }) => {
                   </span>
                   <span> to </span>
                   <span className="font-weight-bold">
-                    {moment(dueOn).format("MMM D")}
+                    {moment(finishedOn).format("MMM D")}
                   </span>
                 </span>
               </Card.Subtitle>
