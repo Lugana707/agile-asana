@@ -131,7 +131,7 @@ const Show = ({ match }) => {
                 </Button>
               </LinkContainer>
               <LinkContainer to={`/sprint/${uuid}/task`}>
-                <Button size="sm" className="mr-1">
+                <Button size="sm" className="mr-1" hidden>
                   Tasks
                 </Button>
               </LinkContainer>
