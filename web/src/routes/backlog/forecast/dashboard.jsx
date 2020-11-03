@@ -2,21 +2,18 @@ import React, { useMemo } from "react";
 import { Container, Jumbotron } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import ForecastGrid from "./grid";
-import collect from "collect.js";
 import TasksAtRiskCardAndTable from "../../../components/backlog/alerts/tasksAtRiskCardAndTable";
+import withCurrentSprint from "../../../components/sprint/withCurrentSprint";
 
-const Backlog = () => {
+const Backlog = ({ sprint: currentSprint }) => {
   const { sprints } = useSelector(state => state.sprints);
 
   const averageCompletedStoryPoints = useMemo(() => {
-    const currentSprint = collect(sprints)
-      .where("state", "ACTIVE")
-      .first();
     if (currentSprint) {
       return currentSprint.averageCompletedStoryPoints || "?";
     }
     return 0;
-  }, [sprints]);
+  }, [currentSprint]);
 
   if (!sprints) {
     return <div />;
@@ -42,4 +39,4 @@ const Backlog = () => {
   );
 };
 
-export default Backlog;
+export default withCurrentSprint(Backlog);
