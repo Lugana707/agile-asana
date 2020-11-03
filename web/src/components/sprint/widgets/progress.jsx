@@ -1,8 +1,6 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { LinkContainer } from "react-router-bootstrap";
 import { Card, Row, Col } from "react-bootstrap";
-import { useSelector } from "react-redux";
-import collect from "collect.js";
 import SprintProgress from "../progress";
 import withCurrentSprint from "../withCurrentSprint";
 
