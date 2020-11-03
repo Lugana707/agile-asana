@@ -4,18 +4,9 @@ import { Card, Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import collect from "collect.js";
 import SprintProgress from "../progress";
+import withCurrentSprint from "../withCurrentSprint";
 
-const TasksAtRiskCardAndTable = () => {
-  const { sprints } = useSelector(state => state.sprints);
-
-  const sprint = useMemo(() => collect(sprints).firstWhere("state", "ACTIVE"), [
-    sprints
-  ]);
-
-  if (!sprint) {
-    return <div />;
-  }
-
+const TasksAtRiskCardAndTable = ({ sprint }) => {
   const { uuid, number } = sprint;
 
   return (
@@ -40,4 +31,4 @@ const TasksAtRiskCardAndTable = () => {
   );
 };
 
-export default TasksAtRiskCardAndTable;
+export default withCurrentSprint(TasksAtRiskCardAndTable);
