@@ -29,7 +29,6 @@ const GraphStoryPointsTrend = ({ sprints = [] }) => {
             completedSprints.max("number")
           ])
           .map(obj => [obj.number, obj.averageCompletedStoryPoints])
-          .dump()
           .all()
       },
       {
