@@ -61,7 +61,7 @@ const Settings = ({ history }) => {
             onClick={() => dispatch(loadAll())}
             disabled={globalLoading}
           >
-            <FontAwesomeIcon icon={faRedo} size="1x" spin={globalLoading} />
+            <FontAwesomeIcon icon={faRedo} size="1x" spin={!!globalLoading} />
             <span> Reload Data</span>
           </Button>
         </Container>
@@ -103,8 +103,9 @@ const Settings = ({ history }) => {
                 </Form.Text>
                 <Form.Control
                   type="password"
+                  name="asanaApiKey"
                   placeholder="asana api key"
-                  value={settings.asanaApiKey}
+                  value={settings.asanaApiKey || ""}
                   onChange={({ target }) =>
                     setSettings({ asanaApiKey: target.value })
                   }
