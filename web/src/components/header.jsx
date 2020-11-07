@@ -1,5 +1,6 @@
 import React from "react";
 import { LinkContainer } from "react-router-bootstrap";
+import { useSelector } from "react-redux";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
@@ -7,6 +8,8 @@ import Logo from "../logo.png";
 import User from "./user";
 
 const Header = () => {
+  const { asanaApiKey } = useSelector(state => state.settings);
+
   const NavLink = ({ children, to }) => (
     <LinkContainer to={to}>
       <Nav.Link>{children}</Nav.Link>
@@ -18,6 +21,10 @@ const Header = () => {
       <NavDropdown.Item>{children}</NavDropdown.Item>
     </LinkContainer>
   );
+
+  if (!asanaApiKey) {
+    return <div />;
+  }
 
   return (
     <header className="header">

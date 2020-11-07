@@ -249,7 +249,11 @@ const lookForNewProjects = ({ forceReload = false } = {}) => {
       state.asanaSections.loading ||
       asanaTasksLoading
     ) {
-      Logger.warn("Cannot look for new projects, already loading!");
+      Logger.warn("Cannot look for new projects, already loading!", {
+        asanaProjectsLoaing: state.asanaProjects.loading,
+        asanaSectionsLoading: state.asanaSections.loading,
+        asanaTasksLoading
+      });
       return false;
     }
 
@@ -300,7 +304,11 @@ const reloadProject = ({ projects }) => {
     const { asanaTasks, loading: asanaTasksLoading } = state.asanaTasks;
 
     if (asanaProjectsLoading || asanaSectionsLoading || asanaTasksLoading) {
-      Logger.warn("Cannot reload project, already loading!");
+      Logger.warn("Cannot reload project, already loading!", {
+        asanaProjectsLoading,
+        asanaSectionsLoading,
+        asanaTasksLoading
+      });
       return false;
     }
 

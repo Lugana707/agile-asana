@@ -1,20 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useTimeout } from "@react-hook/timeout";
+import React, { useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import Logger from "js-logger";
-import moment from "moment";
-import collect from "collect.js";
-import {
-  loadAll,
-  reloadProject,
-  lookForNewProjects
-} from "../scripts/redux/actions/asanaActions";
+import { loadAll } from "../scripts/redux/actions/asanaActions";
 import { processSprints } from "../scripts/redux/actions/sprintActions";
 import { loadUser, logout } from "../scripts/redux/actions/settingsActions";
-
-const RELOAD_DATA_TIMEOUT_MINUTES = 5;
 
 const DataIntegrity = ({ history }) => {
   const { loading } = useSelector(state => state.globalReducer);
@@ -22,13 +13,7 @@ const DataIntegrity = ({ history }) => {
   const { asanaTags } = useSelector(state => state.asanaTags);
   const { asanaProjects } = useSelector(state => state.asanaProjects);
   const { asanaSections } = useSelector(state => state.asanaSections);
-  const { asanaTasks, timestamp: asanaTasksTimestamp } = useSelector(
-    state => state.asanaTasks
-  );
-
-  const [lastCheckedForData, setLastCheckedForData] = useState(
-    moment(asanaTasksTimestamp)
-  );
+  const { asanaTasks } = useSelector(state => state.asanaTasks);
 
   const dispatch = useDispatch();
 
@@ -49,48 +34,6 @@ const DataIntegrity = ({ history }) => {
       }
     );
   }, [asanaApiKey]);
-
-  const [timedOut, startTimeout, resetTimeout] = useTimeout(
-    RELOAD_DATA_TIMEOUT_MINUTES * 60 * 1000
-  );
-
-  useEffect(() => {
-    startTimeout();
-  }, [startTimeout]);
-
-  useEffect(() => {
-    if (loading) {
-      return resetTimeout;
-    }
-
-    const minutesSinceLastReload = moment().diff(lastCheckedForData, "minutes");
-    if (minutesSinceLastReload < RELOAD_DATA_TIMEOUT_MINUTES) {
-      return resetTimeout;
-    }
-
-    setLastCheckedForData(moment());
-
-    dispatch(
-      reloadProject({
-        projects: collect(asanaProjects)
-          .sortBy(({ created_at }) => moment(created_at).unix())
-          .take(2)
-      })
-    );
-
-    dispatch(lookForNewProjects());
-
-    if (timedOut) {
-      return resetTimeout;
-    }
-  }, [
-    timedOut,
-    resetTimeout,
-    asanaProjects,
-    loading,
-    dispatch,
-    lastCheckedForData
-  ]);
 
   useEffect(() => {
     if (!asanaApiKey) {
