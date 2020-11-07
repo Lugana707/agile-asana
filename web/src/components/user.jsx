@@ -28,8 +28,8 @@ const User = ({ badge, access }) => {
         <div className="d-block">
           <div>With access to these workspaces:</div>
           <ul>
-            {workspaces.map(({ name }) => (
-              <li>{name}</li>
+            {workspaces.map(({ name }, index) => (
+              <li key={index}>{name}</li>
             ))}
           </ul>
         </div>
