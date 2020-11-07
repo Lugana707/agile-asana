@@ -13,9 +13,7 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
     if (sprints) {
       return collect(sprints);
     }
-    return collect(state.sprints)
-      .where("state", "COMPLETED")
-      .all();
+    return collect(state.sprints).where("state", "COMPLETED");
   }, [sprints, state.sprints]);
 
   const maxStoryPoints = useMemo(
