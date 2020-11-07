@@ -13,7 +13,7 @@ const TasksAtRiskCardAndTable = ({ sprint }) => {
         <Card.Body className="p-3">
           <Card.Title className="m-0">
             <div className="pb-1">Sprint {number}</div>
-            <SprintProgress sprint={sprint} />
+            <SprintProgress sprint={sprint} sm />
             <Row hidden>
               <Col xs={4} as="h1" className="text-nowrap">
                 {number}

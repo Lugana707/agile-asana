@@ -3,7 +3,7 @@ import { ProgressBar } from "react-bootstrap";
 import moment from "moment";
 import collect from "collect.js";
 
-const SprintProgress = ({ sprint, showIfComplete = false }) => {
+const SprintProgress = ({ sprint, sm, showIfComplete = false }) => {
   const {
     uuid,
     state,
@@ -53,6 +53,7 @@ const SprintProgress = ({ sprint, showIfComplete = false }) => {
   }
 
   const showStoryPointLabel = storyPoints =>
+    !sm ||
     collect([
       completedStoryPoints,
       inProgressStoryPoints,
@@ -78,8 +79,11 @@ const SprintProgress = ({ sprint, showIfComplete = false }) => {
           variant="warning"
           key={2}
           label={
-            showStoryPointLabel(inProgressStoryPoints) &&
-            `${inProgressStoryPoints} story points`
+            showStoryPointLabel(inProgressStoryPoints) && (
+              <span className="text-dark">
+                {inProgressStoryPoints} story points
+              </span>
+            )
           }
         />
         <ProgressBar
