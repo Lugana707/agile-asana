@@ -6,9 +6,9 @@ import Logger from "js-logger";
 import { loadAll } from "../scripts/redux/actions/asanaActions";
 import { processSprints } from "../scripts/redux/actions/sprintActions";
 import { loadUser, logout } from "../scripts/redux/actions/settingsActions";
+import withLoading from "./withLoading";
 
-const DataIntegrity = ({ history }) => {
-  const { loading } = useSelector(state => state.globalReducer);
+const DataIntegrity = ({ history, loading }) => {
   const { user, asanaApiKey } = useSelector(state => state.settings);
   const { asanaTags } = useSelector(state => state.asanaTags);
   const { asanaProjects } = useSelector(state => state.asanaProjects);
@@ -65,4 +65,4 @@ const DataIntegrity = ({ history }) => {
   return <div />;
 };
 
-export default withRouter(DataIntegrity);
+export default withRouter(withLoading(DataIntegrity));

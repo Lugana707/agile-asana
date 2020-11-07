@@ -22,11 +22,11 @@ import { useSelector, useDispatch } from "react-redux";
 import User from "../components/user";
 import { updateSettings } from "../scripts/redux/actions/settingsActions";
 import { loadAll } from "../scripts/redux/actions/asanaActions";
+import withLoading from "../components/withLoading";
 
-const Settings = ({ history }) => {
+const Settings = ({ loading: globalLoading, history }) => {
   const asanaDeveloperConsoleUrl = "https://app.asana.com/0/developer-console";
 
-  const { loading: globalLoading } = useSelector(state => state.globalReducer);
   const { loading, asanaApiKey } = useSelector(state => state.settings);
   const [settings, setSettings] = useReducer(
     (accumulator, currentValue) => ({ ...accumulator, ...currentValue }),
@@ -139,4 +139,4 @@ const Settings = ({ history }) => {
   );
 };
 
-export default Settings;
+export default withLoading(Settings);

@@ -331,4 +331,4 @@ const reloadProject = ({ projects }) => {
   };
 };
 
-export { loadAll, lookForNewProjects, reloadProject };
+export { loadAll, lookForNewProjects, reloadProject, MATCH_PROJECT_BACKLOG };

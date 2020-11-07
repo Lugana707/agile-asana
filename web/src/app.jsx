@@ -4,7 +4,7 @@ import axios from "axios";
 import jsLogger from "js-logger";
 import DataProvider from "./dataProvider";
 import DataIntegrity from "./components/dataIntegrity";
-import UpdateSprints from "./components/sprint/updateSprints";
+import UpdateProjects from "./components/updateProjects";
 import Header from "./components/header";
 import Footer from "./components/footer";
 import Home from "./routes/home";
@@ -30,7 +30,7 @@ function App() {
       <DataProvider>
         <BrowserRouter>
           <DataIntegrity />
-          <UpdateSprints seconds={60 * 5} />
+          <UpdateProjects seconds={60 * 5} />
           <Header />
           <Switch>
             <Route exact path="/" component={Home} />

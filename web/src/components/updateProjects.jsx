@@ -5,11 +5,12 @@ import moment from "moment";
 import collect from "collect.js";
 import {
   reloadProject,
-  lookForNewProjects
-} from "../../scripts/redux/actions/asanaActions";
+  lookForNewProjects,
+  MATCH_PROJECT_BACKLOG
+} from "../scripts/redux/actions/asanaActions";
+import withLoading from "./withLoading";
 
-const UpdateSprints = ({ seconds: reloadDataTimeoutSeconds }) => {
-  const { loading } = useSelector(state => state.globalReducer);
+const UpdateProjects = ({ loading, seconds: reloadDataTimeoutSeconds }) => {
   const { asanaProjects } = useSelector(state => state.asanaProjects);
   const { timestamp: asanaTasksTimestamp } = useSelector(
     state => state.asanaTasks
@@ -40,6 +41,11 @@ const UpdateSprints = ({ seconds: reloadDataTimeoutSeconds }) => {
         projects: collect(asanaProjects)
           .sortBy(({ created_at }) => moment(created_at).unix())
           .take(2)
+          .combine(
+            collect(asanaProjects)
+              .filter(({ name }) => MATCH_PROJECT_BACKLOG.test(name))
+              .all()
+          )
       })
     );
 
@@ -73,4 +79,4 @@ const UpdateSprints = ({ seconds: reloadDataTimeoutSeconds }) => {
   return <div />;
 };
 
-export default UpdateSprints;
+export default withLoading(UpdateProjects);
