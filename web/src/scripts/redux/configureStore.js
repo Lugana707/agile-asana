@@ -3,7 +3,7 @@
 import { createStore, applyMiddleware, compose, combineReducers } from "redux";
 import thunkMiddleware from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
-import { persistStore, persistReducer } from "redux-persist";
+import { persistStore, persistReducer, createTransform } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 //import monitorReducersEnhancer from "./enhancers/monitorReducers";
 import loggerMiddleware from "./middleware/logger";
@@ -20,6 +20,12 @@ const persistConfig = {
     "asanaSections",
     "asanaTasks",
     "settings"
+  ],
+  transforms: [
+    createTransform(
+      ({ loading, ...inboundState }, key) => inboundState,
+      ({ loading, ...outboundState }, key) => outboundState
+    )
   ]
 };
 
