@@ -3,13 +3,14 @@ const initialState = {
 };
 
 const globalReducer = (state = initialState, { type, loading } = {}) => {
-  if (type.startsWith("SET_LOADING_")) {
+  if (loading === true || loading === false) {
     return {
       ...state,
       loading
     };
   }
-  return initialState;
+
+  return state;
 };
 
 export default globalReducer;

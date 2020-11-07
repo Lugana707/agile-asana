@@ -12,13 +12,13 @@ import {
   lookForNewProjects
 } from "../scripts/redux/actions/asanaActions";
 import { processSprints } from "../scripts/redux/actions/sprintActions";
-import { loadUser } from "../scripts/redux/actions/settingsActions";
+import { loadUser, logout } from "../scripts/redux/actions/settingsActions";
 
 const RELOAD_DATA_TIMEOUT_MINUTES = 5;
 
 const DataIntegrity = ({ history }) => {
   const { loading } = useSelector(state => state.globalReducer);
-  const { asanaApiKey } = useSelector(state => state.settings);
+  const { user, asanaApiKey } = useSelector(state => state.settings);
   const { asanaTags } = useSelector(state => state.asanaTags);
   const { asanaProjects } = useSelector(state => state.asanaProjects);
   const { asanaSections } = useSelector(state => state.asanaSections);
@@ -93,14 +93,17 @@ const DataIntegrity = ({ history }) => {
   ]);
 
   useEffect(() => {
-    dispatch(loadUser());
-  }, [asanaApiKey, dispatch]);
+    if (!asanaApiKey) {
+      dispatch(logout());
+      history.push("/settings");
+    } else if (!user) {
+      dispatch(loadUser());
+    }
+  }, [asanaApiKey, user, dispatch, history]);
 
   useEffect(() => {
-    if (loading) {
+    if (loading || !asanaApiKey) {
       return;
-    } else if (!asanaApiKey) {
-      history.push("/settings");
     } else if (!asanaTags || !asanaProjects || !asanaSections || !asanaTasks) {
       dispatch(loadAll());
     } else {
@@ -109,7 +112,6 @@ const DataIntegrity = ({ history }) => {
   }, [
     loading,
     asanaApiKey,
-    history,
     dispatch,
     asanaTags,
     asanaProjects,

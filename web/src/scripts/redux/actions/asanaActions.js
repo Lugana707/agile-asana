@@ -170,7 +170,7 @@ const loadSections = async (dispatch, { asanaProjects }) => {
 
 const loadTasks = async (
   dispatch,
-  { asanaSections, asanaTags, asanaTasks = [] }
+  { asanaSections, asanaTags, asanaTasks }
 ) => {
   try {
     dispatch({ type: SET_LOADING_ASANA_TASKS, loading: true });
@@ -213,7 +213,7 @@ const loadTasks = async (
       .mapWithKeys(({ gid }) => [gid, true])
       .all();
     const merged = tasksCollection.merge(
-      asanaTasks.filter(({ gid }) => !taskKeyMap[gid])
+      collect(asanaTasks).filter(({ gid }) => !taskKeyMap[gid])
     );
 
     dispatch({
@@ -234,13 +234,27 @@ const loadTasks = async (
 const lookForNewProjects = ({ forceReload = false } = {}) => {
   return async (dispatch, getState) => {
     const state = getState();
-    const { asanaTasks } = state.asanaTasks;
+
+    const { asanaApiKey } = state.settings;
+    if (!asanaApiKey) {
+      Logger.warn("Cannot look for new projects, asanaApiKey is false!");
+      return false;
+    }
+
+    const { asanaTasks, loading: asanaTasksLoading } = state.asanaTasks;
     const currentAsanaProjects = collect(state.asanaProjects.asanaProjects);
 
-    const [asanaTags, asanaProjects] = await Promise.all([
-      loadTags(dispatch),
-      await loadProjects(dispatch)
-    ]);
+    if (
+      state.asanaProjects.loading ||
+      state.asanaSections.loading ||
+      asanaTasksLoading
+    ) {
+      Logger.warn("Cannot look for new projects, already loading!");
+      return false;
+    }
+
+    const asanaTags = await loadTags(dispatch);
+    const asanaProjects = await loadProjects(dispatch);
 
     const newAsanaProjects = collect(asanaProjects).filter(
       ({ gid }) => !currentAsanaProjects.contains("gid", gid)
@@ -268,9 +282,27 @@ const reloadProject = ({ projects }) => {
     }
 
     const state = getState();
-    const { asanaProjects } = state.asanaProjects;
-    const { asanaSections } = state.asanaSections;
-    const { asanaTasks } = state.asanaTasks;
+
+    const { asanaApiKey } = state.settings;
+    if (!asanaApiKey) {
+      Logger.warn("Cannot look for new projects, asanaApiKey is false!");
+      return false;
+    }
+
+    const {
+      asanaProjects,
+      loading: asanaProjectsLoading
+    } = state.asanaProjects;
+    const {
+      asanaSections,
+      loading: asanaSectionsLoading
+    } = state.asanaSections;
+    const { asanaTasks, loading: asanaTasksLoading } = state.asanaTasks;
+
+    if (asanaProjectsLoading || asanaSectionsLoading || asanaTasksLoading) {
+      Logger.warn("Cannot reload project, already loading!");
+      return false;
+    }
 
     const sections = collect(asanaProjects)
       .filter(({ gid }) => projects.pluck("gid").contains(gid))
