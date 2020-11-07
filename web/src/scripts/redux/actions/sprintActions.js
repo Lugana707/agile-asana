@@ -151,14 +151,6 @@ const processProjectIntoSprint = ({
 
   const week = parseInt(name.replace(/.+ Kanban Week /u, "").trim(), 10);
 
-  if (week === 35) {
-    Logger.debug("Hello processProjectIntoSprint!", {
-      tasksCollection,
-      completedStoryPoints,
-      storyPoints
-    });
-  }
-
   const finishedOn = moment(due_on);
   const startOn = moment(start_on || created_at);
   const sprintLength = finishedOn.diff(startOn.format("YYYY-MM-DD"), "days");
