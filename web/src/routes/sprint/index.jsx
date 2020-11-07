@@ -1,20 +1,18 @@
 import React from "react";
-import { Button, Container, Row, Col } from "react-bootstrap";
-import { useSelector } from "react-redux";
+import { Button, Container, Row, Col, Badge } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import Table from "../../components/library/table";
+import withCurrentSprint from "../../components/sprint/withCurrentSprint";
+import withCompletedSprints from "../../components/sprint/withCompletedSprints";
 
-const Projects = () => {
-  const { loading, sprints = [] } = useSelector(state => state.sprints);
-
+const Sprints = ({ sprint, completedSprints }) => {
   const TableRow = ({ data }) => {
     const {
       uuid,
       number,
       storyPoints,
       completedStoryPoints,
-      averageCompletedStoryPoints,
-      state
+      averageCompletedStoryPoints
     } = data;
 
     const percentageComplete =
@@ -22,43 +20,58 @@ const Projects = () => {
         ? false
         : Math.round((completedStoryPoints / parseFloat(storyPoints)) * 100);
 
+    const inProgress = uuid === sprint.uuid;
+
     return (
-      <tr key={uuid}>
-        <td className="align-middle">
+      <tr>
+        <td className="text-left align-middle">
           <LinkContainer
             to={`/sprint/${uuid}`}
-            className={state === "COMPLETED" ? "" : "text-danger"}
+            className={inProgress ? "text-warning" : ""}
           >
             <Button variant="link">Week {number}</Button>
           </LinkContainer>
         </td>
         <td className="text-center align-middle">{storyPoints}</td>
-        {state === "COMPLETED" ? (
+        <td className="text-center align-middle">
+          <span className={inProgress ? "text-warning" : ""}>
+            {completedStoryPoints}
+          </span>
+        </td>
+        {inProgress ? (
+          <td colSpan="2" className="text-center align-middle">
+            <Badge variant="warning">In Progress</Badge>
+          </td>
+        ) : (
           <>
-            <td className="text-center align-middle">
-              <span>{completedStoryPoints}</span>
-            </td>
             <td className="text-center align-middle">
               {percentageComplete !== false && (
                 <span>{percentageComplete}%</span>
               )}
             </td>
             <td className="text-center align-middle">
-              {averageCompletedStoryPoints}
+              {averageCompletedStoryPoints.toString()}
             </td>
           </>
-        ) : (
-          <td colSpan="3" className="text-warning text-center align-middle">
-            (In Progress)
-          </td>
         )}
       </tr>
     );
   };
 
-  if (!sprints) {
-    return <div />;
-  }
+  const TableHeader = () => {
+    return (
+      <>
+        <th></th>
+        <th className="text-center">Committed</th>
+        <th className="text-center">Completed</th>
+        <th className="text-center" colSpan="2">
+          3 Week Average
+        </th>
+      </>
+    );
+  };
+
+  const sprints = [sprint, ...completedSprints.all()].filter(Boolean);
 
   return (
     <Container>
@@ -66,10 +79,10 @@ const Projects = () => {
         <Col>
           <Table
             id="sprints"
-            loading={loading}
+            loading={!sprints.length}
             data={sprints}
             row={TableRow}
-            columns={["", "Committed", "Completed", "", "3 Week Average"]}
+            tableHeader={TableHeader}
           />
         </Col>
       </Row>
@@ -77,4 +90,4 @@ const Projects = () => {
   );
 };
 
-export default Projects;
+export default withCompletedSprints(withCurrentSprint(Sprints));

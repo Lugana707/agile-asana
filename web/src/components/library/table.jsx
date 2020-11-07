@@ -6,6 +6,7 @@ import { faSkull } from "@fortawesome/free-solid-svg-icons";
 export default ({
   id,
   row: Row,
+  tableHeader: TableHeader,
   columns,
   data,
   loading,
@@ -38,12 +39,11 @@ export default ({
       variant={variant}
       borderless
     >
-      {columns && (
+      {(columns || TableHeader) && (
         <thead>
           <tr>
-            {columns.map(key => (
-              <td key={key}>{key}</td>
-            ))}
+            {TableHeader && <TableHeader />}
+            {columns && columns.map((key, index) => <td key={index}>{key}</td>)}
           </tr>
         </thead>
       )}
