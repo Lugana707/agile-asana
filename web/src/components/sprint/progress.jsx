@@ -52,6 +52,13 @@ const SprintProgress = ({ sprint, showIfComplete = false }) => {
     return <div />;
   }
 
+  const showStoryPointLabel = storyPoints =>
+    collect([
+      completedStoryPoints,
+      inProgressStoryPoints,
+      remainingStoryPoints
+    ]).max() === storyPoints;
+
   return (
     <>
       <ProgressBar>
@@ -60,21 +67,30 @@ const SprintProgress = ({ sprint, showIfComplete = false }) => {
           now={(completedStoryPoints / storyPoints) * 100}
           variant="success"
           key={1}
-          label={`${completedStoryPoints} story points`}
+          label={
+            showStoryPointLabel(completedStoryPoints) &&
+            `${completedStoryPoints} story points`
+          }
         />
         <ProgressBar
           striped
           now={(inProgressStoryPoints / storyPoints) * 100}
           variant="warning"
           key={2}
-          label={`${inProgressStoryPoints} story points`}
+          label={
+            showStoryPointLabel(inProgressStoryPoints) &&
+            `${inProgressStoryPoints} story points`
+          }
         />
         <ProgressBar
           striped
           now={(remainingStoryPoints / storyPoints) * 100}
           variant="danger"
           key={3}
-          label={`${remainingStoryPoints} story points`}
+          label={
+            showStoryPointLabel(remainingStoryPoints) &&
+            `${remainingStoryPoints} story points`
+          }
         />
       </ProgressBar>
       {!isComplete && (
