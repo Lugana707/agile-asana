@@ -214,7 +214,7 @@ const loadTasks = async (
       .mapWithKeys(({ gid }) => [gid, true])
       .all();
     const merged = tasksCollection.merge(
-      asanaTasks.filter(({ gid }) => !taskKeyMap[gid])
+      collect(asanaTasks).filter(({ gid }) => !taskKeyMap[gid])
     );
 
     dispatch({
