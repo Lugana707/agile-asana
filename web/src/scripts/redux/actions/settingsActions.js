@@ -6,6 +6,21 @@ const SET_LOADING_SETTINGS = "SET_LOADING_SETTINGS";
 const ADD_SETTINGS = "ADD_SETTINGS";
 const DELETE_SETTINGS = "DELETE_SETTINGS";
 
+const logout = () => {
+  return dispatch => {
+    dispatch({
+      type: DELETE_SETTINGS,
+      loading: false,
+      value: "user"
+    });
+    dispatch({
+      type: DELETE_SETTINGS,
+      loading: false,
+      value: "asanaApiKey"
+    });
+  };
+};
+
 const loadUser = () => {
   return async (dispatch, getState) => {
     const { asanaApiKey } = getState().settings;
@@ -30,21 +45,6 @@ const loadUser = () => {
     } finally {
       dispatch({ type: SET_LOADING_SETTINGS, loading: false });
     }
-  };
-};
-
-const logout = () => {
-  return dispatch => {
-    dispatch({
-      type: DELETE_SETTINGS,
-      loading: false,
-      value: "user"
-    });
-    dispatch({
-      type: DELETE_SETTINGS,
-      loading: false,
-      value: "asanaApiKey"
-    });
   };
 };
 

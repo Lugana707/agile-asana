@@ -3,6 +3,7 @@ import Logger from "js-logger";
 import camelcase from "camelcase";
 import collect from "collect.js";
 import { ASANA_API_URL } from "../../api";
+import { isLoading } from "../../helpers";
 
 const SET_LOADING_ASANA_TAGS = "SET_LOADING_ASANATAGS";
 const SUCCESS_LOADING_ASANA_TAGS = "SUCCESS_LOADING_ASANATAGS";
@@ -241,19 +242,10 @@ const lookForNewProjects = ({ forceReload = false } = {}) => {
       return false;
     }
 
-    const { asanaTasks, loading: asanaTasksLoading } = state.asanaTasks;
+    const { asanaTasks } = state.asanaTasks;
     const currentAsanaProjects = collect(state.asanaProjects.asanaProjects);
 
-    if (
-      state.asanaProjects.loading ||
-      state.asanaSections.loading ||
-      asanaTasksLoading
-    ) {
-      Logger.warn("Cannot look for new projects, already loading!", {
-        asanaProjectsLoaing: state.asanaProjects.loading,
-        asanaSectionsLoading: state.asanaSections.loading,
-        asanaTasksLoading
-      });
+    if (isLoading(state)) {
       return false;
     }
 
@@ -293,22 +285,11 @@ const reloadProject = ({ projects }) => {
       return false;
     }
 
-    const {
-      asanaProjects,
-      loading: asanaProjectsLoading
-    } = state.asanaProjects;
-    const {
-      asanaSections,
-      loading: asanaSectionsLoading
-    } = state.asanaSections;
-    const { asanaTasks, loading: asanaTasksLoading } = state.asanaTasks;
+    const { asanaProjects } = state.asanaProjects;
+    const { asanaSections } = state.asanaSections;
+    const { asanaTasks } = state.asanaTasks;
 
-    if (asanaProjectsLoading || asanaSectionsLoading || asanaTasksLoading) {
-      Logger.warn("Cannot reload project, already loading!", {
-        asanaProjectsLoading,
-        asanaSectionsLoading,
-        asanaTasksLoading
-      });
+    if (isLoading(state)) {
       return false;
     }
 

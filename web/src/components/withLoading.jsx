@@ -1,32 +1,16 @@
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
+import { isLoading } from "../scripts/helpers";
 
 export default WrappedComponent => props => {
-  const {
-    globalReducer,
-    asanaProjects,
-    asanaSections,
-    asanaTasks
-  } = useSelector(state => state);
+  const { globalReducer, ...state } = useSelector(state => state);
 
   const { loading: globalLoading } = globalReducer;
-  const { loading: asanaProjectsLoading } = asanaProjects;
-  const { loading: asanaSectionsLoading } = asanaSections;
-  const { loading: asanaTasksLoading } = asanaTasks;
 
-  const loading = useMemo(
-    () =>
-      globalLoading ||
-      asanaProjectsLoading ||
-      asanaSectionsLoading ||
-      asanaTasksLoading,
-    [
-      globalLoading,
-      asanaProjectsLoading,
-      asanaSectionsLoading,
-      asanaTasksLoading
-    ]
-  );
+  const loading = useMemo(() => globalLoading || isLoading(state), [
+    globalLoading,
+    state
+  ]);
 
   return <WrappedComponent {...props} loading={loading} />;
 };

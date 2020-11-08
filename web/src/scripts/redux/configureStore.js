@@ -23,8 +23,8 @@ const persistConfig = {
   ],
   transforms: [
     createTransform(
-      ({ loading, ...inboundState }, key) => inboundState,
-      ({ loading, ...outboundState }, key) => outboundState
+      ({ loading, ...inboundState }) => inboundState,
+      ({ loading, ...outboundState }) => outboundState
     )
   ]
 };
