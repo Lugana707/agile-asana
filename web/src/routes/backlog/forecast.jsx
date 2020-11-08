@@ -1,7 +1,5 @@
 import React, { useMemo } from "react";
 import { Jumbotron, Container, Row } from "react-bootstrap";
-import { useSelector } from "react-redux";
-import collect from "collect.js";
 import TasksAtRiskCardAndTable from "../../components/backlog/alerts/tasksAtRiskCardAndTable";
 import withCurrentSprint from "../../components/sprint/withCurrentSprint";
 import withForecastSprints from "../../components/backlog/withForecastSprints";
