@@ -30,7 +30,7 @@ function App() {
       <DataProvider>
         <BrowserRouter>
           <DataIntegrity />
-          <UpdateProjects seconds={60 * 5} />
+          <UpdateProjects seconds={60 * 3} />
           <Header />
           <Switch>
             <Route exact path="/" component={Home} />

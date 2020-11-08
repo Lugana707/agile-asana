@@ -214,7 +214,7 @@ const loadTasks = async (
       .mapWithKeys(({ gid }) => [gid, true])
       .all();
     const merged = tasksCollection.merge(
-      collect(asanaTasks).filter(({ gid }) => !taskKeyMap[gid])
+      asanaTasks.filter(({ gid }) => !taskKeyMap[gid])
     );
 
     dispatch({
@@ -242,12 +242,12 @@ const lookForNewProjects = ({ forceReload = false } = {}) => {
       return false;
     }
 
-    const { asanaTasks } = state.asanaTasks;
-    const currentAsanaProjects = collect(state.asanaProjects.asanaProjects);
-
     if (isLoading(state)) {
       return false;
     }
+
+    const { asanaTasks } = state.asanaTasks;
+    const currentAsanaProjects = collect(state.asanaProjects.asanaProjects);
 
     const asanaTags = await loadTags(dispatch);
     const asanaProjects = await loadProjects(dispatch);
@@ -285,13 +285,15 @@ const reloadProject = ({ projects }) => {
       return false;
     }
 
+    if (isLoading(state)) {
+      return false;
+    }
+
     const { asanaProjects } = state.asanaProjects;
     const { asanaSections } = state.asanaSections;
     const { asanaTasks } = state.asanaTasks;
 
-    if (isLoading(state)) {
-      return false;
-    }
+    const asanaTags = await loadTags(dispatch);
 
     const sections = collect(asanaProjects)
       .filter(({ gid }) => projects.pluck("gid").contains(gid))
@@ -301,8 +303,6 @@ const reloadProject = ({ projects }) => {
         collect(asanaSections).firstWhere("gid", sectionGid)
       )
       .all();
-
-    const asanaTags = await loadTags(dispatch);
 
     await loadTasks(dispatch, {
       asanaSections: sections,

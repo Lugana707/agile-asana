@@ -41,11 +41,12 @@ const UpdateProjects = ({ loading, seconds: reloadDataTimeoutSeconds }) => {
         projects: collect(asanaProjects)
           .sortBy(({ created_at }) => moment(created_at).unix())
           .take(2)
-          .combine(
+          .merge(
             collect(asanaProjects)
               .filter(({ name }) => MATCH_PROJECT_BACKLOG.test(name))
               .all()
           )
+          .where()
       })
     );
 
