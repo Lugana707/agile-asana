@@ -13,7 +13,6 @@ const Home = ({ sprints }) => {
   const recentSprints = useMemo(
     () =>
       collect(sprints)
-        .reverse()
         .take(20)
         .reverse()
         .all(),
