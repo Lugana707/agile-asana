@@ -43,13 +43,11 @@ const Header = () => {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
             <NavLink to="/sprint">Sprints</NavLink>
-            <NavDropdown title="Forecast" id="nav-dropdown">
-              <NavDropDownItem to="/backlog/forecast/dashboard">
+            <NavDropdown title="Backlog" id="nav-dropdown">
+              <NavDropDownItem to="/backlog/dashboard">
                 Dashboard
               </NavDropDownItem>
-              <NavDropDownItem to="/backlog/forecast/grid">
-                Grid
-              </NavDropDownItem>
+              <NavDropDownItem to="/backlog/forecast">Forecast</NavDropDownItem>
             </NavDropdown>
           </Nav>
           <Nav className="navbar-right">

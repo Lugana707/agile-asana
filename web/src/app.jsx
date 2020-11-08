@@ -8,8 +8,8 @@ import UpdateProjects from "./components/updateProjects";
 import Header from "./components/header";
 import Footer from "./components/footer";
 import Home from "./routes/home";
-import BacklogForecastDashboard from "./routes/backlog/forecast/dashboard";
-import BacklogForecastGrid from "./routes/backlog/forecast/grid";
+import BacklogDashboard from "./routes/backlog/dashboard";
+import BacklogForecast from "./routes/backlog/forecast";
 import Sprints from "./routes/sprint/index";
 import SprintShow from "./routes/sprint/show";
 import SprintTasks from "./routes/sprint/tasks";
@@ -36,14 +36,10 @@ function App() {
             <Route exact path="/" component={Home} />
             <Route
               exact
-              path="/backlog/forecast/dashboard"
-              component={BacklogForecastDashboard}
+              path="/backlog/dashboard"
+              component={BacklogDashboard}
             />
-            <Route
-              exact
-              path="/backlog/forecast/grid"
-              component={BacklogForecastGrid}
-            />
+            <Route exact path="/backlog/forecast" component={BacklogForecast} />
             <Route exact path="/sprint" component={Sprints} />
             <Route exact path="/sprint/:uuid" component={SprintShow} />
             <Route exact path="/sprint/:uuid/task" component={SprintTasks} />

@@ -34,7 +34,7 @@ const TasksAtRiskCardAndTable = () => {
   }, [unrefinedBacklogTasks, refinedBacklogTasks, sprints]);
 
   return (
-    <LinkContainer to="/backlog/forecast/dashboard" className="btn p-0">
+    <LinkContainer to="/backlog/forecast" className="btn p-0">
       <Card bg="danger" text="dark" className="text-left">
         <Card.Body>
           <Card.Title className="m-0">
