@@ -16,7 +16,8 @@ import moment from "moment";
 import collect from "collect.js";
 import SprintWidgetGraphStoryPointsThroughWeek from "../../components/sprint/widgets/graphStoryPointsThroughWeek";
 import SprintWidgetGraphTagBreakdown from "../../components/sprint/widgets/graphTagBreakdown";
-import SprintProgress from "../../components/sprint/progress";
+import SprintTimeProgress from "../../components/sprint/timeProgress";
+import SprintStoryPointProgress from "../../components/sprint/storyPointProgress";
 
 const Show = ({ match }) => {
   const { uuid } = match.params;
@@ -60,7 +61,8 @@ const Show = ({ match }) => {
           </div>
         </Col>
         <Col xs={12} className="pb-4">
-          <SprintProgress sprint={sprint} showIfComplete />
+          <SprintStoryPointProgress sprint={sprint} />
+          <SprintTimeProgress className="mt-1" sprint={sprint} />
         </Col>
         <Col xs={12} md={7}>
           <div className="h-100" style={{ minHeight: "300px " }}>
