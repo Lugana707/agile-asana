@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import { useSelector } from "react-redux";
 import collect from "collect.js";
 import SprintFilters from "../components/sprint/widgets/sprintFilters";
 import SprintWidgetGraphStoryPointsTrend from "../components//sprint/widgets/graphStoryPointsTrend";
@@ -8,26 +7,26 @@ import SprintWidgetGraphStoryPointsThroughWeek from "../components/sprint/widget
 import SprintWidgetGraphTagBreakdown from "../components/sprint/widgets/graphTagBreakdown";
 import TasksAtRiskWidget from "../components/backlog/alerts/tasksAtRiskWidget";
 import SprintProgressWidget from "../components/sprint/widgets/progress";
+import withSprints from "../components/sprint/withSprints";
 
-const Home = () => {
-  const state = useSelector(state => state.sprints);
-
-  const historicSprints = useMemo(
+const Home = ({ sprints }) => {
+  const recentSprints = useMemo(
     () =>
-      collect(state.sprints)
-        .where("state", "!==", "FORECAST")
-        .sortBy("number")
+      collect(sprints)
+        .reverse()
+        .take(20)
+        .reverse()
         .all(),
-    [state.sprints]
+    [sprints]
   );
 
-  const [sprints, setSprints] = useState(historicSprints);
+  const [filteredSprints, setFilteredSprints] = useState(recentSprints);
   const sprintsForDisplay = useMemo(
-    () => (sprints.length === 0 ? historicSprints : sprints),
-    [historicSprints, sprints]
+    () => (filteredSprints.length === 0 ? recentSprints : filteredSprints),
+    [recentSprints, filteredSprints]
   );
 
-  if (state.loading) {
+  if (sprints.isEmpty()) {
     return <div className="loading-spinner centre" />;
   }
 
@@ -43,7 +42,10 @@ const Home = () => {
       </Row>
       <Row>
         <Col xs={12} className="pb-4">
-          <SprintFilters sprints={historicSprints} setSprints={setSprints} />
+          <SprintFilters
+            sprints={recentSprints}
+            setSprints={setFilteredSprints}
+          />
         </Col>
       </Row>
       <Row className="mr-4">
@@ -63,4 +65,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default withSprints(Home);

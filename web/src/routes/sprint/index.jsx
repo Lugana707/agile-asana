@@ -3,9 +3,8 @@ import { Button, Container, Row, Col, Badge } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import Table from "../../components/library/table";
 import withCurrentSprint from "../../components/sprint/withCurrentSprint";
-import withCompletedSprints from "../../components/sprint/withCompletedSprints";
 
-const Sprints = ({ sprint, completedSprints }) => {
+const Sprints = ({ currentSprint, sprints }) => {
   const TableRow = ({ data }) => {
     const {
       uuid,
@@ -20,7 +19,7 @@ const Sprints = ({ sprint, completedSprints }) => {
         ? false
         : Math.round((completedStoryPoints / parseFloat(storyPoints)) * 100);
 
-    const inProgress = uuid === sprint.uuid;
+    const inProgress = uuid === currentSprint.uuid;
 
     return (
       <tr>
@@ -71,16 +70,14 @@ const Sprints = ({ sprint, completedSprints }) => {
     );
   };
 
-  const sprints = [sprint, ...completedSprints.all()].filter(Boolean);
-
   return (
     <Container>
       <Row>
         <Col>
           <Table
             id="sprints"
-            loading={!sprints.length}
-            data={sprints}
+            loading={sprints.isEmpty()}
+            data={sprints.all()}
             row={TableRow}
             tableHeader={TableHeader}
           />
@@ -90,4 +87,4 @@ const Sprints = ({ sprint, completedSprints }) => {
   );
 };
 
-export default withCompletedSprints(withCurrentSprint(Sprints));
+export default withCurrentSprint(Sprints);

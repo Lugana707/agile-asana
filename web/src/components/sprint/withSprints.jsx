@@ -5,13 +5,13 @@ import collect from "collect.js";
 export default WrappedComponent => props => {
   const { sprints } = useSelector(state => state.sprints);
 
-  const completedSprints = useMemo(
+  const sprintCollection = useMemo(
     () =>
       collect(sprints)
-        .where("state", "COMPLETED")
-        .sortByDesc("week"),
+        .whereIn("state", ["ACTIVE", "COMPLETED"])
+        .sortBy("number"),
     [sprints]
   );
 
-  return <WrappedComponent {...props} completedSprints={completedSprints} />;
+  return <WrappedComponent {...props} sprints={sprintCollection} />;
 };

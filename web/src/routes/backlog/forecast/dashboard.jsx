@@ -5,7 +5,7 @@ import ForecastGrid from "./grid";
 import TasksAtRiskCardAndTable from "../../../components/backlog/alerts/tasksAtRiskCardAndTable";
 import withCurrentSprint from "../../../components/sprint/withCurrentSprint";
 
-const Backlog = ({ sprint: currentSprint }) => {
+const Backlog = ({ currentSprint }) => {
   const { sprints } = useSelector(state => state.sprints);
 
   const averageCompletedStoryPoints = useMemo(() => {
