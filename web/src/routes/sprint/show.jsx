@@ -29,10 +29,6 @@ const Show = ({ match }) => {
     uuid
   ]);
 
-  if (!sprint) {
-    return <div className="loading-spinner centre" />;
-  }
-
   const {
     name,
     number,
@@ -42,7 +38,13 @@ const Show = ({ match }) => {
     completedStoryPoints,
     averageCompletedStoryPoints,
     state
-  } = sprint;
+  } = sprint || {};
+
+  const isComplete = useMemo(() => state === "COMPLETED", [state]);
+
+  if (!sprint) {
+    return <div className="loading-spinner centre" />;
+  }
 
   return (
     <Container>
@@ -55,14 +57,16 @@ const Show = ({ match }) => {
           <div className="h-100" style={{ minHeight: "300px" }}>
             <SprintWidgetGraphStoryPointsThroughWeek
               sprints={[sprint]}
-              showBurnUp={state === "COMPLETED"}
+              showBurnUp={isComplete}
               showBurnDown={state === "ACTIVE"}
             />
           </div>
         </Col>
         <Col xs={12} className="pb-4">
           <SprintStoryPointProgress sprint={sprint} />
-          <SprintTimeProgress className="mt-1" sprint={sprint} />
+          {!isComplete && (
+            <SprintTimeProgress className="mt-1" sprint={sprint} />
+          )}
         </Col>
         <Col xs={12} md={7}>
           <div className="h-100" style={{ minHeight: "300px " }}>

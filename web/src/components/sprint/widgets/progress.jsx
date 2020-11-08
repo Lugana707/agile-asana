@@ -15,7 +15,7 @@ const TasksAtRiskCardAndTable = ({ currentSprint }) => {
           <Card.Title className="m-0">
             <div className="pb-1">Sprint {number}</div>
             <SprintStoryPointProgress sprint={currentSprint} sm />
-            <SprintTimeProgress className="mt-1" sprint={currentSprint} sm />
+            <SprintTimeProgress className="mt-1" sprint={currentSprint} />
           </Card.Title>
         </Card.Body>
       </Card>
