@@ -76,6 +76,7 @@ const getTasks = async ({ gid, ...section }) => {
       opt_fields: [
         "projects",
         "name",
+        "created_at",
         "completed_at",
         "started_at",
         "custom_fields",
