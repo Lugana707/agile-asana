@@ -60,6 +60,7 @@ const GraphStoryPointsTrend = ({ sprints = [] }) => {
         return { type: "bar", position: "bottom" };
     }
   }, []);
+
   const axes = useMemo(
     () => [
       { primary: true, type: "ordinal", position: "bottom" },
