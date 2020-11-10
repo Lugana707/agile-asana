@@ -3,7 +3,7 @@ import { Chart } from "react-charts";
 import collect from "collect.js";
 
 const GraphStoryPointsTrend = ({ sprints = [] }) => {
-  const sprintsCollection = useMemo(() => collect(sprints).sortBy("week"), [
+  const sprintsCollection = useMemo(() => collect(sprints).sortByDesc("week"), [
     sprints
   ]);
 

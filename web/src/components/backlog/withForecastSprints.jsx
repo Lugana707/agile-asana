@@ -9,7 +9,7 @@ export default WrappedComponent => props => {
     () =>
       collect(sprints)
         .where("state", "FORECAST")
-        .sortByDesc("number"),
+        .sortBy("number"),
     [sprints]
   );
 
