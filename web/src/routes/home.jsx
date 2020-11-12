@@ -7,6 +7,7 @@ import SprintWidgetGraphStoryPointsThroughWeek from "../components/sprint/widget
 import SprintWidgetGraphTagBreakdown from "../components/sprint/widgets/graphTagBreakdown";
 import TasksAtRiskWidget from "../components/backlog/alerts/tasksAtRiskWidget";
 import SprintProgressWidget from "../components/sprint/widgets/progress";
+import BacklogStoryPoints from "../components/backlog/widgets/storyPoints";
 import withSprints from "../components/sprint/withSprints";
 
 const Home = ({ sprints }) => {
@@ -37,6 +38,9 @@ const Home = ({ sprints }) => {
         </Col>
         <Col xs={4} lg={2}>
           <TasksAtRiskWidget />
+        </Col>
+        <Col xs={4} lg={2}>
+          <BacklogStoryPoints />
         </Col>
       </Row>
       <Row>
