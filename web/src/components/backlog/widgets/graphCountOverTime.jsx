@@ -2,6 +2,7 @@ import React, { useMemo, useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Chart } from "react-charts";
 import moment from "moment";
+import camelcase from "camelcase";
 import collect from "collect.js";
 import withAsanaClient from "../../withAsanaClient";
 
@@ -21,16 +22,25 @@ const GraphCountOverTime = ({ asanaClient }) => {
     }
 
     const collection = await asanaClient.tasks.getTasksForProject(backlogGid, {
-      opt_fields: ["created_at", "completed_at"].join(",")
+      opt_fields: ["created_at", "completed_at", "custom_fields"].join(",")
     });
     const tasks = await collection.fetch();
 
     setTasks(
-      collect(tasks).map(({ created_at, completed_at, ...task }) => ({
-        ...task,
-        createdAt: moment(created_at),
-        completedAt: moment(completed_at)
-      }))
+      collect(tasks).map(
+        ({ created_at, completed_at, custom_fields, ...task }) => ({
+          ...task,
+          createdAt: moment(created_at),
+          completedAt: moment(completed_at),
+          ...custom_fields.reduce(
+            (accumulator, { name, number_value, enum_value }) => ({
+              [camelcase(name)]: number_value || enum_value,
+              ...accumulator
+            }),
+            {}
+          )
+        })
+      )
     );
   }, [asanaClient, backlogGid]);
 
@@ -54,11 +64,22 @@ const GraphCountOverTime = ({ asanaClient }) => {
 
     const getTaskCountByDate = key =>
       tasks
-        .pluck(key)
-        .where()
-        .map(date => date.format("YYYY-MM-DD"))
-        .countBy()
-        .all();
+        .map(({ [key]: date, ...obj }) => ({
+          ...obj,
+          [key]: date.format("YYYY-MM-DD")
+        }))
+        .reduce(
+          (accumulator, { [key]: date, storyPoints = 0 }) => ({
+            ...accumulator,
+            [date]: {
+              storyPoints:
+                ((accumulator[date] || { storyPoints: 0 }).storyPoints || 0) +
+                storyPoints,
+              count: (accumulator[date] || { count: 0 }).count + 1
+            }
+          }),
+          {}
+        );
 
     const createdCountByDate = getTaskCountByDate("createdAt");
     const completedCountByDate = getTaskCountByDate("completedAt");
@@ -70,37 +91,58 @@ const GraphCountOverTime = ({ asanaClient }) => {
           .format("YYYY-MM-DD")
       )
       .map((date, index, self) => {
-        const { [date]: created = 0 } = createdCountByDate;
-        const { [date]: completed = 0 } = completedCountByDate;
+        const { count: createdCount = 0, storyPoints: createdStoryPoints = 0 } =
+          createdCountByDate[date] || {};
+        const {
+          count: completedCount = 0,
+          storyPoints: completedStoryPoints = 0
+        } = completedCountByDate[date] || {};
 
-        const count = created - completed;
+        const count = createdCount - completedCount;
+        const storyPoints = createdStoryPoints - completedStoryPoints;
 
         return {
           date,
+          storyPoints,
           count
         };
       })
-      .map(({ count, ...obj }, index, self) => {
-        const runningTotal =
+      .map(({ count, storyPoints, ...obj }, index, self) => {
+        const runningCountTotal =
           count +
           collect(self)
             .take(index)
             .sum("count");
 
+        const runningStoryPointTotal =
+          storyPoints +
+          collect(self)
+            .take(index)
+            .sum("storyPoints");
+
         return {
           ...obj,
-          count: runningTotal
+          storyPoints: runningStoryPointTotal,
+          count: runningCountTotal
         };
       })
-      .filter(({ date }) => moment(date).isAfter(moment().add(-1, "year")))
-      .dump();
+      .dump()
+      .filter(({ date }) => moment(date).isAfter(moment().add(-1, "year")));
   }, [tasks]);
 
   const data = useMemo(
     () => [
       {
-        label: "Backlog size",
-        data: backlogCountPerDay.map(({ date, count }) => [date, count]).all()
+        label: "Tasks",
+        data: backlogCountPerDay.map(({ date, count }) => [date, count]).all(),
+        secondaryAxisID: "taskCount"
+      },
+      {
+        label: "Story Points",
+        data: backlogCountPerDay
+          .map(({ date, storyPoints }) => [date, storyPoints])
+          .all(),
+        secondaryAxisID: "storyPointSum"
       }
     ],
     [backlogCountPerDay]
@@ -125,7 +167,15 @@ const GraphCountOverTime = ({ asanaClient }) => {
         }
       },
       {
+        id: "taskCount",
         position: "left",
+        type: "linear",
+        hardMin: 0,
+        stacked: false
+      },
+      {
+        id: "storyPointSum",
+        position: "right",
         type: "linear",
         hardMin: 0,
         stacked: false
