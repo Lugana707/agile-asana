@@ -92,6 +92,7 @@ const GraphCountOverTime = ({ asanaClient }) => {
           count: runningTotal
         };
       })
+      .filter(({ date }) => moment(date).isAfter(moment().add(-1, "year")))
       .dump();
   }, [tasks]);
 
@@ -126,6 +127,7 @@ const GraphCountOverTime = ({ asanaClient }) => {
       {
         position: "left",
         type: "linear",
+        hardMin: 0,
         stacked: false
       }
     ],
