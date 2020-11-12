@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import { LinkContainer } from "react-router-bootstrap";
 import { Card, Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import moment from "moment";
 import collect from "collect.js";
 
 const BacklogStoryPoints = () => {

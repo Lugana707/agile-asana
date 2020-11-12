@@ -5,7 +5,10 @@ import { useSelector } from "react-redux";
 export default WrappedComponent => props => {
   const { asanaApiKey } = useSelector(state => state.settings);
 
-  const client = Asana.Client.create().useAccessToken(asanaApiKey);
+  const client = useMemo(
+    () => Asana.Client.create().useAccessToken(asanaApiKey),
+    [asanaApiKey]
+  );
 
   return <WrappedComponent {...props} asanaClient={client} />;
 };
