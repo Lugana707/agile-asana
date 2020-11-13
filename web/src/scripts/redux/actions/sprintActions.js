@@ -242,8 +242,8 @@ const processSprints = () => {
       Logger.info("Processing tasks into refined and unrefined...", {
         tasksCollection
       });
-      const backlogTasks = tasksCollection.filter(({ sprints }) =>
-        collect(sprints).contains(asanaProjectBacklog.gid)
+      const backlogTasks = tasksCollection.filter(task =>
+        collect(task.sprints).contains(asanaProjectBacklog.gid)
       );
       const refinedBacklogTasks = backlogTasks
         .where("completedAt", false)
