@@ -10,6 +10,7 @@ const SET_LOADING_SPRINTS = "SET_LOADING_SPRINTS";
 const DELETE_SPRINT = "DELETE_SPRINT";
 const ADD_SPRINT = "ADD_SPRINT";
 
+const SUCCESS_LOADING_BACKLOG_TASKS = "SUCCESS_LOADING_BACKLOGTASKS";
 const SUCCESS_LOADING_REFINED_BACKLOG_TASKS =
   "SUCCESS_LOADING_REFINEDBACKLOGTASKS";
 const SUCCESS_LOADING_UNREFINED_BACKLOG_TASKS =
@@ -241,9 +242,11 @@ const processSprints = () => {
       Logger.info("Processing tasks into refined and unrefined...", {
         tasksCollection
       });
-      const refinedBacklogTasks = tasksCollection
+      const backlogTasks = tasksCollection.filter(({ sprints }) =>
+        collect(sprints).contains(asanaProjectBacklog.gid)
+      );
+      const refinedBacklogTasks = backlogTasks
         .where("completedAt", false)
-        .filter(task => collect(task.sprints).contains(asanaProjectBacklog.gid))
         .filter(
           task =>
             !collect(task.sprints).contains(uuid =>
@@ -256,25 +259,28 @@ const processSprints = () => {
           collect(task.sections).contains(
             value => value.toLowerCase() === "refined"
           )
-        )
-        .all();
+        );
       const unrefinedBacklogTasks = tasksCollection
         .where("completedAt", false)
         .filter(task =>
           collect(task.sections).contains(
             value => value.toLowerCase() === "unrefined"
           )
-        )
-        .all();
+        );
+      dispatch({
+        type: SUCCESS_LOADING_BACKLOG_TASKS,
+        value: { backlogTasks: backlogTasks.all() },
+        loading: false
+      });
       dispatch({
         type: SUCCESS_LOADING_REFINED_BACKLOG_TASKS,
-        value: { refinedBacklogTasks },
-        loading: true
+        value: { refinedBacklogTasks: refinedBacklogTasks.all() },
+        loading: false
       });
       dispatch({
         type: SUCCESS_LOADING_UNREFINED_BACKLOG_TASKS,
-        value: { unrefinedBacklogTasks },
-        loading: true
+        value: { unrefinedBacklogTasks: unrefinedBacklogTasks.all() },
+        loading: false
       });
 
       Logger.info("Processing backlog into forecasted sprints...", {

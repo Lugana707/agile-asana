@@ -1,60 +1,19 @@
-import React, { useMemo, useCallback, useEffect, useState } from "react";
+import React, { useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { Chart } from "react-charts";
 import moment from "moment";
-import camelcase from "camelcase";
 import collect from "collect.js";
-import withAsanaClient from "../../withAsanaClient";
 
-const GraphCountOverTime = ({ asanaClient }) => {
-  const { asanaProjects } = useSelector(state => state.asanaProjects);
-
-  const { gid: backlogGid } = useMemo(
-    () => collect(asanaProjects).firstWhere("name", "Product Backlog"),
-    [asanaProjects]
-  );
-
-  const [tasks, setTasks] = useState(false);
-
-  const loadTasks = useCallback(async () => {
-    if (!asanaClient || !backlogGid) {
-      return false;
-    }
-
-    const collection = await asanaClient.tasks.getTasksForProject(backlogGid, {
-      opt_fields: ["created_at", "completed_at", "custom_fields"].join(",")
-    });
-    const tasks = await collection.fetch();
-
-    setTasks(
-      collect(tasks).map(
-        ({ created_at, completed_at, custom_fields, ...task }) => ({
-          ...task,
-          createdAt: moment(created_at),
-          completedAt: moment(completed_at),
-          ...custom_fields.reduce(
-            (accumulator, { name, number_value, enum_value }) => ({
-              [camelcase(name)]: number_value || enum_value,
-              ...accumulator
-            }),
-            {}
-          )
-        })
-      )
-    );
-  }, [asanaClient, backlogGid]);
-
-  useEffect(() => {
-    loadTasks();
-  }, [loadTasks]);
+const GraphCountOverTime = () => {
+  const { backlogTasks } = useSelector(state => state.backlogTasks);
 
   const backlogCountPerDay = useMemo(() => {
-    if (!tasks) {
+    if (!backlogTasks) {
       return collect();
     }
 
     const minDate = moment.unix(
-      tasks
+      collect(backlogTasks)
         .pluck("createdAt")
         .map(date => date.unix())
         .sort()
@@ -63,7 +22,8 @@ const GraphCountOverTime = ({ asanaClient }) => {
     const days = moment().diff(minDate, "days");
 
     const getTaskCountByDate = key =>
-      tasks
+      collect(backlogTasks)
+        .where(key)
         .map(({ [key]: date, ...obj }) => ({
           ...obj,
           [key]: date.format("YYYY-MM-DD")
@@ -126,9 +86,8 @@ const GraphCountOverTime = ({ asanaClient }) => {
           count: runningCountTotal
         };
       })
-      .dump()
       .filter(({ date }) => moment(date).isAfter(moment().add(-1, "year")));
-  }, [tasks]);
+  }, [backlogTasks]);
 
   const data = useMemo(
     () => [
@@ -184,11 +143,11 @@ const GraphCountOverTime = ({ asanaClient }) => {
     []
   );
 
-  if (!tasks) {
+  if (!backlogTasks) {
     return <div className="loading-spinner centre" />;
   }
 
   return <Chart data={data} series={series} axes={axes} tooltip dark />;
 };
 
-export default withAsanaClient(GraphCountOverTime);
+export default GraphCountOverTime;
