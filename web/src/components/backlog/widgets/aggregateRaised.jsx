@@ -5,6 +5,7 @@ import moment from "moment";
 import collect from "collect.js";
 import pluralise from "pluralise";
 import withBacklogTasks from "../withBacklogTasks";
+import NoData from "../../library/noData";
 
 const AggregateRaised = ({
   backlogTasks,
@@ -63,7 +64,7 @@ const AggregateRaised = ({
         )}
       </Card.Body>
       <ListGroup variant="flush">
-        {groupedByTags &&
+        {groupedByTags && groupedByTags.isNotEmpty() ? (
           groupedByTags.map(({ key, count }) => (
             <LinkContainer key={key} to="/backlog/dashboard">
               <ListGroup.Item className="bg-dark">
@@ -73,7 +74,12 @@ const AggregateRaised = ({
                 </span>
               </ListGroup.Item>
             </LinkContainer>
-          ))}
+          ))
+        ) : (
+          <ListGroup.Item className="bg-dark">
+            <NoData />
+          </ListGroup.Item>
+        )}
       </ListGroup>
     </Card>
   );

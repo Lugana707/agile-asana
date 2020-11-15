@@ -2,6 +2,7 @@ import React from "react";
 import { Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSkull } from "@fortawesome/free-solid-svg-icons";
+import NoData from "./noData";
 
 export default ({
   id,
@@ -23,12 +24,7 @@ export default ({
   }
 
   if (!data || !data.length) {
-    return (
-      <h2 className="text-center">
-        <FontAwesomeIcon icon={faSkull} size="1x" />
-        <span className="pl-2">{noDataText || "Nothing to show!"}</span>
-      </h2>
-    );
+    return <NoData noDataText={noDataText} />;
   }
 
   return (
