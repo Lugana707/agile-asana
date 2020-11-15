@@ -3,17 +3,16 @@ import { useSelector } from "react-redux";
 import { Chart } from "react-charts";
 import moment from "moment";
 import collect from "collect.js";
+import withBacklogTasks from "../withBacklogTasks";
 
-const GraphCountOverTime = () => {
-  const { backlogTasks } = useSelector(state => state.backlogTasks);
-
+const GraphCountOverTime = ({ backlogTasks }) => {
   const backlogCountPerDay = useMemo(() => {
-    if (!backlogTasks) {
+    if (backlogTasks.isEmpty()) {
       return collect();
     }
 
     const minDate = moment.unix(
-      collect(backlogTasks)
+      backlogTasks
         .pluck("createdAt")
         .map(date => date.unix())
         .sort()
@@ -22,7 +21,7 @@ const GraphCountOverTime = () => {
     const days = moment().diff(minDate, "days");
 
     const getTaskCountByDate = key =>
-      collect(backlogTasks)
+      backlogTasks
         .where(key)
         .map(({ [key]: date, ...obj }) => ({
           ...obj,
@@ -143,11 +142,11 @@ const GraphCountOverTime = () => {
     []
   );
 
-  if (!backlogTasks) {
+  if (backlogCountPerDay.isEmpty()) {
     return <div className="loading-spinner centre" />;
   }
 
   return <Chart data={data} series={series} axes={axes} tooltip dark />;
 };
 
-export default GraphCountOverTime;
+export default withBacklogTasks(GraphCountOverTime);
