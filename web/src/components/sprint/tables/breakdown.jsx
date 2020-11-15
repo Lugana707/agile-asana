@@ -59,6 +59,7 @@ const Report = ({ loading, sprints, numberOfTags = 3 }) => {
           .pluck(tag)
           .filter()
           .avg()
+          .toFixed(2)
       }))
       .reduce(
         (accumulator, { name, value }) => ({ ...accumulator, [name]: value }),
