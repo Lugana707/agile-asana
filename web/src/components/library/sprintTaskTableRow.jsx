@@ -7,25 +7,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import moment from "moment";
+import TaskTag from "./taskTag";
 
 const SprintTaskTableRow = ({ data }) => {
-  const getVariantFromTag = tag => {
-    const map = collect([
-      { key: "feature", value: "success" },
-      { key: "bug", value: "danger" },
-      { key: "debt", value: "warning" }
-    ]);
-
-    const tagLowerCase = tag.toLowerCase();
-
-    return (
-      map
-        .filter(({ key }) => tagLowerCase.includes(key))
-        .pluck("value")
-        .first() || "secondary"
-    );
-  };
-
   const { gid, name, dueOn, storyPoints, sprints, tags } = data;
 
   const [sprintUUID] = sprints;
@@ -65,13 +49,7 @@ const SprintTaskTableRow = ({ data }) => {
         {sortedTags.length > 0 && (
           <span className="ml-1">
             {sortedTags.map((tag, index) => (
-              <Badge
-                key={index}
-                variant={getVariantFromTag(tag)}
-                className="mr-1"
-              >
-                {tag}
-              </Badge>
+              <TaskTag tag={tag} asBadge />
             ))}
           </span>
         )}
