@@ -1,24 +1,17 @@
 import React, { useMemo } from "react";
 import { LinkContainer } from "react-router-bootstrap";
 import { Card, Row, Col } from "react-bootstrap";
-import { useSelector } from "react-redux";
-import collect from "collect.js";
+import withBacklogTasks from "../withBacklogTasks";
 
-const BacklogStoryPoints = () => {
-  const { refinedBacklogTasks } = useSelector(
-    state => state.refinedBacklogTasks
+const BacklogStoryPoints = ({ backlogTasks }) => {
+  const storyPoints = useMemo(
+    () =>
+      backlogTasks
+        .where("completedAt", false)
+        .where("storyPoints")
+        .sum("storyPoints"),
+    [backlogTasks]
   );
-  const { unrefinedBacklogTasks } = useSelector(
-    state => state.unrefinedBacklogTasks
-  );
-
-  const storyPoints = useMemo(() => {
-    return collect(unrefinedBacklogTasks || [])
-      .merge(refinedBacklogTasks || [])
-      .filter()
-      .where("storyPoints")
-      .sum("storyPoints");
-  }, [unrefinedBacklogTasks, refinedBacklogTasks]);
 
   return (
     <LinkContainer to="/backlog/dashboard" className="btn p-0">
@@ -38,4 +31,4 @@ const BacklogStoryPoints = () => {
   );
 };
 
-export default BacklogStoryPoints;
+export default withBacklogTasks(BacklogStoryPoints);
