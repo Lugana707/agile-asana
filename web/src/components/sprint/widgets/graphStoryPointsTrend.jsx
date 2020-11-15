@@ -3,9 +3,10 @@ import { Chart } from "react-charts";
 import collect from "collect.js";
 
 const GraphStoryPointsTrend = ({ sprints = [] }) => {
-  const sprintsCollection = useMemo(() => collect(sprints).sortByDesc("week"), [
-    sprints
-  ]);
+  const sprintsCollection = useMemo(
+    () => collect(sprints).sortByDesc("number"),
+    [sprints]
+  );
 
   const completedSprints = useMemo(
     () => sprintsCollection.where("state", "COMPLETED"),
