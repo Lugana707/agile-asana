@@ -3,7 +3,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import collect from "collect.js";
 import SprintFilters from "../components/sprint/widgets/sprintFilters";
 import SprintWidgetGraphStoryPointsTrend from "../components//sprint/widgets/graphStoryPointsTrend";
-import SprintWidgetGraphStoryPointsThroughWeek from "../components/sprint/widgets/graphStoryPointsThroughWeek";
+import SprintWidgetGraphStoryPointsThroughSprint from "../components/sprint/widgets/graphStoryPointsThroughSprint";
 import SprintWidgetGraphTagBreakdown from "../components/sprint/widgets/graphTagBreakdown";
 import TasksAtRiskWidget from "../components/backlog/alerts/tasksAtRiskWidget";
 import SprintProgressWidget from "../components/sprint/widgets/progress";
@@ -56,7 +56,7 @@ const Home = ({ sprints }) => {
           <SprintWidgetGraphStoryPointsTrend sprints={sprintsForDisplay} />
         </Col>
         <Col xs={12} md={6} lg={4} style={{ height: "50vh" }}>
-          <SprintWidgetGraphStoryPointsThroughWeek
+          <SprintWidgetGraphStoryPointsThroughSprint
             sprints={sprintsForDisplay}
           />
         </Col>

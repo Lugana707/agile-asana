@@ -14,7 +14,7 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import collect from "collect.js";
-import SprintWidgetGraphStoryPointsThroughWeek from "../../components/sprint/widgets/graphStoryPointsThroughWeek";
+import SprintWidgetGraphStoryPointsThroughSprint from "../../components/sprint/widgets/graphStoryPointsThroughSprint";
 import SprintWidgetGraphTagBreakdown from "../../components/sprint/widgets/graphTagBreakdown";
 import SprintTimeProgress from "../../components/sprint/timeProgress";
 import SprintStoryPointProgress from "../../components/sprint/storyPointProgress";
@@ -55,7 +55,7 @@ const Show = ({ match }) => {
           className="pb-4"
         >
           <div className="h-100" style={{ minHeight: "300px" }}>
-            <SprintWidgetGraphStoryPointsThroughWeek
+            <SprintWidgetGraphStoryPointsThroughSprint
               sprints={[sprint]}
               showBurnUp={isComplete}
               showBurnDown={state === "ACTIVE"}

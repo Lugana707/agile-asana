@@ -4,7 +4,11 @@ import { useSelector } from "react-redux";
 import collect from "collect.js";
 import moment from "moment";
 
-const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
+const GraphStoryPointsThroughSprint = ({
+  sprints,
+  showBurnUp,
+  showBurnDown
+}) => {
   const { loading, ...state } = useSelector(state => state.sprints);
 
   const hideWeekends = true;
@@ -198,4 +202,4 @@ const GraphStoryPointsThroughWeek = ({ sprints, showBurnUp, showBurnDown }) => {
   return <Chart data={data} series={series} axes={axes} tooltip dark />;
 };
 
-export default GraphStoryPointsThroughWeek;
+export default GraphStoryPointsThroughSprint;
