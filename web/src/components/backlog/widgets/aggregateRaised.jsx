@@ -4,6 +4,7 @@ import { Card, ListGroup } from "react-bootstrap";
 import moment from "moment";
 import collect from "collect.js";
 import pluralise from "pluralise";
+import { pluraliseText } from "../../../scripts/helpers";
 import withBacklogTasks from "../withBacklogTasks";
 import NoData from "../../library/noData";
 
@@ -77,7 +78,9 @@ const AggregateRaised = ({
               <ListGroup.Item className="bg-dark">
                 <span className="text-nowrap">
                   <span>{count}</span>
-                  <span className="ml-3">{pluralise(count, key)}</span>
+                  <span className="ml-3">
+                    {pluraliseText({ name: key, count })}
+                  </span>
                 </span>
               </ListGroup.Item>
             </LinkContainer>
