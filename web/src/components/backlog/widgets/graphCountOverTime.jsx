@@ -1,5 +1,4 @@
 import React, { useMemo, useCallback } from "react";
-import { useSelector } from "react-redux";
 import { Chart } from "react-charts";
 import moment from "moment";
 import collect from "collect.js";
