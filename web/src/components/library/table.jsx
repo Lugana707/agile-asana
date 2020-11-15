@@ -1,7 +1,5 @@
 import React from "react";
 import { Table } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSkull } from "@fortawesome/free-solid-svg-icons";
 import NoData from "./noData";
 
 export default ({
