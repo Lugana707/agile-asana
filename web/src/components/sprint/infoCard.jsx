@@ -19,7 +19,7 @@ const InfoCard = ({ sprint }) => {
   } = sprint || {};
 
   return (
-    <Card bg="dark" text="light" className="text-left h-100">
+    <Card bg="dark" text="light" className="text-left">
       <Card.Body>
         <Card.Title>
           <span>
