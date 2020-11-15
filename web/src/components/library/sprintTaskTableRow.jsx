@@ -1,5 +1,4 @@
 import React from "react";
-import { Badge } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faQuestion,
