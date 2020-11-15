@@ -1,16 +1,12 @@
 import React, { useMemo } from "react";
 import { LinkContainer } from "react-router-bootstrap";
 import { Card, Row, Col } from "react-bootstrap";
-import withBacklogTasks from "../withBacklogTasks";
+import withIncompleteBacklogTasks from "../withIncompleteBacklogTasks";
 
-const BacklogStoryPoints = ({ backlogTasks }) => {
+const BacklogStoryPoints = ({ incompleteBacklogTasks }) => {
   const storyPoints = useMemo(
-    () =>
-      backlogTasks
-        .where("completedAt", false)
-        .where("storyPoints")
-        .sum("storyPoints"),
-    [backlogTasks]
+    () => incompleteBacklogTasks.where("storyPoints").sum("storyPoints"),
+    [incompleteBacklogTasks]
   );
 
   return (
@@ -31,4 +27,4 @@ const BacklogStoryPoints = ({ backlogTasks }) => {
   );
 };
 
-export default withBacklogTasks(BacklogStoryPoints);
+export default withIncompleteBacklogTasks(BacklogStoryPoints);
