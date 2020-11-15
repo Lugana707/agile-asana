@@ -16,32 +16,37 @@ const AggregateRaised = ({
   const groupedByTags = useMemo(() => {
     const includeTagsColletion = collect(includeTags);
 
-    return collect(backlogTasks)
-      .filter(({ createdAt }) =>
-        createdAt.isBetween(dateFrom, dateTo || moment())
-      )
-      .pluck("tags")
-      .flatten(1)
-      .filter(tag => {
-        if (!includeTags) {
-          return true;
-        }
+    return collect(
+      collect(backlogTasks)
+        .filter(({ createdAt }) =>
+          createdAt.isBetween(dateFrom, dateTo || moment())
+        )
+        .pluck("tags")
+        .flatten(1)
+        .filter(tag => {
+          if (!includeTags) {
+            return true;
+          }
 
-        const tagLowerCase = tag.toLowerCase();
-        return includeTagsColletion
-          .map(obj => obj.toLowerCase())
-          .filter(obj => tagLowerCase.includes(obj))
-          .isNotEmpty();
-      })
-      .countBy()
-      .map((count, key) => ({ key, count }))
-      .toArray();
+          const tagLowerCase = tag.toLowerCase();
+          return includeTagsColletion
+            .map(obj => obj.toLowerCase())
+            .filter(obj => tagLowerCase.includes(obj))
+            .isNotEmpty();
+        })
+        .countBy()
+        .map((count, key) => ({ key, count }))
+        .toArray()
+    );
   }, [backlogTasks, dateFrom, dateTo, includeTags]);
 
   return (
     <Card bg="dark" className="text-left text-white">
       <Card.Body>
-        <Card.Title>Backlog Tasks Created</Card.Title>
+        <Card.Title>
+          <span>{groupedByTags.sum("count")}</span>
+          <span className="ml-2">Backlog Tasks Created</span>
+        </Card.Title>
         {showDateRange && (
           <Card.Subtitle className="text-muted">
             <hr />
