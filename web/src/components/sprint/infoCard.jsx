@@ -45,7 +45,7 @@ const InfoCard = ({ sprint }) => {
           </span>
         </Card.Subtitle>
       </Card.Body>
-      <ListGroup className="list-group-flush">
+      <ListGroup variant="flush">
         <ListGroup.Item variant="info">
           <span className="font-weight-bold">
             {averageCompletedStoryPoints}

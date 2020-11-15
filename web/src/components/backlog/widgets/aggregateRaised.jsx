@@ -7,6 +7,7 @@ import pluralise from "pluralise";
 import { pluraliseText } from "../../../scripts/helpers";
 import withBacklogTasks from "../withBacklogTasks";
 import NoData from "../../library/noData";
+import TaskTag from "../../library/taskTag";
 
 const AggregateRaised = ({
   backlogTasks,
@@ -75,14 +76,12 @@ const AggregateRaised = ({
         {groupedByTags && groupedByTags.isNotEmpty() ? (
           groupedByTags.map(({ key, count }) => (
             <LinkContainer key={key} to="/backlog/dashboard">
-              <ListGroup.Item className="bg-dark">
-                <span className="text-nowrap">
-                  <span>{count}</span>
-                  <span className="ml-3">
-                    {pluraliseText({ name: key, count })}
-                  </span>
+              <TaskTag className="text-nowrap" tag={key} asListGroupItem>
+                <span className="font-weight-bold">{count}</span>
+                <span className="ml-3">
+                  {pluraliseText({ name: key, count })}
                 </span>
-              </ListGroup.Item>
+              </TaskTag>
             </LinkContainer>
           ))
         ) : (

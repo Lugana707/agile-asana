@@ -1,8 +1,15 @@
 import React from "react";
-import { Badge } from "react-bootstrap";
+import { Badge, ListGroup } from "react-bootstrap";
 import collect from "collect.js";
 
-export default ({ tag, children, asBadge }) => {
+export default ({
+  className,
+  tag,
+  children,
+  defaultVariant = "secondary",
+  asBadge,
+  asListGroupItem
+}) => {
   const getVariantFromTag = tag => {
     const map = collect([
       { key: "feature", value: "success" },
@@ -16,15 +23,25 @@ export default ({ tag, children, asBadge }) => {
       map
         .filter(({ key }) => tagLowerCase.includes(key))
         .pluck("value")
-        .first() || "secondary"
+        .first("value") || defaultVariant
     );
   };
 
+  const variant = getVariantFromTag(tag);
+
   if (asBadge) {
     return (
-      <Badge key={tag} variant={getVariantFromTag(tag)} className="mr-1">
+      <Badge key={tag} variant={variant} className={`${className} mr-1`}>
         {children || tag}
       </Badge>
+    );
+  }
+
+  if (asListGroupItem) {
+    return (
+      <ListGroup.Item key={tag} variant={variant} className={className}>
+        {children || tag}
+      </ListGroup.Item>
     );
   }
 
