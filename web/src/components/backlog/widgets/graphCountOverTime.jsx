@@ -1,16 +1,10 @@
-import React, { useState, useMemo, useCallback, useReducer } from "react";
-import { Chart } from "react-charts";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTimesCircle,
-  faCheckCircle
-} from "@fortawesome/free-solid-svg-icons";
-import { ButtonGroup, Button } from "react-bootstrap";
+import React, { useMemo, useCallback } from "react";
+import { Line } from "react-chartjs-2";
 import moment from "moment";
 import collect from "collect.js";
 import withBacklogTasks from "../withBacklogTasks";
 
-const allTagsTag = "All Tags";
+const ALL_TAGS_TAG = "All";
 
 const GraphCountOverTime = ({ backlogTasks }) => {
   backlogTasks.macro("filterToCurrentYear", function() {
@@ -19,21 +13,29 @@ const GraphCountOverTime = ({ backlogTasks }) => {
     );
   });
 
-  const [showTaskCount, setShowTaskCount] = useState(true);
-  const [showStoryPoints, setShowStoryPoints] = useState(true);
-  const [showTags, setShowTags] = useState(false);
+  const dates = useMemo(() => {
+    const minDate = moment.unix(
+      backlogTasks
+        .pluck("createdAt")
+        .map(date => date.unix())
+        .sort()
+        .first()
+    );
 
-  const minDate = useMemo(
-    () =>
-      moment.unix(
-        backlogTasks
-          .pluck("createdAt")
-          .map(date => date.unix())
-          .sort()
-          .first()
-      ),
-    [backlogTasks]
-  );
+    const days = moment().diff(minDate, "days");
+
+    if (!days) {
+      return collect([]);
+    }
+
+    return collect(new Array(days).fill())
+      .map((day, index) =>
+        moment(minDate)
+          .add(index, "days")
+          .format("YYYY-MM-DD")
+      )
+      .map(date => ({ date }));
+  }, [backlogTasks]);
 
   const backlogCountPerDay = useCallback(
     tag => {
@@ -42,11 +44,9 @@ const GraphCountOverTime = ({ backlogTasks }) => {
       }
 
       const filteredBacklogTasks = backlogTasks.when(
-        tag !== allTagsTag,
+        tag !== ALL_TAGS_TAG,
         collection => collection.filter(task => task.tags.includes(tag))
       );
-
-      const days = moment().diff(minDate, "days");
 
       const getTaskCountByDate = (collection, key) =>
         collection
@@ -77,13 +77,8 @@ const GraphCountOverTime = ({ backlogTasks }) => {
         "completedAt"
       );
 
-      return collect(new Array(days).fill())
-        .map((day, index) =>
-          moment(minDate)
-            .add(index, "days")
-            .format("YYYY-MM-DD")
-        )
-        .map((date, index, self) => {
+      return dates
+        .map(({ date }, index, self) => {
           const {
             count: createdCount = 0,
             storyPoints: createdStoryPoints = 0
@@ -121,9 +116,10 @@ const GraphCountOverTime = ({ backlogTasks }) => {
             count: runningCountTotal
           };
         })
-        .filterToCurrentYear();
+        .filterToCurrentYear()
+        .except("date");
     },
-    [backlogTasks, minDate]
+    [dates, backlogTasks]
   );
 
   const tags = useMemo(
@@ -135,163 +131,85 @@ const GraphCountOverTime = ({ backlogTasks }) => {
         .unique()
         .sort()
         .reverse()
-        .push(allTagsTag)
+        .push(ALL_TAGS_TAG)
         .reverse(),
     [backlogTasks]
-  );
-
-  const [tagsEnabled, toggleTag] = useReducer(
-    (accumulator, currentValue) => ({
-      ...accumulator,
-      [currentValue]: !accumulator[currentValue]
-    }),
-    tags.reduce(
-      (accumulator, currentValue) => ({
-        ...accumulator,
-        [currentValue]: false,
-        [allTagsTag]: true
-      }),
-      {}
-    )
   );
 
   const backlogCountPerDayByTag = useMemo(
     () =>
       tags
-        .filter(tag => !!tagsEnabled[tag])
         .map(tag => ({ tag, countPerDay: backlogCountPerDay(tag) }))
         .filter(({ countPerDay }) => countPerDay.isNotEmpty()),
-    [tags, tagsEnabled, backlogCountPerDay]
+    [tags, backlogCountPerDay]
   );
 
-  const data = useMemo(() => {
-    return [
-      ...backlogCountPerDayByTag
-        .when(!showTaskCount, () => collect([]))
-        .map(({ tag, countPerDay }) => ({
-          label: `${tag} (Tasks)`,
-          data: countPerDay.map(({ date, count }) => [date, count]).all(),
-          secondaryAxisID: "taskCount"
-        }))
+  const data = useMemo(
+    () => ({
+      labels: dates
+        .filterToCurrentYear()
+        .pluck("date")
         .toArray(),
-      ...backlogCountPerDayByTag
-        .when(!showStoryPoints, () => collect([]))
-        .map(({ tag, countPerDay }) => ({
-          label: `${tag} (Story Points)`,
-          data: countPerDay
-            .map(({ date, storyPoints }) => [date, storyPoints])
-            .all(),
-          secondaryAxisID: "storyPointSum"
+      datasets: [
+        ...backlogCountPerDayByTag
+          .map(({ tag, countPerDay }) => ({
+            label: `${tag} (Tasks)`,
+            data: countPerDay.pluck("count").toArray(),
+            backgroundColor: "rgb(255, 99, 132)",
+            borderColor: "rgba(255, 99, 132)",
+            yAxisID: "y-axis-task-count"
+          }))
+          .toArray(),
+        ...backlogCountPerDayByTag
+          .map(({ tag, countPerDay }) => ({
+            label: `${tag} (Story Points)`,
+            data: countPerDay.pluck("storyPoints").toArray(),
+            backgroundColor: "rgb(54, 162, 235)",
+            borderColor: "rgba(54, 162, 235)",
+            yAxisID: "y-axis-story-point-sum"
+          }))
+          .toArray()
+      ]
+        .filter(Boolean)
+        .map(dataset => ({
+          ...dataset,
+          pointRadius: 0,
+          hidden: !dataset.label.startsWith(ALL_TAGS_TAG),
+          fill: false
         }))
-        .toArray()
-    ].filter(Boolean);
-  }, [showTaskCount, showStoryPoints, backlogCountPerDayByTag]);
+    }),
+    [dates, backlogCountPerDayByTag]
+  );
 
-  const series = useCallback((series, index) => {
-    return { showPoints: false, type: "line", position: "bottom" };
-  }, []);
-
-  const axes = useMemo(
-    () =>
-      [
-        {
-          primary: true,
-          type: "ordinal",
-          position: "bottom",
-          format: d => {
-            const date = moment(d);
-            if (date.get("date") === 1) {
-              return date.format("MMM YYYY");
-            }
-            return false;
+  const options = useMemo(
+    () => ({
+      showLines: true,
+      scales: {
+        yAxes: [
+          {
+            type: "linear",
+            display: true,
+            position: "left",
+            id: "y-axis-task-count"
+          },
+          {
+            type: "linear",
+            display: true,
+            position: "right",
+            id: "y-axis-story-point-sum"
           }
-        },
-        showTaskCount && {
-          id: "taskCount",
-          position: "left",
-          type: "linear",
-          hardMin: 0,
-          stacked: false
-        },
-        showStoryPoints && {
-          id: "storyPointSum",
-          position: "right",
-          type: "linear",
-          hardMin: 0,
-          stacked: false
-        },
-        !showTaskCount &&
-          !showStoryPoints && { position: "left", type: "linear" }
-      ].filter(Boolean),
-    [showTaskCount, showStoryPoints]
+        ]
+      }
+    }),
+    []
   );
 
-  const seriesStyle = useCallback(() => ({ transition: "all .5s ease" }), []);
-  const datumStyle = useCallback(() => ({ transition: "all .5s ease" }), []);
-
-  const FilterButtons = useCallback(
-    () => (
-      <>
-        <ButtonGroup size="sm">
-          {[
-            {
-              label: "Task Count",
-              action: setShowTaskCount,
-              value: showTaskCount
-            },
-            {
-              label: "Story Points",
-              action: setShowStoryPoints,
-              value: showStoryPoints
-            },
-            {
-              label: "Show Tags",
-              action: setShowTags,
-              value: showTags
-            }
-          ].map(({ label, action, value }) => (
-            <Button
-              variant={value ? "secondary" : "dark"}
-              onClick={() => action(!value)}
-            >
-              <FontAwesomeIcon icon={value ? faCheckCircle : faTimesCircle} />
-              <span className="ml-1">{label}</span>
-            </Button>
-          ))}
-        </ButtonGroup>
-        {showTags && (
-          <>
-            <hr />
-            {tags.map(key => (
-              <Button
-                key={key}
-                size="sm"
-                variant={tagsEnabled[key] ? "info" : "link"}
-                onClick={() => toggleTag(key)}
-              >
-                {key}
-              </Button>
-            ))}
-          </>
-        )}
-      </>
-    ),
-    [showTaskCount, showStoryPoints, showTags, tags, tagsEnabled]
-  );
-
-  const BacklogChart = useCallback(
-    () => (
-      <Chart
-        data={data}
-        series={series}
-        axes={axes}
-        seriesStyle={seriesStyle}
-        datumStyle={datumStyle}
-        tooltip
-        dark
-      />
-    ),
-    [data, series, axes, seriesStyle, datumStyle]
+  const legend = useMemo(
+    () => ({
+      display: true,
+      position: "bottom"
+    }),
+    []
   );
 
   if (backlogCountPerDay().isEmpty()) {
@@ -299,11 +217,8 @@ const GraphCountOverTime = ({ backlogTasks }) => {
   }
 
   return (
-    <div className="h-100">
-      <FilterButtons />
-      <div className="h-100 overflow-hidden">
-        <BacklogChart />
-      </div>
+    <div className="h-100 overflow-hidden">
+      <Line data={data} options={options} legend={legend} />
     </div>
   );
 };
