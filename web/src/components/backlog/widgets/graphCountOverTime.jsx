@@ -15,7 +15,7 @@ const allTagsTag = "All Tags";
 const GraphCountOverTime = ({ backlogTasks }) => {
   backlogTasks.macro("filterToCurrentYear", function() {
     return this.filter(({ date }) =>
-      moment(date).isAfter(moment().add(-1, "years"))
+      moment(date).isAfter(moment().add(-0.5, "years"))
     );
   });
 
@@ -161,7 +161,7 @@ const GraphCountOverTime = ({ backlogTasks }) => {
         .filter(tag => !!tagsEnabled[tag])
         .map(tag => ({ tag, countPerDay: backlogCountPerDay(tag) }))
         .filter(({ countPerDay }) => countPerDay.isNotEmpty()),
-    [tags, tagsEnabled]
+    [tags, tagsEnabled, backlogCountPerDay]
   );
 
   const data = useMemo(() => {
@@ -185,12 +185,7 @@ const GraphCountOverTime = ({ backlogTasks }) => {
         }))
         .toArray()
     ].filter(Boolean);
-  }, [
-    showTaskCount,
-    showStoryPoints,
-    backlogCountPerDay,
-    backlogCountPerDayByTag
-  ]);
+  }, [showTaskCount, showStoryPoints, backlogCountPerDayByTag]);
 
   const series = useCallback((series, index) => {
     return { showPoints: false, type: "line", position: "bottom" };
@@ -234,64 +229,80 @@ const GraphCountOverTime = ({ backlogTasks }) => {
   const seriesStyle = useCallback(() => ({ transition: "all .5s ease" }), []);
   const datumStyle = useCallback(() => ({ transition: "all .5s ease" }), []);
 
+  const FilterButtons = useCallback(
+    () => (
+      <>
+        <ButtonGroup size="sm">
+          {[
+            {
+              label: "Task Count",
+              action: setShowTaskCount,
+              value: showTaskCount
+            },
+            {
+              label: "Story Points",
+              action: setShowStoryPoints,
+              value: showStoryPoints
+            },
+            {
+              label: "Show Tags",
+              action: setShowTags,
+              value: showTags
+            }
+          ].map(({ label, action, value }) => (
+            <Button
+              variant={value ? "secondary" : "dark"}
+              onClick={() => action(!value)}
+            >
+              <FontAwesomeIcon icon={value ? faCheckCircle : faTimesCircle} />
+              <span className="ml-1">{label}</span>
+            </Button>
+          ))}
+        </ButtonGroup>
+        {showTags && (
+          <>
+            <hr />
+            {tags.map(key => (
+              <Button
+                key={key}
+                size="sm"
+                variant={tagsEnabled[key] ? "info" : "link"}
+                onClick={() => toggleTag(key)}
+              >
+                {key}
+              </Button>
+            ))}
+          </>
+        )}
+      </>
+    ),
+    [showTaskCount, showStoryPoints, showTags, tags, tagsEnabled]
+  );
+
+  const BacklogChart = useCallback(
+    () => (
+      <Chart
+        data={data}
+        series={series}
+        axes={axes}
+        seriesStyle={seriesStyle}
+        datumStyle={datumStyle}
+        tooltip
+        dark
+      />
+    ),
+    [data, series, axes, seriesStyle, datumStyle]
+  );
+
   if (backlogCountPerDay().isEmpty()) {
     return <div className="loading-spinner centre" />;
   }
 
   return (
     <div className="h-100">
-      <ButtonGroup size="sm">
-        {[
-          {
-            label: "Task Count",
-            action: setShowTaskCount,
-            value: showTaskCount
-          },
-          {
-            label: "Story Points",
-            action: setShowStoryPoints,
-            value: showStoryPoints
-          },
-          {
-            label: "Show Tags",
-            action: setShowTags,
-            value: showTags
-          }
-        ].map(({ label, action, value }) => (
-          <Button
-            variant={value ? "secondary" : "dark"}
-            onClick={() => action(!value)}
-          >
-            <FontAwesomeIcon icon={value ? faCheckCircle : faTimesCircle} />
-            <span className="ml-1">{label}</span>
-          </Button>
-        ))}
-      </ButtonGroup>
-      {showTags && (
-        <>
-          <hr />
-          {tags.map(key => (
-            <Button
-              key={key}
-              size="sm"
-              variant={tagsEnabled[key] ? "info" : "link"}
-              onClick={() => toggleTag(key)}
-            >
-              {key}
-            </Button>
-          ))}
-        </>
-      )}
+      <FilterButtons />
       <div className="h-100 overflow-hidden">
-        <Chart
-          data={data}
-          series={series}
-          axes={axes}
-          seriesStyle={seriesStyle}
-          datumStyle={datumStyle}
-          tooltip
-          dark
-        />
+        <BacklogChart />
       </div>
     </div>
   );
