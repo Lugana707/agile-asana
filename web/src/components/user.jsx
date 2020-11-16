@@ -15,13 +15,15 @@ const User = ({ badge, access }) => {
     <>
       {badge && (
         <div className="d-inline-block" style={{ height: "30px" }}>
-          <Image
-            src={photo.image_128x128}
-            className="h-100"
-            fluid
-            roundedCircle
-          />
-          <span className="pl-2">{name}</span>
+          {photo && (
+            <Image
+              src={photo.image_128x128}
+              className="h-100"
+              fluid
+              roundedCircle
+            />
+          )}
+          {name && <span className="pl-2">{name}</span>}
         </div>
       )}
       {access && (
