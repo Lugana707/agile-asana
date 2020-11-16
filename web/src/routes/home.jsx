@@ -33,13 +33,13 @@ const Home = ({ sprints }) => {
   return (
     <Container fluid>
       <Row className="pb-4">
-        <Col xs={4} lg={2}>
+        <Col xs={4} lg={3}>
           <SprintProgressWidget />
         </Col>
-        <Col xs={4} lg={2}>
+        <Col xs={4} lg={3}>
           <TasksAtRiskWidget />
         </Col>
-        <Col xs={4} lg={2}>
+        <Col xs={4} lg={3}>
           <BacklogStoryPoints />
         </Col>
       </Row>
@@ -52,15 +52,25 @@ const Home = ({ sprints }) => {
         </Col>
       </Row>
       <Row className="mr-4">
-        <Col xs={12} lg={4} style={{ height: "50vh" }}>
+        <Col xs={12} lg={6} style={{ height: "50vh" }}>
           <SprintWidgetGraphStoryPointsTrend sprints={sprintsForDisplay} />
         </Col>
-        <Col xs={12} md={6} lg={4} style={{ height: "50vh" }}>
+        <Col
+          xs={12}
+          md={{ span: 6, order: 1 }}
+          lg={{ span: 6, order: 2 }}
+          style={{ height: "50vh" }}
+        >
           <SprintWidgetGraphStoryPointsThroughSprint
             sprints={sprintsForDisplay}
           />
         </Col>
-        <Col xs={12} md={6} lg={4} style={{ height: "50vh" }}>
+        <Col
+          xs={12}
+          md={{ span: 6, order: 2 }}
+          lg={{ span: 6, order: 1 }}
+          style={{ height: "50vh" }}
+        >
           <SprintWidgetGraphTagBreakdown sprints={sprintsForDisplay} />
         </Col>
       </Row>

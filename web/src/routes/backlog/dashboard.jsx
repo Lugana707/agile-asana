@@ -19,13 +19,13 @@ const Forecast = () => {
       </Jumbotron>
       <Container fluid>
         <Row>
-          <Col xs={12} md={4} lg={2}>
+          <Col xs={12} md={4} lg={3}>
             <TasksAtRiskWidget />
           </Col>
-          <Col xs={12} md={4} lg={2}>
+          <Col xs={12} md={4} lg={3}>
             <BacklogStoryPoints />
           </Col>
-          <Col xs={12} md={4} lg={8}>
+          <Col xs={12} md={4} lg={6}>
             <div className="w-100 h-100 bg-warning text-dark rounded pt-4 pb-4">
               <h4 className="mx-auto">
                 <FontAwesomeIcon icon={faExclamationTriangle} />
