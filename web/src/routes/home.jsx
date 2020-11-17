@@ -4,7 +4,7 @@ import collect from "collect.js";
 import SprintFilters from "../components/sprint/widgets/sprintFilters";
 import SprintWidgetGraphStoryPointsTrend from "../components//sprint/widgets/graphStoryPointsTrend";
 import SprintWidgetGraphStoryPointsThroughSprint from "../components/sprint/widgets/graphStoryPointsThroughSprint";
-import SprintWidgetGraphTagBreakdown from "../components/sprint/widgets/graphTagBreakdown";
+import SprintTagsAreaChart from "../components/sprint/charts/sprintTagsAreaChart";
 import TasksAtRiskWidget from "../components/backlog/alerts/tasksAtRiskWidget";
 import SprintProgressWidget from "../components/sprint/widgets/progress";
 import BacklogStoryPoints from "../components/backlog/widgets/storyPoints";
@@ -71,7 +71,7 @@ const Home = ({ sprints }) => {
           lg={{ span: 6, order: 1 }}
           style={{ height: "50vh" }}
         >
-          <SprintWidgetGraphTagBreakdown sprints={sprintsForDisplay} />
+          <SprintTagsAreaChart sprints={sprintsForDisplay} />
         </Col>
       </Row>
     </Container>
