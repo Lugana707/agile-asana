@@ -3,7 +3,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import collect from "collect.js";
 import SprintWidgetGraphStoryPointsThroughSprint from "../../components/sprint/widgets/graphStoryPointsThroughSprint";
-import SprintWidgetGraphTagBreakdown from "../../components/sprint/widgets/graphTagBreakdown";
+import SprintTagsBarChart from "../../components/sprint/charts/sprintTagsBarChart";
 import SprintTimeProgress from "../../components/sprint/timeProgress";
 import SprintStoryPointProgress from "../../components/sprint/storyPointProgress";
 import SprintInfoCard from "../../components/sprint/infoCard";
@@ -57,7 +57,7 @@ const Show = ({ match }) => {
         </Col>
         <Col xs={{ size: 12, order: "last" }} md={12}>
           <div className="h-100" style={{ minHeight: "300px " }}>
-            <SprintWidgetGraphTagBreakdown sprints={[sprint]} />
+            <SprintTagsBarChart sprint={sprint} />
           </div>
         </Col>
       </Row>
