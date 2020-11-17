@@ -184,6 +184,7 @@ const GraphCountOverTime = ({ backlogTasks }) => {
   const options = useMemo(
     () => ({
       showLines: true,
+      maintainAspectRatio: false,
       scales: {
         yAxes: [
           {
