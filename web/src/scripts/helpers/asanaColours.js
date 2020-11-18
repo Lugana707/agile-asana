@@ -2,7 +2,7 @@ import cssColors from "css-color-names";
 import randomFlatColors from "random-flat-colors";
 import camelcase from "camelcase";
 
-const getColourFromTag = ({ color }) => {
+const getColourFromTag = ({ color } = {}) => {
   if (!color) {
     return randomFlatColors();
   }
