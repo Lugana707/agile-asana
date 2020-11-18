@@ -73,7 +73,7 @@ const AggregateRaised = ({
       <ListGroup variant="flush">
         {groupedByTags && groupedByTags.isNotEmpty() ? (
           groupedByTags.map(({ key, count }) => (
-            <TagListGroupItem key="key" tag={key} count={count} />
+            <TagListGroupItem key={key} tag={key} count={count} />
           ))
         ) : (
           <ListGroup.Item className="bg-dark">
