@@ -43,7 +43,22 @@ const SprintTagsBarChart = ({ sprint }) => {
     [tasksByTag]
   );
 
-  const options = useMemo(() => ({ maintainAspectRatio: false }), []);
+  const options = useMemo(
+    () => ({
+      maintainAspectRatio: false,
+      responsive: true,
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              min: 0
+            }
+          }
+        ]
+      }
+    }),
+    []
+  );
 
   return <Bar data={data} options={options} />;
 };

@@ -115,12 +115,19 @@ const GraphStoryPointsTrend = ({ sprints }) => {
             gridLines: {
               display: false
             },
-            display: true,
+            display: false,
             stacked: true,
             type: "linear",
             scaleLabel: {
               display: false,
               labelString: "Percentage"
+            },
+            ticks: {
+              min: 0,
+              max: 100,
+              callback: function(value) {
+                return `${value}%`;
+              }
             }
           }
         ]
