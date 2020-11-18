@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { Bar } from "react-chartjs-2";
 import collect from "collect.js";
+import randomFlatColors from "random-flat-colors";
 
 const SprintTagsBarChart = ({ sprint }) => {
   const tasksByTag = useMemo(
@@ -27,20 +28,14 @@ const SprintTagsBarChart = ({ sprint }) => {
       datasets: [
         {
           label: "Story Points",
-          backgroundColor: "rgba(255, 99, 132, 0.2)",
-          borderColor: "rgba(255, 99, 132, 1)",
+          backgroundColor: randomFlatColors("green"),
           borderWidth: 1,
-          hoverBackgroundColor: "rgba(255, 99, 132, 0.4)",
-          hoverBorderColor: "rgba(255, 99, 132, 1)",
           data: tasksByTag.pluck("storyPoints").toArray()
         },
         {
           label: "Task Count",
-          backgroundColor: "rgb(54, 162, 235, 0.2)",
-          borderColor: "rgba(54, 162, 235)",
+          backgroundColor: randomFlatColors("blue"),
           borderWidth: 1,
-          hoverBackgroundColor: "rgba(54, 162, 235, 0.4)",
-          hoverBorderColor: "rgba(54, 162, 235, 1)",
           data: tasksByTag.pluck("count").toArray()
         }
       ]
