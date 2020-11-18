@@ -1,12 +1,19 @@
 import React, { useMemo, useCallback } from "react";
 import { Line } from "react-chartjs-2";
+import { useSelector } from "react-redux";
 import moment from "moment";
 import collect from "collect.js";
+import randomFlatColors from "random-flat-colors";
 import withBacklogTasks from "../withBacklogTasks";
+import { getColourFromTag } from "../../../scripts/helpers/asanaColours";
 
 const ALL_TAGS_TAG = "All";
 
 const GraphCountOverTime = ({ backlogTasks }) => {
+  const { asanaTags } = useSelector(state => state.asanaTags);
+
+  const tagsCollection = useMemo(() => collect(asanaTags), [asanaTags]);
+
   backlogTasks.macro("filterToCurrentYear", function() {
     return this.filter(({ date }) =>
       moment(date).isAfter(moment().add(-0.5, "years"))
@@ -155,8 +162,10 @@ const GraphCountOverTime = ({ backlogTasks }) => {
           .map(({ tag, countPerDay }) => ({
             label: `${tag} (Tasks)`,
             data: countPerDay.pluck("count").toArray(),
-            backgroundColor: "rgb(255, 99, 132)",
-            borderColor: "rgba(255, 99, 132)",
+            borderColor:
+              tag.toString() === ALL_TAGS_TAG
+                ? randomFlatColors("green")
+                : getColourFromTag(tagsCollection.firstWhere("name", tag.tag)),
             yAxisID: "y-axis-task-count"
           }))
           .toArray(),
@@ -164,8 +173,10 @@ const GraphCountOverTime = ({ backlogTasks }) => {
           .map(({ tag, countPerDay }) => ({
             label: `${tag} (Story Points)`,
             data: countPerDay.pluck("storyPoints").toArray(),
-            backgroundColor: "rgb(54, 162, 235)",
-            borderColor: "rgba(54, 162, 235)",
+            borderColor:
+              tag.toString() === ALL_TAGS_TAG
+                ? randomFlatColors("blue")
+                : getColourFromTag(tagsCollection.firstWhere("name", tag.tag)),
             yAxisID: "y-axis-story-point-sum"
           }))
           .toArray()

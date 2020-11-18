@@ -1,13 +1,12 @@
 import React, { useMemo } from "react";
-import { LinkContainer } from "react-router-bootstrap";
 import { Card, ListGroup } from "react-bootstrap";
 import moment from "moment";
 import collect from "collect.js";
 import pluralise from "pluralise";
-import { pluraliseText } from "../../../scripts/helpers";
+import { getColourFromTag } from "../../../scripts/helpers/asanaColours";
 import withBacklogTasks from "../withBacklogTasks";
 import NoData from "../../library/noData";
-import TaskTag from "../../library/taskTag";
+import TagListGroupItem from "../../library/tags/listGroupItem";
 
 const AggregateRaised = ({
   backlogTasks,
@@ -75,14 +74,7 @@ const AggregateRaised = ({
       <ListGroup variant="flush">
         {groupedByTags && groupedByTags.isNotEmpty() ? (
           groupedByTags.map(({ key, count }) => (
-            <LinkContainer key={key} to="/backlog/dashboard">
-              <TaskTag className="text-nowrap" tag={key} asListGroupItem>
-                <span className="font-weight-bold">{count}</span>
-                <span className="ml-3">
-                  {pluraliseText({ name: key, count })}
-                </span>
-              </TaskTag>
-            </LinkContainer>
+            <TagListGroupItem key="key" tag={key} count={count} />
           ))
         ) : (
           <ListGroup.Item className="bg-dark">

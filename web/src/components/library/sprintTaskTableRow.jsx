@@ -6,7 +6,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import moment from "moment";
-import TaskTag from "./taskTag";
+import TagBadge from "./tags/badge";
 
 const SprintTaskTableRow = ({ data }) => {
   const { gid, name, dueOn, storyPoints, sprints, tags } = data;
@@ -48,7 +48,7 @@ const SprintTaskTableRow = ({ data }) => {
         {sortedTags.length > 0 && (
           <span className="ml-1">
             {sortedTags.map((tag, index) => (
-              <TaskTag tag={tag} asBadge />
+              <TagBadge tag={tag} />
             ))}
           </span>
         )}
