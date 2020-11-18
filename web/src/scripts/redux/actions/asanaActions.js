@@ -107,24 +107,21 @@ const loadTags = async (dispatch, getState) => {
 
     const client = Asana.Client.create().useAccessToken(settings.asanaApiKey);
 
-    const { data } = await client.tags.getTags({
-      workspace: settings.user.workspaces[0].gid
+    const collection = await client.tags.getTags({
+      workspace: settings.user.workspaces[0].gid,
+      opt_fields: ["name", "color"]
     });
-    const tags = await Promise.all(
-      collect(data)
-        .pluck("gid")
-        .map(gid => client.tags.getTag(gid))
-    );
-    Logger.trace("Gotten tags from API!", { tags });
+    const asanaTags = await collection.fetch();
+    Logger.trace("Gotten tags from API!", { asanaTags });
 
     dispatch({
       type: SUCCESS_LOADING_ASANA_TAGS,
       loading: false,
-      value: { asanaTags: tags },
+      value: { asanaTags },
       timestamp: new Date()
     });
 
-    return tags;
+    return asanaTags;
   } catch (error) {
     dispatch({ type: SET_LOADING_ASANA_TAGS, loading: false });
     Logger.error(error.callStack || error);
@@ -198,9 +195,9 @@ const loadTasks = async (
           tasks
         ) => ({
           ...task,
-          tags: tags.map(
-            tag => collect(asanaTags).firstWhere("gid", tag.gid).name
-          ),
+          tags: collect(tags)
+            .dump()
+            .map(tag => collect(asanaTags).firstWhere("gid", tag.gid).name),
           sections: collect(tasks)
             .where("gid", task.gid)
             .pluck("sections")
