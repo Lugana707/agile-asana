@@ -1,30 +1,18 @@
 import React, { useMemo } from "react";
 import { Line } from "react-chartjs-2";
+import { useSelector } from "react-redux";
 import collect from "collect.js";
+import { getColourFromTag } from "../../../scripts/helpers/asanaColours";
 
-String.prototype.hashCode = function() {
-  var hash = 0,
-    i,
-    chr;
-  if (this.length === 0) return hash;
-  for (i = 0; i < this.length; i++) {
-    chr = this.charCodeAt(i);
-    hash = (hash << 5) - hash + chr;
-    hash |= 0; // Convert to 32bit integer
-  }
-  return hash;
-};
+const GraphStoryPointsTrend = ({ sprints }) => {
+  const { asanaTags } = useSelector(state => state.asanaTags);
 
-const GraphStoryPointsTrend = ({
-  sprints,
-  showCount = false,
-  showStoryPoints = true
-}) => {
   const sprintCollection = useMemo(() => collect(sprints), [sprints]);
+  const tagsCollection = useMemo(() => collect(asanaTags), [asanaTags]);
 
   const tasksByTag = useMemo(
     () =>
-      collect(sprints)
+      sprintCollection
         .flatMap(({ state, tasksCompleted, tasks }) =>
           state === "ACTIVE" ? tasks : tasksCompleted
         )
@@ -47,7 +35,7 @@ const GraphStoryPointsTrend = ({
               const filteredBySprintAndTag = filteredBySprint.where("tag", key);
 
               const getPercentage = (a, b) => {
-                if (a === 0 || b === 0) {
+                if (!a || !b) {
                   return 0;
                 }
                 return (a / b) * 100;
@@ -73,7 +61,7 @@ const GraphStoryPointsTrend = ({
         )
         .flatten(1)
         .pipe(collection => collect(collection.toArray())),
-    [sprints]
+    [sprintCollection]
   );
 
   const data = useMemo(
@@ -88,9 +76,11 @@ const GraphStoryPointsTrend = ({
         .unique()
         .map(tag => ({
           label: tag,
-          backgroundColor: `#${tag.hashCode().toString(16)}`,
+          backgroundColor: getColourFromTag(
+            tagsCollection.firstWhere("name", tag)
+          ),
           borderColor: "white",
-          borderWidth: 2,
+          borderWidth: 1,
           pointRadius: 0,
           data: tasksByTag
             .where("tag", tag)
@@ -100,7 +90,7 @@ const GraphStoryPointsTrend = ({
         }))
         .toArray()
     }),
-    [sprintCollection]
+    [sprintCollection, tagsCollection]
   );
 
   const options = useMemo(

@@ -3547,6 +3547,11 @@ css-color-names@0.0.4, css-color-names@^0.0.4:
   resolved "https://registry.yarnpkg.com/css-color-names/-/css-color-names-0.0.4.tgz#808adc2e79cf84738069b646cb20ec27beb629e0"
   integrity sha1-gIrcLnnPhHOAabZGyyDsJ762KeA=
 
+css-color-names@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/css-color-names/-/css-color-names-1.0.1.tgz#6ff7ee81a823ad46e020fa2fd6ab40a887e2ba67"
+  integrity sha512-/loXYOch1qU1biStIFsHH8SxTmOseh1IJqFvy8IujXOm1h+QjUdDhkzOrR5HG8K8mlxREj0yfi8ewCHx0eMxzA==
+
 css-declaration-sorter@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/css-declaration-sorter/-/css-declaration-sorter-4.0.1.tgz#c198940f63a76d7e36c1e71018b001721054cb22"
@@ -5090,6 +5095,18 @@ flat-cache@^2.0.1:
     flatted "^2.0.0"
     rimraf "2.6.3"
     write "1.0.3"
+
+flat-colors-groupped@^1.0.0:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/flat-colors-groupped/-/flat-colors-groupped-1.0.9.tgz#8db4f8c1c61c9770ea20ab3d2a7e8975de9458d7"
+  integrity sha512-1V6bsjtofkUaAZuPwo8eL8FvnPNtYNBIY/ZpqtGlmVW/IS9nbTEDi5k9f8PaVDvqQHJ1jED2ImisKS1U+EdDvA==
+  dependencies:
+    flat-colors "^3.3.3"
+
+flat-colors@^3.3.3:
+  version "3.3.12"
+  resolved "https://registry.yarnpkg.com/flat-colors/-/flat-colors-3.3.12.tgz#e93abe480cc3e78f9ea0563e3946f3162c849389"
+  integrity sha512-SYIhhJ+ElZbyyz6+e+xpyN3EboppIg1h6nZaMyEeDwXSY6a3jjp/gANDBmj8xwu+mMflj4UWCPkxRIH+rExDMQ==
 
 flatted@^2.0.0:
   version "2.0.1"
@@ -9433,6 +9450,14 @@ raf@^3.4.0, raf@^3.4.1:
   dependencies:
     performance-now "^2.1.0"
 
+random-flat-colors@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/random-flat-colors/-/random-flat-colors-1.0.7.tgz#88edfae85f0aabfa34e2f37483c33852d0dcd408"
+  integrity sha512-P0tVmBrVKM//1olPW761RRW+OYrncpWdwIdmXF/l0qvTQIMtIeGlL2S2TWVUbWozr3O0BTWt5U863oq58Hw8jw==
+  dependencies:
+    flat-colors-groupped "^1.0.0"
+    unique-random-array "^1.0.0"
+
 randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/randombytes/-/randombytes-2.1.0.tgz#df6f84372f0270dc65cdf6291349ab7a473d4f2a"
@@ -11517,6 +11542,18 @@ unique-filename@^1.1.1:
   integrity sha512-Vmp0jIp2ln35UTXuryvjzkjGdRyf9b2lTXuSYUiPmzRcl3FDtYqAwOnTJkAngD9SWhnoJzDbTKwaOrZ+STtxNQ==
   dependencies:
     unique-slug "^2.0.0"
+
+unique-random-array@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/unique-random-array/-/unique-random-array-1.0.1.tgz#f29bda2a62be8860a703c4739c8f4fdb4d722cc7"
+  integrity sha512-z9J/SV8CUIhIRROcHe9YUoAT6XthUJt0oUyLGgobiXJprDP9O9dsErNevvSaAv5BkhwFEVPn6nIEOKeNE6Ck1Q==
+  dependencies:
+    unique-random "^1.0.0"
+
+unique-random@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/unique-random/-/unique-random-1.0.0.tgz#ce3e224c8242cd33a0e77b0d7180d77e6b62d0c4"
+  integrity sha1-zj4iTIJCzTOg53sNcYDXfmti0MQ=
 
 unique-slug@^2.0.0:
   version "2.0.2"

@@ -1,4 +1,5 @@
 import axios from "axios";
+import Asana from "asana";
 import Logger from "js-logger";
 import camelcase from "camelcase";
 import collect from "collect.js";
@@ -95,26 +96,35 @@ const getTasks = async ({ gid, ...section }) => {
   return tasks;
 };
 
-const loadTags = async dispatch => {
+const loadTags = async (dispatch, getState) => {
   try {
     dispatch({ type: SET_LOADING_ASANA_TAGS, loading: true });
 
     const url = `${ASANA_API_URL}/tags`;
     Logger.trace("Getting tags from API...", { url });
 
-    const { data } = await axios.get(url);
-    Logger.trace("Gotten tags from API!", { data });
+    const { settings } = getState();
 
-    const { data: asanaTags } = data;
+    const client = Asana.Client.create().useAccessToken(settings.asanaApiKey);
+
+    const { data } = await client.tags.getTags({
+      workspace: settings.user.workspaces[0].gid
+    });
+    const tags = await Promise.all(
+      collect(data)
+        .pluck("gid")
+        .map(gid => client.tags.getTag(gid))
+    );
+    Logger.trace("Gotten tags from API!", { tags });
 
     dispatch({
       type: SUCCESS_LOADING_ASANA_TAGS,
       loading: false,
-      value: { asanaTags },
+      value: { asanaTags: tags },
       timestamp: new Date()
     });
 
-    return asanaTags;
+    return tags;
   } catch (error) {
     dispatch({ type: SET_LOADING_ASANA_TAGS, loading: false });
     Logger.error(error.callStack || error);
@@ -250,7 +260,7 @@ const lookForNewProjects = ({ forceReload = false } = {}) => {
     const { asanaTasks } = state.asanaTasks;
     const currentAsanaProjects = collect(state.asanaProjects.asanaProjects);
 
-    const asanaTags = await loadTags(dispatch);
+    const asanaTags = await loadTags(dispatch, getState);
     const asanaProjects = await loadProjects(dispatch);
 
     const newAsanaProjects = collect(asanaProjects).filter(
@@ -294,7 +304,7 @@ const reloadProject = ({ projects }) => {
     const { asanaSections } = state.asanaSections;
     const { asanaTasks } = state.asanaTasks;
 
-    const asanaTags = await loadTags(dispatch);
+    const asanaTags = await loadTags(dispatch, getState);
 
     const sections = collect(asanaProjects)
       .filter(({ gid }) => projects.pluck("gid").contains(gid))
