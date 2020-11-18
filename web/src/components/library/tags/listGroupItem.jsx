@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Badge, ListGroup } from "react-bootstrap";
+import { ListGroup } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { useSelector } from "react-redux";
 import collect from "collect.js";

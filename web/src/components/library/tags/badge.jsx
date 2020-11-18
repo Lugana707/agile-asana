@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Badge, ListGroup } from "react-bootstrap";
+import { Badge } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import collect from "collect.js";
 import { getColourFromTag } from "../../../scripts/helpers/asanaColours";

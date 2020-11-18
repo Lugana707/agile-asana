@@ -90,7 +90,7 @@ const GraphStoryPointsTrend = ({ sprints }) => {
         }))
         .toArray()
     }),
-    [sprintCollection, tagsCollection]
+    [sprintCollection, tagsCollection, tasksByTag]
   );
 
   const options = useMemo(

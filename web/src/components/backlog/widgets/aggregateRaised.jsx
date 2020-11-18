@@ -3,7 +3,6 @@ import { Card, ListGroup } from "react-bootstrap";
 import moment from "moment";
 import collect from "collect.js";
 import pluralise from "pluralise";
-import { getColourFromTag } from "../../../scripts/helpers/asanaColours";
 import withBacklogTasks from "../withBacklogTasks";
 import NoData from "../../library/noData";
 import TagListGroupItem from "../../library/tags/listGroupItem";
