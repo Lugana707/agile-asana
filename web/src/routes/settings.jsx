@@ -4,6 +4,7 @@ import {
   Jumbotron,
   Alert,
   Button,
+  ButtonGroup,
   Row,
   Col,
   Form,
@@ -17,17 +18,25 @@ import {
   faExternalLinkAlt,
   faInfoCircle
 } from "@fortawesome/free-solid-svg-icons";
-import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
+import moment from "moment";
+import collect from "collect.js";
 import User from "../components/user";
 import { updateSettings } from "../scripts/redux/actions/settingsActions";
+import {
+  reloadProject,
+  lookForNewProjects,
+  MATCH_PROJECT_BACKLOG
+} from "../scripts/redux/actions/asanaActions";
 import { loadAll } from "../scripts/redux/actions/asanaActions";
 import withLoading from "../components/withLoading";
 
 const Settings = ({ loading: globalLoading, history }) => {
   const asanaDeveloperConsoleUrl = "https://app.asana.com/0/developer-console";
 
+  const { asanaProjects } = useSelector(state => state.asanaProjects);
   const { loading, asanaApiKey } = useSelector(state => state.settings);
+
   const [settings, setSettings] = useReducer(
     (accumulator, currentValue) => ({ ...accumulator, ...currentValue }),
     { asanaApiKey }
@@ -40,6 +49,23 @@ const Settings = ({ loading: globalLoading, history }) => {
     event.stopPropagation();
     dispatch(updateSettings({ settings }));
     history.push("/");
+  };
+
+  const refreshRecent = () => {
+    dispatch(
+      reloadProject({
+        projects: collect(asanaProjects)
+          .sortBy(({ created_at }) => moment(created_at).unix())
+          .take(2)
+          .merge(
+            collect(asanaProjects)
+              .filter(({ name }) => MATCH_PROJECT_BACKLOG.test(name))
+              .all()
+          )
+          .where()
+      })
+    );
+    dispatch(lookForNewProjects());
   };
 
   const ApiKeyTooltip = props => (
@@ -56,14 +82,16 @@ const Settings = ({ loading: globalLoading, history }) => {
           <p>These settings be stored locally using local storage.</p>
           <Alert variant="info">All data is stored locally!</Alert>
           <hr className="my-4" />
-          <Button
-            variant="secondary"
-            onClick={() => dispatch(loadAll())}
-            disabled={globalLoading}
-          >
-            <FontAwesomeIcon icon={faRedo} size="1x" spin={!!globalLoading} />
-            <span> Reload Data</span>
-          </Button>
+          <fieldset disabled={globalLoading}>
+            <ButtonGroup>
+              <Button variant="secondary" onClick={() => dispatch(loadAll())}>
+                Reload All
+              </Button>
+              <Button variant="secondary" onClick={() => refreshRecent()}>
+                Refresh Recent
+              </Button>
+            </ButtonGroup>
+          </fieldset>
         </Container>
       </Jumbotron>
       <Container className="text-left">

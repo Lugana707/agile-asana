@@ -1,13 +1,14 @@
 import React from "react";
 import { LinkContainer } from "react-router-bootstrap";
 import { useSelector } from "react-redux";
-import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRedo } from "@fortawesome/free-solid-svg-icons";
+import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 import Logo from "../logo.png";
 import User from "./user";
+import withLoading from "./withLoading";
 
-const Header = () => {
+const Header = ({ loading: globalLoading }) => {
   const { asanaApiKey } = useSelector(state => state.settings);
 
   const NavLink = ({ children, to }) => (
@@ -52,6 +53,13 @@ const Header = () => {
           </Nav>
           <Nav className="navbar-right">
             <NavLink to="/settings">
+              <span className="pr-2" hidden={!globalLoading}>
+                <FontAwesomeIcon
+                  icon={faRedo}
+                  size="1x"
+                  spin={!!globalLoading}
+                />
+              </span>
               <User badge />
             </NavLink>
           </Nav>
@@ -61,4 +69,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default withLoading(Header);
