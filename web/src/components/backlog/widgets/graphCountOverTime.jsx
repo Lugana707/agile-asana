@@ -196,6 +196,7 @@ const GraphCountOverTime = ({ backlogTasks }) => {
     () => ({
       showLines: true,
       maintainAspectRatio: false,
+      responsive: true,
       scales: {
         yAxes: [
           {
