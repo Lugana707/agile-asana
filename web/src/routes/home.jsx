@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import collect from "collect.js";
 import SprintFilters from "../components/sprint/widgets/sprintFilters";
-import SprintWidgetGraphStoryPointsTrend from "../components//sprint/widgets/graphStoryPointsTrend";
+import SprintStoryPointsTrend from "../components/sprint/charts/sprintStoryPointsTrend";
 import SprintWidgetGraphStoryPointsThroughSprint from "../components/sprint/widgets/graphStoryPointsThroughSprint";
 import SprintTagsAreaChart from "../components/sprint/charts/sprintTagsAreaChart";
 import TasksAtRiskWidget from "../components/backlog/alerts/tasksAtRiskWidget";
@@ -53,7 +53,7 @@ const Home = ({ sprints }) => {
       </Row>
       <Row className="mr-4">
         <Col xs={12} lg={6} style={{ height: "50vh" }}>
-          <SprintWidgetGraphStoryPointsTrend sprints={sprintsForDisplay} />
+          <SprintStoryPointsTrend sprints={sprintsForDisplay} />
         </Col>
         <Col
           xs={12}

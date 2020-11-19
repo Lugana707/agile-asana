@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from "react";
 import { Chart } from "react-charts";
 import collect from "collect.js";
 
-const GraphStoryPointsTrend = ({ sprints = [] }) => {
+const SprintStoryPointsTrend = ({ sprints = [] }) => {
   const sprintsCollection = useMemo(
     () => collect(sprints).sortByDesc("number"),
     [sprints]
@@ -73,4 +73,4 @@ const GraphStoryPointsTrend = ({ sprints = [] }) => {
   return <Chart data={data} series={series} axes={axes} tooltip dark />;
 };
 
-export default GraphStoryPointsTrend;
+export default SprintStoryPointsTrend;
