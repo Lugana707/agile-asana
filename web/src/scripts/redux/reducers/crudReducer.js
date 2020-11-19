@@ -32,6 +32,18 @@ export default (
           loading,
           [resourceType]: state[resourceType].concat(value)
         };
+
+      case `UPSERT_${resourceTypeSingular}`:
+        return {
+          ...state,
+          loading,
+          [resourceType]: [
+            ...state[resourceType].filter(
+              obj => obj[resourceIdKey] !== value[resourceIdKey]
+            ),
+            value
+          ]
+        };
       case `DELETE_${resourceTypeSingular}`:
         return {
           ...state,

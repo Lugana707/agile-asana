@@ -8,7 +8,7 @@ const MATCH_PROJECT_BACKLOG = /^Product Backlog$/u;
 
 const SET_LOADING_SPRINTS = "SET_LOADING_SPRINTS";
 const DELETE_SPRINT = "DELETE_SPRINT";
-const ADD_SPRINT = "ADD_SPRINT";
+const UPSERT_SPRINT = "UPSERT_SPRINT";
 
 const SUCCESS_LOADING_BACKLOG_TASKS = "SUCCESS_LOADING_BACKLOGTASKS";
 const SUCCESS_LOADING_REFINED_BACKLOG_TASKS =
@@ -233,8 +233,7 @@ const processSprints = () => {
         )
         .sortByDesc("number")
         .map(sprint => {
-          dispatch({ type: DELETE_SPRINT, value: sprint, loading: true });
-          dispatch({ type: ADD_SPRINT, value: sprint, loading: true });
+          dispatch({ type: UPSERT_SPRINT, value: sprint, loading: true });
           return sprint;
         })
         .all();
@@ -293,8 +292,7 @@ const processSprints = () => {
         asanaProjectBacklog,
         refinedBacklogTasks
       }).forEach(sprint => {
-        dispatch({ type: DELETE_SPRINT, value: sprint, loading: true });
-        dispatch({ type: ADD_SPRINT, value: sprint, loading: true });
+        dispatch({ type: UPSERT_SPRINT, value: sprint, loading: true });
       });
     } catch (error) {
       Logger.error(error);
