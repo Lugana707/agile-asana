@@ -177,15 +177,15 @@ const loadSections = async (dispatch, getState, { asanaProjects }) => {
   }
 };
 
-const loadTasks = async (
-  dispatch,
-  getState,
-  { asanaSections, asanaTags, asanaTasks }
-) => {
+const loadTasks = async (dispatch, getState, { asanaSections }) => {
   try {
     dispatch({ type: SET_LOADING_ASANA_TASKS, loading: true });
 
     const { client } = getAsanaApiClient(getState());
+
+    const { asanaTasks } = getState().asanaTasks;
+
+    const asanaTags = await loadTags(dispatch, getState);
 
     const tasksCollection = collect(
       await Promise.all(asanaSections.map(section => getTasks(client, section)))
@@ -257,10 +257,8 @@ const lookForNewProjects = ({ forceReload = false } = {}) => {
       return false;
     }
 
-    const { asanaTasks } = state.asanaTasks;
     const currentAsanaProjects = collect(state.asanaProjects.asanaProjects);
 
-    const asanaTags = await loadTags(dispatch, getState);
     const asanaProjects = await loadProjects(dispatch, getState);
 
     const newAsanaProjects = collect(asanaProjects).filter(
@@ -276,9 +274,7 @@ const lookForNewProjects = ({ forceReload = false } = {}) => {
       asanaProjects: forceReload ? asanaProjects : newAsanaProjects.all()
     });
     await loadTasks(dispatch, getState, {
-      asanaSections,
-      asanaTags,
-      asanaTasks
+      asanaSections
     });
   };
 };
@@ -306,9 +302,6 @@ const reloadProject = ({ projects }) => {
 
     const { asanaProjects } = state.asanaProjects;
     const { asanaSections } = state.asanaSections;
-    const { asanaTasks } = state.asanaTasks;
-
-    const asanaTags = await loadTags(dispatch, getState);
 
     const sections = collect(asanaProjects)
       .filter(({ gid }) => projects.pluck("gid").contains(gid))
@@ -320,9 +313,7 @@ const reloadProject = ({ projects }) => {
       .all();
 
     await loadTasks(dispatch, getState, {
-      asanaSections: sections,
-      asanaTags,
-      asanaTasks
+      asanaSections: sections
     });
   };
 };
