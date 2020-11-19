@@ -7,7 +7,6 @@ const RUNNING_AVERAGE_WEEK_COUNT = 3;
 const MATCH_PROJECT_BACKLOG = /^Product Backlog$/u;
 
 const SET_LOADING_SPRINTS = "SET_LOADING_SPRINTS";
-const DELETE_SPRINT = "DELETE_SPRINT";
 const UPSERT_SPRINT = "UPSERT_SPRINT";
 
 const SUCCESS_LOADING_BACKLOG_TASKS = "SUCCESS_LOADING_BACKLOGTASKS";
@@ -71,8 +70,7 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
       }
 
       return task;
-    })
-    .all();
+    });
 
 const processBacklogIntoForecastedSprints = ({
   sprints,
@@ -124,22 +122,22 @@ const processBacklogIntoForecastedSprints = ({
 
 const processProjectIntoSprint = ({
   asanaProject,
-  tasks,
+  tasksCollection,
   asanaProjectsCollection
 }) => {
   Logger.debug("Processing project into sprint...", {
     asanaProject,
-    tasks,
+    tasksCollection,
     asanaProjectsCollection
   });
 
   const { gid, archived, name, due_on, start_on, created_at } = asanaProject;
 
-  const tasksCollection = collect(tasks).filter(task =>
+  const sprintTasksCollection = tasksCollection.filter(task =>
     collect(task.sprints).contains(gid)
   );
 
-  const tasksCompletedCollection = tasksCollection
+  const tasksCompletedCollection = sprintTasksCollection
     .filter(task => !!task.completedAt)
     .where("mostRecentSprint", gid);
 
@@ -149,7 +147,7 @@ const processProjectIntoSprint = ({
       .filter()
       .sum();
 
-  const storyPoints = sumStoryPoints(tasksCollection);
+  const storyPoints = sumStoryPoints(sprintTasksCollection);
   const completedStoryPoints = sumStoryPoints(tasksCompletedCollection);
 
   const week = parseInt(name.replace(/.+ Kanban Week /u, "").trim(), 10);
@@ -167,7 +165,7 @@ const processProjectIntoSprint = ({
     startOn,
     finishedOn,
     sprintLength,
-    tasks: tasksCollection.all(),
+    tasks: sprintTasksCollection.all(),
     tasksCompleted: tasksCompletedCollection.all()
   };
 };
@@ -207,9 +205,10 @@ const processSprints = () => {
         .filter(({ name }) => matchBacklog.test(name))
         .first();
 
-      const tasksCollection = collect(
-        processTasks({ asanaTasks, asanaProjectsCollection })
-      );
+      const tasksCollection = processTasks({
+        asanaTasks,
+        asanaProjectsCollection
+      });
 
       Logger.info("Processing projects into historic sprints...", {
         asanaProjectsCollection,
@@ -220,7 +219,7 @@ const processSprints = () => {
         .map(asanaProject =>
           processProjectIntoSprint({
             asanaProject,
-            tasks: tasksCollection.all(),
+            tasksCollection,
             asanaProjectsCollection
           })
         )
