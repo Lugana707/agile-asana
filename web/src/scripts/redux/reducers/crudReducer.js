@@ -24,7 +24,7 @@ export default (
     collection.filter(({ [resourceIdKey]: id }) => id !== value[resourceIdKey]);
 
   return (state = initialState, { type, value, loading, timestamp } = {}) => {
-    const { [resourceType]: collection } = value;
+    const { [resourceType]: collection = [] } = state;
 
     switch (type) {
       case `SET_LOADING_${resourceTypeUpperCase}`:
@@ -55,7 +55,7 @@ export default (
         return {
           ...state,
           loading,
-          [resourceType]: deleteFromArray(collection)
+          [resourceType]: deleteFromArray(collection, value)
         };
       case "LOGOUT":
         return initialState;
