@@ -129,7 +129,7 @@ const loadTags = async (dispatch, getState) => {
   }
 };
 
-const loadProjects = async (dispatch, getState) => {
+const loadProjects = async dispatch => {
   try {
     dispatch({ type: SET_LOADING_ASANA_PROJECTS, loading: true });
 
@@ -261,7 +261,7 @@ const lookForNewProjects = ({ forceReload = false } = {}) => {
 
     const currentAsanaProjects = collect(state.asanaProjects.asanaProjects);
 
-    const asanaProjects = await loadProjects(dispatch, getState);
+    const asanaProjects = await loadProjects(dispatch);
 
     const newAsanaProjects = collect(asanaProjects).filter(
       ({ gid }) => !currentAsanaProjects.contains("gid", gid)

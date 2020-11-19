@@ -1,3 +1,4 @@
+/* jshint maxcomplexity:7 */
 export default (
   resourceType = "",
   resourceIdKey = "",
@@ -12,7 +13,19 @@ export default (
     resourceTypeUpperCase.length - 1
   );
 
+  const upsertFromArray = (collection, value) => [
+    ...collection.filter(
+      ({ [resourceIdKey]: id }) => id !== value[resourceIdKey]
+    ),
+    value
+  ];
+
+  const deleteFromArray = (collection, value) =>
+    collection.filter(({ [resourceIdKey]: id }) => id !== value[resourceIdKey]);
+
   return (state = initialState, { type, value, loading, timestamp } = {}) => {
+    const { [resourceType]: collection } = value;
+
     switch (type) {
       case `SET_LOADING_${resourceTypeUpperCase}`:
         return {
@@ -30,27 +43,19 @@ export default (
         return {
           ...state,
           loading,
-          [resourceType]: state[resourceType].concat(value)
+          [resourceType]: [...collection, value]
         };
-
       case `UPSERT_${resourceTypeSingular}`:
         return {
           ...state,
           loading,
-          [resourceType]: [
-            ...state[resourceType].filter(
-              obj => obj[resourceIdKey] !== value[resourceIdKey]
-            ),
-            value
-          ]
+          [resourceType]: upsertFromArray(collection, value)
         };
       case `DELETE_${resourceTypeSingular}`:
         return {
           ...state,
           loading,
-          [resourceType]: state[resourceType].filter(
-            ({ [resourceIdKey]: id }) => id !== value[resourceIdKey]
-          )
+          [resourceType]: deleteFromArray(collection)
         };
       case "LOGOUT":
         return initialState;
