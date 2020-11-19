@@ -35,9 +35,15 @@ const loadUser = () => {
       dispatch({ type: SET_LOADING_SETTINGS, loading: true });
 
       const client = Asana.Client.create().useAccessToken(asanaApiKey);
-      const user = await client.users.me();
 
-      dispatch({ type: ADD_SETTINGS, loading: false, value: { user } });
+      const user = await client.users.me();
+      const [asanaDefaultWorkspace] = user.workspaces;
+
+      dispatch({
+        type: ADD_SETTINGS,
+        loading: false,
+        value: { user, asanaDefaultWorkspace }
+      });
       dispatch(loadAll());
     } catch (error) {
       Logger.error(error);
