@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import collect from "collect.js";
-import SprintWidgetGraphStoryPointsThroughSprint from "../../components/sprint/widgets/graphStoryPointsThroughSprint";
+import SprintBurnUpDown from "../../components/sprint/charts/burnUpDown";
 import SprintTagsBarChart from "../../components/sprint/charts/sprintTagsBarChart";
 import SprintTimeProgress from "../../components/sprint/timeProgress";
 import SprintStoryPointProgress from "../../components/sprint/storyPointProgress";
@@ -32,11 +32,7 @@ const Show = ({ match }) => {
       <Row>
         <Col xs={12} md={12} className="pb-4">
           <div className="h-100" style={{ minHeight: "300px" }}>
-            <SprintWidgetGraphStoryPointsThroughSprint
-              sprints={[sprint]}
-              showBurnUp={isComplete}
-              showBurnDown={state === "ACTIVE"}
-            />
+            <SprintBurnUpDown sprint={sprint} />
           </div>
         </Col>
         <Col xs={12} className="pb-4">

@@ -51,13 +51,6 @@ const SprintStoryPointsTrend = ({ sprints = [] }) => {
 
               return undefined;
             })
-            .toArray(),
-          dataOld: completedSprints
-            .whereIn("number", [
-              completedSprints.min("number"),
-              completedSprints.max("number")
-            ])
-            .pluck("averageCompletedStoryPoints")
             .toArray()
         },
         {

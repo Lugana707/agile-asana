@@ -123,7 +123,7 @@ const GraphStoryPointsTrend = ({ sprints }) => {
               labelString: "Percentage"
             },
             ticks: {
-              min: 0,
+              beginAtZero: true,
               max: 100,
               callback: function(value) {
                 return `${value}%`;
