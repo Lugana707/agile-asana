@@ -7,8 +7,9 @@ import { loadAll } from "../scripts/redux/actions/asanaActions";
 import { processSprints } from "../scripts/redux/actions/sprintActions";
 import { loadUser, logout } from "../scripts/redux/actions/settingsActions";
 import withLoading from "./withLoading";
+import withConfigured from "./withConfigured";
 
-const DataIntegrity = ({ history, loading }) => {
+const DataIntegrity = ({ history, configured, loading }) => {
   const { user, asanaApiKey } = useSelector(state => state.settings);
   const { asanaTags } = useSelector(state => state.asanaTags);
   const { asanaProjects } = useSelector(state => state.asanaProjects);
@@ -36,16 +37,16 @@ const DataIntegrity = ({ history, loading }) => {
   }, [asanaApiKey]);
 
   useEffect(() => {
-    if (!asanaApiKey) {
+    if (!configured) {
       dispatch(logout());
       history.push("/settings");
     } else if (!user) {
       dispatch(loadUser());
     }
-  }, [asanaApiKey, user, dispatch, history]);
+  }, [configured, user, dispatch, history]);
 
   useEffect(() => {
-    if (loading || !asanaApiKey) {
+    if (loading || !configured) {
       return;
     } else if (!asanaTags || !asanaProjects || !asanaSections || !asanaTasks) {
       dispatch(loadAll());
@@ -54,7 +55,7 @@ const DataIntegrity = ({ history, loading }) => {
     }
   }, [
     loading,
-    asanaApiKey,
+    configured,
     dispatch,
     asanaTags,
     asanaProjects,
@@ -65,4 +66,4 @@ const DataIntegrity = ({ history, loading }) => {
   return <div />;
 };
 
-export default withRouter(withLoading(DataIntegrity));
+export default withRouter(withConfigured(withLoading(DataIntegrity)));

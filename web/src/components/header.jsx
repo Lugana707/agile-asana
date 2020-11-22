@@ -1,15 +1,17 @@
 import React from "react";
 import { LinkContainer } from "react-router-bootstrap";
-import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 import Logo from "../logo.png";
 import User from "./user";
 import withLoading from "./withLoading";
+import withConfigured from "./withConfigured";
 
-const Header = ({ loading: globalLoading }) => {
-  const { asanaApiKey } = useSelector(state => state.settings);
+const Header = ({ loading: globalLoading, configured }) => {
+  if (!configured) {
+    return <div />;
+  }
 
   const NavLink = ({ children, to }) => (
     <LinkContainer to={to}>
@@ -22,10 +24,6 @@ const Header = ({ loading: globalLoading }) => {
       <NavDropdown.Item>{children}</NavDropdown.Item>
     </LinkContainer>
   );
-
-  if (!asanaApiKey) {
-    return <div />;
-  }
 
   return (
     <header className="header">
@@ -69,4 +67,4 @@ const Header = ({ loading: globalLoading }) => {
   );
 };
 
-export default withLoading(Header);
+export default withConfigured(withLoading(Header));

@@ -9,8 +9,13 @@ import {
   MATCH_PROJECT_BACKLOG
 } from "../scripts/redux/actions/asanaActions";
 import withLoading from "./withLoading";
+import withConfigured from "./withConfigured";
 
-const UpdateProjects = ({ loading, seconds: reloadDataTimeoutSeconds }) => {
+const UpdateProjects = ({
+  loading,
+  configured,
+  seconds: reloadDataTimeoutSeconds
+}) => {
   const { asanaProjects } = useSelector(state => state.asanaProjects);
   const { timestamp: asanaTasksTimestamp } = useSelector(
     state => state.asanaTasks
@@ -25,7 +30,7 @@ const UpdateProjects = ({ loading, seconds: reloadDataTimeoutSeconds }) => {
   const [timedOut, setTimedOut] = useState(false);
 
   const reloadAsanaProjectsIfAppropriate = useCallback(() => {
-    if (loading) {
+    if (loading || !configured) {
       return;
     }
 
@@ -53,6 +58,7 @@ const UpdateProjects = ({ loading, seconds: reloadDataTimeoutSeconds }) => {
     dispatch(lookForNewProjects());
   }, [
     loading,
+    configured,
     asanaProjects,
     lastCheckedForData,
     reloadDataTimeoutSeconds,
@@ -80,4 +86,4 @@ const UpdateProjects = ({ loading, seconds: reloadDataTimeoutSeconds }) => {
   return <div />;
 };
 
-export default withLoading(UpdateProjects);
+export default withConfigured(withLoading(UpdateProjects));
