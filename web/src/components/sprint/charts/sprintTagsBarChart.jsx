@@ -18,7 +18,8 @@ const SprintTagsBarChart = ({ sprint }) => {
           storyPoints: value.sum("storyPoints"),
           count: value.count()
         }))
-        .pipe(collection => collect(collection.toArray())),
+        .pipe(collection => collect(collection.toArray()))
+        .sortBy("tag"),
     [sprint]
   );
 
@@ -58,7 +59,11 @@ const SprintTagsBarChart = ({ sprint }) => {
     []
   );
 
-  return <Bar data={data} options={options} />;
+  return (
+    <div className="h-100" style={{ minHeight: "300px" }}>
+      <Bar data={data} options={options} />
+    </div>
+  );
 };
 
 export default SprintTagsBarChart;

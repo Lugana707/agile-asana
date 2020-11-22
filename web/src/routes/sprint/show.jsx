@@ -8,6 +8,7 @@ import SprintTimeProgress from "../../components/sprint/timeProgress";
 import SprintStoryPointProgress from "../../components/sprint/storyPointProgress";
 import SprintInfoCard from "../../components/sprint/infoCard";
 import BacklogAggregateRaised from "../../components/backlog/widgets/aggregateRaised";
+import BacklogProgressPerSprint from "../../components/backlog/charts/progressPerSprint";
 
 const Show = ({ match }) => {
   const { uuid } = match.params;
@@ -30,31 +31,33 @@ const Show = ({ match }) => {
   return (
     <Container>
       <Row>
-        <Col xs={12} md={12} className="pb-4">
-          <div className="h-100" style={{ minHeight: "300px" }}>
-            <SprintBurnUpDown sprint={sprint} />
-          </div>
+        <Col xs={{ span: 12, order: 0 }} md={12} className="pb-4">
+          <SprintBurnUpDown sprint={sprint} />
         </Col>
-        <Col xs={12} className="pb-4">
+        <Col xs={{ span: 12, order: 1 }} className="pb-4">
           <SprintStoryPointProgress sprint={sprint} />
           {!isComplete && (
             <SprintTimeProgress className="mt-1" sprint={sprint} />
           )}
         </Col>
-        <Col xs={12} md={7} className="pb-4 d-block">
+        <Col xs={{ span: 12, order: 3 }} md={5} className="pb-4">
+          <SprintInfoCard sprint={sprint} />
+        </Col>
+        <Col xs={{ span: 12, order: 4 }} md={7} className="pb-4 d-block">
+          <SprintTagsBarChart sprint={sprint} />
+        </Col>
+        <Col md={{ span: 12, order: 5 }} className="d-hidden d-md-block">
+          <hr />
+        </Col>
+        <Col xs={{ span: 12, order: 7 }} md={7} className="pb-4 d-block">
+          <BacklogProgressPerSprint sprint={sprint} />
+        </Col>
+        <Col xs={{ span: 12, order: 6 }} md={5} className="pb-4">
           <BacklogAggregateRaised
             dateFrom={startOn}
             dateTo={finishedOn}
             includeTag={["bug", "feature"]}
           />
-        </Col>
-        <Col xs={12} md={5} className="pb-4">
-          <SprintInfoCard sprint={sprint} />
-        </Col>
-        <Col xs={{ size: 12, order: "last" }} md={12}>
-          <div className="h-100" style={{ minHeight: "300px " }}>
-            <SprintTagsBarChart sprint={sprint} />
-          </div>
         </Col>
       </Row>
     </Container>

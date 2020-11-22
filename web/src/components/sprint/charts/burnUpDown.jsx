@@ -132,7 +132,11 @@ const StoryPointsPerDay = ({ sprint }) => {
     return <div className="loading-spinner centre" />;
   }
 
-  return <Bar data={data} options={options} />;
+  return (
+    <div className="h-100" style={{ minHeight: "300px" }}>
+      <Bar data={data} options={options} />
+    </div>
+  );
 };
 
 export default StoryPointsPerDay;
