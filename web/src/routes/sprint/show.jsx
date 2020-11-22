@@ -49,10 +49,18 @@ const Show = ({ match }) => {
         <Col md={{ span: 12, order: 5 }} className="d-hidden d-md-block">
           <hr />
         </Col>
-        <Col xs={{ span: 12, order: 7 }} md={7} className="pb-4 d-block">
+        <Col
+          xs={{ span: 12, order: 7 }}
+          md={{ span: 7, order: 6 }}
+          className="pb-4 d-block"
+        >
           <BacklogProgressPerSprint sprint={sprint} />
         </Col>
-        <Col xs={{ span: 12, order: 6 }} md={5} className="pb-4">
+        <Col
+          xs={{ span: 12, order: 6 }}
+          md={{ span: 5, order: 7 }}
+          className="pb-4"
+        >
           <BacklogAggregateRaised
             dateFrom={startOn}
             dateTo={finishedOn}
