@@ -22,14 +22,12 @@ const InfoCard = ({ sprint }) => {
     <Card bg="dark" text="light" className="text-left">
       <Card.Body>
         <Card.Title>
-          <span>
-            <span>Sprint {number}</span>
-            {state === "COMPLETED" ? (
-              <span className="text-success"> Completed</span>
-            ) : (
-              <span className="text-warning"> (In Progress)</span>
-            )}
-          </span>
+          <span>Sprint {number}</span>
+          {state === "COMPLETED" ? (
+            <span className="text-success"> Completed</span>
+          ) : (
+            <span className="text-warning"> (In Progress)</span>
+          )}
         </Card.Title>
         <Card.Subtitle className="text-muted">
           <span className="d-block">{name}</span>

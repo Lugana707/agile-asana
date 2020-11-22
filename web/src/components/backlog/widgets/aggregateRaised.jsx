@@ -45,15 +45,13 @@ const AggregateRaised = ({
     <Card bg="dark" className="text-left text-white">
       <Card.Body>
         <Card.Title>
-          <span className="ml-2">
-            {pluralise.withCount(
-              groupedByTags.sum("count"),
-              "% Backlog Task",
-              null,
-              "No Backlog Tasks"
-            )}
-            <span> Created</span>
-          </span>
+          {pluralise.withCount(
+            groupedByTags.sum("count"),
+            "% Backlog Task",
+            null,
+            "No Backlog Tasks"
+          )}
+          <span> Created</span>
         </Card.Title>
         {showDateRange && (
           <Card.Subtitle className="text-muted">
