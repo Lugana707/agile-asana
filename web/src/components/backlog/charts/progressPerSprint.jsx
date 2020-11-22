@@ -4,7 +4,6 @@ import { Bar } from "react-chartjs-2";
 import collect from "collect.js";
 import Color from "color";
 import withBacklogTasks from "../withBacklogTasks";
-import { getColourFromTag } from "../../../scripts/helpers/asanaColours";
 
 const BacklogProgressPerSprint = ({ sprint, backlogTasks }) => {
   const { asanaTags } = useSelector(state => state.asanaTags);
@@ -81,7 +80,7 @@ const BacklogProgressPerSprint = ({ sprint, backlogTasks }) => {
         .sort()
         .map(tag => ({
           tag,
-          colour: Color(getColourFromTag(getAsanaTag(tag)))
+          colour: Color(getAsanaTag(tag).color)
         })),
     [tasksCompletedByTags, tasksCreatedByTag, getAsanaTag]
   );

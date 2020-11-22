@@ -2,13 +2,12 @@ import React, { useMemo } from "react";
 import { Badge } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import collect from "collect.js";
-import { getColourFromTag } from "../../../scripts/helpers/asanaColours";
 
 export default ({ className, tag, children }) => {
   const { asanaTags } = useSelector(state => state.asanaTags);
 
   const colour = useMemo(
-    () => getColourFromTag(collect(asanaTags).firstWhere("name", tag)),
+    () => collect(asanaTags).firstWhere("name", tag).color,
     [asanaTags, tag]
   );
 

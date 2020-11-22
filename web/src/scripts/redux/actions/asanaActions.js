@@ -5,6 +5,7 @@ import camelcase from "camelcase";
 import collect from "collect.js";
 import { ASANA_API_URL } from "../../api";
 import { isLoading } from "../../helpers";
+import { getColourFromTag } from "../../helpers/asanaColours";
 
 const SET_LOADING_ASANA_TAGS = "SET_LOADING_ASANATAGS";
 const SUCCESS_LOADING_ASANA_TAGS = "SUCCESS_LOADING_ASANATAGS";
@@ -111,7 +112,10 @@ const loadTags = async (dispatch, getState) => {
       workspace,
       opt_fields: ["name", "color"]
     });
-    const asanaTags = await collection.fetch();
+    const asanaTags = (await collection.fetch()).map(tag => ({
+      ...tag,
+      color: getColourFromTag(tag)
+    }));
     Logger.trace("Gotten tags from API!", { asanaTags });
 
     dispatch({

@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import { Line } from "react-chartjs-2";
 import { useSelector } from "react-redux";
 import collect from "collect.js";
-import { getColourFromTag } from "../../../scripts/helpers/asanaColours";
 
 const GraphStoryPointsTrend = ({ sprints }) => {
   const { asanaTags } = useSelector(state => state.asanaTags);
@@ -76,9 +75,7 @@ const GraphStoryPointsTrend = ({ sprints }) => {
         .unique()
         .map(tag => ({
           label: tag,
-          backgroundColor: getColourFromTag(
-            tagsCollection.firstWhere("name", tag)
-          ),
+          backgroundColor: tagsCollection.firstWhere("name", tag).color,
           borderColor: "white",
           borderWidth: 1,
           pointRadius: 0,

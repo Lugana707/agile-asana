@@ -28,7 +28,6 @@ const StoryPointsPerDay = ({ sprints, showBurnUp, showBurnDown }) => {
             backgroundColor: randomFlatColors(),
             borderWidth: 1,
             data: daysOfTheWeek
-              .dump()
               .map(obj =>
                 tasksCompletedCollection
                   .where("storyPoints")
