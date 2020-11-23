@@ -56,7 +56,7 @@ const BacklogProgressPerSprint = ({ sprint, backlogTasks }) => {
   const tasksCompletedByTags = useMemo(
     () =>
       collect(sprint.tasksCompleted)
-        .merge(backlogTasksCompletedDurnigSprint)
+        .merge(backlogTasksCompletedDurnigSprint.toArray())
         .unique("uuid")
         .groupByTagAndCount(),
     [sprint.tasksCompleted, backlogTasksCompletedDurnigSprint]
@@ -65,7 +65,7 @@ const BacklogProgressPerSprint = ({ sprint, backlogTasks }) => {
   const tasksCreatedByTag = useMemo(
     () =>
       backlogTasksCreatedDuringSprint
-        .merge(sprintTasksCreatedDuringSprint)
+        .merge(sprintTasksCreatedDuringSprint.toArray())
         .unique("uuid")
         .groupByTagAndCount(),
     [backlogTasksCreatedDuringSprint, sprintTasksCreatedDuringSprint]
