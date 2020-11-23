@@ -202,9 +202,11 @@ const loadTasks = async (dispatch, getState, { asanaSections }) => {
           tasks
         ) => ({
           ...task,
-          tags: tags.map(
-            tag => collect(asanaTags).firstWhere("gid", tag.gid).name
-          ),
+          tags: collect(tags)
+            .pluck("gid")
+            .map(gid => (collect(asanaTags).firstWhere("gid", gid) || {}).name)
+            .filter()
+            .toArray(),
           sections: collect(tasks)
             .where("gid", task.gid)
             .pluck("sections")
