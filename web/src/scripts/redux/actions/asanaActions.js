@@ -162,7 +162,7 @@ const loadSections = async (dispatch, getState, { asanaProjects }) => {
 
     const asanaSections = (
       await Promise.all(
-        asanaProjects.map(async project => await getSections(getState, project))
+        asanaProjects.map(project => getSections(getState, project))
       )
     ).flat();
 
