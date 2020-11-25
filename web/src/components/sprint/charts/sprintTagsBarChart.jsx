@@ -51,7 +51,7 @@ const SprintTagsBarChart = ({ sprint }) => {
       scales: {
         yAxes: [
           {
-            ticks: { beginAtZero: true }
+            ticks: { beginAtZero: true, precision: 0 }
           }
         ]
       }

@@ -138,7 +138,7 @@ const BacklogProgressPerSprint = ({ sprint, backlogTasks }) => {
         yAxes: [
           {
             stacked: true,
-            ticks: { beginAtZero: true }
+            ticks: { beginAtZero: true, precision: 0 }
           }
         ]
       }

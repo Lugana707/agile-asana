@@ -125,7 +125,7 @@ const StoryPointsPerDay = ({ sprint }) => {
             type: "linear",
             display: true,
             position: "left",
-            ticks: { beginAtZero: true }
+            ticks: { beginAtZero: true, precision: 0 }
           }
         ]
       }

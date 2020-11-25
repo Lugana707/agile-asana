@@ -74,14 +74,14 @@ const StoryPointsPerDay = ({ sprints, showBurnUp, showBurnDown }) => {
             stacked: true,
             position: "left",
             id: "y-axis-daily-sum",
-            ticks: { beginAtZero: true }
+            ticks: { beginAtZero: true, precision: 0 }
           },
           {
             type: "linear",
             display: false,
             position: "right",
             id: "y-axis-cummulative-sum",
-            ticks: { beginAtZero: true }
+            ticks: { beginAtZero: true, precision: 0 }
           }
         ]
       }

@@ -204,14 +204,14 @@ const GraphCountOverTime = ({ backlogTasks }) => {
             display: true,
             position: "left",
             id: "y-axis-task-count",
-            ticks: { beginAtZero: true }
+            ticks: { beginAtZero: true, precision: 0 }
           },
           {
             type: "linear",
             display: true,
             position: "right",
             id: "y-axis-story-point-sum",
-            ticks: { beginAtZero: true }
+            ticks: { beginAtZero: true, precision: 0 }
           }
         ]
       }

@@ -95,7 +95,7 @@ const SprintStoryPointsTrend = ({ sprints = [] }) => {
             stacked: false,
             type: "linear",
             scaleLabel: { display: false },
-            ticks: { min: 0 }
+            ticks: { beginAtZero: true, precision: 0 }
           }
         ]
       }
