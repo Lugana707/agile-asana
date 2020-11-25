@@ -180,7 +180,7 @@ const GraphCountOverTime = ({
         }))
         .toArray()
     }),
-    [dates, backlogCountPerDayByTag, tagsCollection]
+    [dates, backlogCountPerDayByTag, tagsCollection, displayTags]
   );
 
   const options = useMemo(
