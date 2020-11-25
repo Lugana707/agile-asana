@@ -7,15 +7,7 @@ import randomFlatColors from "random-flat-colors";
 const StoryPointsPerDay = ({ sprint }) => {
   const burnUp = useMemo(() => sprint.state === "COMPLETED", [sprint]);
 
-  const totalStoryPoints = useMemo(
-    () =>
-      sprint.state === "COMPLETED"
-        ? sprint.completedStoryPoints
-        : collect(sprint.tasks)
-            .where("storyPoints")
-            .sum("storyPoints"),
-    [sprint]
-  );
+  const { storyPoints: committedStoryPoints } = sprint;
 
   const daysOfTheWeek = useMemo(
     () =>
@@ -48,8 +40,9 @@ const StoryPointsPerDay = ({ sprint }) => {
                   .sum()
             )
             .when(!burnUp, collection =>
-              collection.map(obj => totalStoryPoints - obj)
+              collection.map(obj => committedStoryPoints - obj)
             )
+            .take(sprint.startOn.diff(moment(), "days") + 1)
             .toArray()
         },
         {
@@ -60,7 +53,7 @@ const StoryPointsPerDay = ({ sprint }) => {
           data: daysOfTheWeek
             .map(
               (obj, index) =>
-                (totalStoryPoints / (daysOfTheWeek.count() - 1)) * index
+                (committedStoryPoints / (daysOfTheWeek.count() - 1)) * index
             )
             .when(!burnUp, collection => collection.reverse())
             .toArray()
@@ -89,7 +82,7 @@ const StoryPointsPerDay = ({ sprint }) => {
           borderWidth: 1
         }))
     }),
-    [sprint, daysOfTheWeek, burnUp, totalStoryPoints]
+    [sprint, daysOfTheWeek, burnUp, committedStoryPoints]
   );
 
   const options = useMemo(
