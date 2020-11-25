@@ -9,14 +9,14 @@ import { getColourFromTag } from "../../../scripts/helpers/asanaColours";
 
 const ALL_TAGS_TAG = "All";
 
-const GraphCountOverTime = ({ backlogTasks }) => {
+const GraphCountOverTime = ({ backlogTasks, weight = false }) => {
   const { asanaTags } = useSelector(state => state.asanaTags);
 
   const tagsCollection = useMemo(() => collect(asanaTags), [asanaTags]);
 
   backlogTasks.macro("filterToCurrentYear", function() {
     return this.filter(({ date }) =>
-      moment(date).isAfter(moment().add(-0.5, "years"))
+      moment(date).isAfter(moment().add(-1, "years"))
     );
   });
 
@@ -147,8 +147,13 @@ const GraphCountOverTime = ({ backlogTasks }) => {
     () =>
       tags
         .map(tag => ({ tag, countPerDay: backlogCountPerDay(tag) }))
-        .filter(({ countPerDay }) => countPerDay.isNotEmpty()),
-    [tags, backlogCountPerDay]
+        .map(({ countPerDay, ...obj }) => ({
+          ...obj,
+          countPerDay: countPerDay.pluck(weight || "count")
+        }))
+        .filter(({ countPerDay }) => countPerDay.isNotEmpty())
+        .filter(({ countPerDay }) => !!countPerDay.sum()),
+    [tags, backlogCountPerDay, weight]
   );
 
   const data = useMemo(
@@ -157,37 +162,19 @@ const GraphCountOverTime = ({ backlogTasks }) => {
         .filterToCurrentYear()
         .pluck("date")
         .toArray(),
-      datasets: [
-        ...backlogCountPerDayByTag
-          .map(({ tag, countPerDay }) => ({
-            label: `${tag} (Tasks)`,
-            data: countPerDay.pluck("count").toArray(),
-            borderColor:
-              tag.toString() === ALL_TAGS_TAG
-                ? randomFlatColors("green")
-                : getColourFromTag(tagsCollection.firstWhere("name", tag.tag)),
-            yAxisID: "y-axis-task-count"
-          }))
-          .toArray(),
-        ...backlogCountPerDayByTag
-          .map(({ tag, countPerDay }) => ({
-            label: `${tag} (Story Points)`,
-            data: countPerDay.pluck("storyPoints").toArray(),
-            borderColor:
-              tag.toString() === ALL_TAGS_TAG
-                ? randomFlatColors("blue")
-                : getColourFromTag(tagsCollection.firstWhere("name", tag.tag)),
-            yAxisID: "y-axis-story-point-sum"
-          }))
-          .toArray()
-      ]
-        .filter(Boolean)
-        .map(dataset => ({
-          ...dataset,
+      datasets: backlogCountPerDayByTag
+        .map(({ tag, countPerDay }) => ({
+          label: tag,
+          data: countPerDay.toArray(),
+          borderColor:
+            tag === ALL_TAGS_TAG
+              ? randomFlatColors("blue")
+              : getColourFromTag(tagsCollection.firstWhere("name", tag.tag)),
           pointRadius: 0,
-          hidden: !dataset.label.startsWith(ALL_TAGS_TAG),
+          hidden: tag !== ALL_TAGS_TAG,
           fill: false
         }))
+        .toArray()
     }),
     [dates, backlogCountPerDayByTag, tagsCollection]
   );
@@ -203,14 +190,6 @@ const GraphCountOverTime = ({ backlogTasks }) => {
             type: "linear",
             display: true,
             position: "left",
-            id: "y-axis-task-count",
-            ticks: { beginAtZero: true, precision: 0 }
-          },
-          {
-            type: "linear",
-            display: true,
-            position: "right",
-            id: "y-axis-story-point-sum",
             ticks: { beginAtZero: true, precision: 0 }
           }
         ]
@@ -232,7 +211,10 @@ const GraphCountOverTime = ({ backlogTasks }) => {
   }
 
   return (
-    <div className="h-100 overflow-hidden">
+    <div
+      className="w-100 overflow-hidden"
+      style={{ minHeight: "300px", height: "50vh" }}
+    >
       <Line data={data} options={options} legend={legend} />
     </div>
   );
