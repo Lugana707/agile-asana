@@ -122,7 +122,7 @@ const BacklogProgressPerSprint = ({ sprint, backlogTasks }) => {
         }
       ]
     }),
-    [tags, tasksCompletedByTags, tasksCreatedByTag]
+    [tags, getTaskCountBytag, tasksCompletedByTags, tasksCreatedByTag]
   );
 
   const options = useMemo(
