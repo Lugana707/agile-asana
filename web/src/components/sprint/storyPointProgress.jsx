@@ -3,12 +3,13 @@ import { ProgressBar } from "react-bootstrap";
 import collect from "collect.js";
 
 const SprintStoryPointProgress = ({ className = "", sprint, sm }) => {
-  const { tasks, storyPoints, completedStoryPoints } = sprint;
+  const { uuid, tasks, storyPoints, completedStoryPoints } = sprint;
 
   const inProgressStoryPoints = useMemo(
     () =>
       collect(tasks)
-        .where("storyPoints")
+        .where("mostRecentSprint")
+        .where("storyPoints", uuid)
         .filter(({ sections }) =>
           collect(sections)
             .map(section => section.toLowerCase())
