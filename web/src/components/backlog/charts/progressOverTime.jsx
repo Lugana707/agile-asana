@@ -9,7 +9,11 @@ import { getColourFromTag } from "../../../scripts/helpers/asanaColours";
 
 const ALL_TAGS_TAG = "All";
 
-const GraphCountOverTime = ({ backlogTasks, weight = false }) => {
+const GraphCountOverTime = ({
+  backlogTasks,
+  tags: displayTags,
+  weight = false
+}) => {
   const { asanaTags } = useSelector(state => state.asanaTags);
 
   const tagsCollection = useMemo(() => collect(asanaTags), [asanaTags]);
@@ -171,7 +175,7 @@ const GraphCountOverTime = ({ backlogTasks, weight = false }) => {
               ? randomFlatColors("blue")
               : getColourFromTag(tagsCollection.firstWhere("name", tag.tag)),
           pointRadius: 0,
-          hidden: tag !== ALL_TAGS_TAG,
+          hidden: tag !== ALL_TAGS_TAG && !displayTags.includes(tag),
           fill: false
         }))
         .toArray()

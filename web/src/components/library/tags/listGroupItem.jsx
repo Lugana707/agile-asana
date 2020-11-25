@@ -18,7 +18,7 @@ export default ({ className, tag, count, children }) => {
       key={tag}
       className={`text-nowrap text-light ${className}`}
       style={{ backgroundColor: colour, borderColor: colour }}
-      to="/backlog/dashboard"
+      to={`/backlog/dashboard?tags=${tag}`}
     >
       <ListGroup.Item>
         {children || (

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Jumbotron, Container, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
@@ -6,7 +6,12 @@ import TasksAtRiskWidget from "../../components/backlog/alerts/tasksAtRiskWidget
 import BacklogProgressOverTime from "../../components/backlog/charts/progressOverTime";
 import BacklogStoryPoints from "../../components/backlog/widgets/storyPoints";
 
-const Forecast = () => {
+const Forecast = ({ location }) => {
+  const tags = useMemo(
+    () => (new URLSearchParams(location.search).get("tags") || "").split("."),
+    [location.search]
+  );
+
   return (
     <>
       <Jumbotron fluid className="bg-primary text-left">
@@ -36,7 +41,7 @@ const Forecast = () => {
         </Row>
         <Row className="mr-4 pt-4">
           <Col xs={12}>
-            <BacklogProgressOverTime weight="storyPoints" />
+            <BacklogProgressOverTime weight="storyPoints" tags={tags} />
           </Col>
         </Row>
       </Container>
