@@ -85,6 +85,19 @@ const BacklogProgressPerSprint = ({ sprint, backlogTasks }) => {
     [tasksCompletedByTags, tasksCreatedByTag, getAsanaTag]
   );
 
+  const getTaskCountBytag = useCallback(
+    tasks =>
+      tags.map(
+        ({ tag }) =>
+          (
+            tasks.firstWhere("tag", tag) || {
+              count: 0
+            }
+          ).count
+      ),
+    [tags]
+  );
+
   const data = useMemo(
     () => ({
       labels: tags.pluck("tag").toArray(),
@@ -95,16 +108,7 @@ const BacklogProgressPerSprint = ({ sprint, backlogTasks }) => {
             .map(({ colour }) => colour.saturate(0.3).hex())
             .toArray(),
           borderWidth: 1,
-          data: tags
-            .map(
-              ({ tag }) =>
-                (
-                  tasksCompletedByTags.firstWhere("tag", tag) || {
-                    count: 0
-                  }
-                ).count
-            )
-            .toArray()
+          data: getTaskCountBytag(tasksCompletedByTags).toArray()
         },
         {
           label: "Tasks Created",
@@ -112,15 +116,8 @@ const BacklogProgressPerSprint = ({ sprint, backlogTasks }) => {
             .map(({ colour }) => colour.desaturate(0.3).hex())
             .toArray(),
           borderWidth: 1,
-          data: tags
-            .map(
-              ({ tag }) =>
-                -(
-                  tasksCreatedByTag.firstWhere("tag", tag) || {
-                    count: 0
-                  }
-                ).count
-            )
+          data: getTaskCountBytag(tasksCreatedByTag)
+            .map(obj => -obj)
             .toArray()
         }
       ]
