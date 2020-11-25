@@ -18,7 +18,7 @@ const SprintStoryPointProgress = ({ className = "", sprint, sm }) => {
             .isNotEmpty()
         )
         .sum("storyPoints"),
-    [tasks]
+    [uuid, tasks]
   );
 
   const remainingStoryPoints = useMemo(
