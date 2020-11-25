@@ -151,7 +151,7 @@ const BacklogProgressPerSprint = ({ sprint, backlogTasks }) => {
 
   return (
     <div className="h-100" style={{ minHeight: "300px" }}>
-      <Bar data={data} options={options} />
+      <Bar data={data} options={options} legend={false} />
     </div>
   );
 };
