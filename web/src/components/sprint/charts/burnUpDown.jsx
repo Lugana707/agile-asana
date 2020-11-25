@@ -1,20 +1,35 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import { Bar } from "react-chartjs-2";
 import collect from "collect.js";
 import moment from "moment";
 import randomFlatColors from "random-flat-colors";
 
 const StoryPointsPerDay = ({ sprint }) => {
-  const burnUp = useMemo(() => sprint.state === "COMPLETED", [sprint]);
+  const {
+    state: sprintState,
+    storyPoints: committedStoryPoints,
+    sprintLength,
+    startOn: sprintStartOn,
+    tasksCompleted: sprintTasksCompleted
+  } = sprint;
 
-  const { storyPoints: committedStoryPoints } = sprint;
+  const burnUp = useMemo(() => sprintState === "COMPLETED", [sprintState]);
 
   const daysOfTheWeek = useMemo(
     () =>
-      collect(new Array(sprint.sprintLength + 1).fill(0)).map(
-        (obj, index) => sprint.startOn.isoWeekday() + index
+      collect(new Array(sprintLength + 1).fill(0)).map(
+        (obj, index) => obj + index
       ),
-    [sprint]
+    [sprintLength]
+  );
+
+  const getStoryPointsForSprintDay = useCallback(
+    dayOfWeek =>
+      collect(sprintTasksCompleted)
+        .where("storyPoints")
+        .where("completedAtDayOfSprint", dayOfWeek + 1)
+        .sum("storyPoints"),
+    [sprintTasksCompleted]
   );
 
   const data = useMemo(
@@ -26,12 +41,7 @@ const StoryPointsPerDay = ({ sprint }) => {
           type: "line",
           color: randomFlatColors("gray"),
           data: daysOfTheWeek
-            .map(obj =>
-              collect(sprint.tasksCompleted)
-                .where("storyPoints")
-                .where("completedAtDayOfSprint", obj)
-                .sum("storyPoints")
-            )
+            .map(obj => getStoryPointsForSprintDay(obj))
             .map(
               (obj, index, array) =>
                 obj +
@@ -42,7 +52,7 @@ const StoryPointsPerDay = ({ sprint }) => {
             .when(!burnUp, collection =>
               collection.map(obj => committedStoryPoints - obj)
             )
-            .take(sprint.startOn.diff(moment(), "days") + 1)
+            .take(moment().diff(sprintStartOn, "days") + 1)
             .toArray()
         },
         {
@@ -63,12 +73,7 @@ const StoryPointsPerDay = ({ sprint }) => {
           type: "bar",
           color: randomFlatColors("orange"),
           data: daysOfTheWeek
-            .map(obj =>
-              collect(sprint.tasksCompleted)
-                .where("storyPoints")
-                .where("completedAtDayOfSprint", obj)
-                .sum("storyPoints")
-            )
+            .map(obj => getStoryPointsForSprintDay(obj))
             .toArray()
         }
       ]
@@ -82,7 +87,13 @@ const StoryPointsPerDay = ({ sprint }) => {
           borderWidth: 1
         }))
     }),
-    [sprint, daysOfTheWeek, burnUp, committedStoryPoints]
+    [
+      sprintStartOn,
+      getStoryPointsForSprintDay,
+      daysOfTheWeek,
+      burnUp,
+      committedStoryPoints
+    ]
   );
 
   const options = useMemo(
@@ -94,9 +105,10 @@ const StoryPointsPerDay = ({ sprint }) => {
           {
             ticks: {
               callback: value => {
-                const weekday = value % 7;
+                const dayOfWeek = value + sprintStartOn.weekday();
+                const weekday = dayOfWeek % 7;
                 const text = moment()
-                  .weekday(value)
+                  .weekday(dayOfWeek)
                   .format("dddd");
 
                 if (weekday === 6 || weekday === 0) {
@@ -118,7 +130,7 @@ const StoryPointsPerDay = ({ sprint }) => {
         ]
       }
     }),
-    []
+    [sprintStartOn]
   );
 
   if (!sprint) {
