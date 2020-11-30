@@ -3,7 +3,7 @@ import { Jumbotron, Container, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import TasksAtRiskWidget from "../../components/backlog/alerts/tasksAtRiskWidget";
-import BacklogProgressOverTime from "../../components/backlog/charts/progressOverTime";
+import BacklogProgressPerSprint from "../../components/backlog/charts/progressPerSprint";
 import BacklogStoryPoints from "../../components/backlog/widgets/storyPoints";
 
 const Forecast = ({ location }) => {
@@ -41,7 +41,7 @@ const Forecast = ({ location }) => {
         </Row>
         <Row className="mr-4 pt-4">
           <Col xs={12}>
-            <BacklogProgressOverTime weight="storyPoints" tags={tags} />
+            <BacklogProgressPerSprint weight="storyPoints" tags={tags} />
           </Col>
         </Row>
       </Container>
