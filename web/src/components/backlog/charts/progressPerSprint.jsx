@@ -1,8 +1,9 @@
 import React, { useMemo, useCallback } from "react";
-import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import collect from "collect.js";
+import Color from "color";
 import randomFlatColors from "random-flat-colors";
 import withBacklogTasks from "../withBacklogTasks";
 import withSprints from "../../sprint/withSprints";
@@ -18,9 +19,20 @@ const BacklogProgressPerSprint = ({
 }) => {
   const { asanaTags } = useSelector(state => state.asanaTags);
 
-  const sprintsCollection = useMemo(() => sprints.sortBy("week"), [sprints]);
+  const getAsanaTagColor = useCallback(
+    tag => {
+      const tagsCollection = collect(asanaTags);
 
-  const tagsCollection = useMemo(() => collect(asanaTags), [asanaTags]);
+      const color =
+        tag === ALL_TAGS_TAG
+          ? randomFlatColors("blue")
+          : getColourFromTag(tagsCollection.firstWhere("name", tag.tag));
+      return Color(color);
+    },
+    [asanaTags]
+  );
+
+  const sprintsCollection = useMemo(() => sprints.sortBy("week"), [sprints]);
 
   const getBacklogCountPerSprint = useCallback(
     tag => {
@@ -60,23 +72,23 @@ const BacklogProgressPerSprint = ({
             createdAt: createdAtCollection
               .where("storyPoints")
               .sum("storyPoints"),
-            completedAt: completedAtCollection
+            completedAt: -completedAtCollection
               .where("storyPoints")
               .sum("storyPoints")
           };
           const count = {
             createdAt: createdAtCollection.count(),
-            completedAt: completedAtCollection.count()
+            completedAt: -completedAtCollection.count()
           };
 
           return {
             storyPoints: {
               ...storyPoints,
-              delta: storyPoints.createdAt - storyPoints.completedAt
+              delta: storyPoints.createdAt + storyPoints.completedAt
             },
             count: {
               ...count,
-              delta: count.createdAt - count.completedAt
+              delta: count.createdAt + count.completedAt
             }
           };
         })
@@ -125,38 +137,86 @@ const BacklogProgressPerSprint = ({
     [backlogTasks]
   );
 
-  const backlogCountPerSprintByTag = useMemo(
-    () =>
+  const getBacklogCountPerSprintByTag = useCallback(
+    type =>
       tags
         .map(tag => ({ tag, data: getBacklogCountPerSprint(tag) }))
         .map(({ data, ...obj }) => ({
           ...obj,
-          countPerDay: data.pluck(weight || "count").pluck("runningTotal")
-        }))
-        .filter(({ countPerDay }) => countPerDay.isNotEmpty())
-        .filter(({ countPerDay }) => !!countPerDay.sum()),
+          count: data.pluck(weight || "count").pluck(type)
+        })),
     [tags, getBacklogCountPerSprint, weight]
   );
 
   const data = useMemo(
     () => ({
       labels: sprintsCollection.pluck("number").toArray(),
-      datasets: backlogCountPerSprintByTag
-        .map(({ tag, countPerDay }) => ({
-          label: tag,
-          data: countPerDay.toArray(),
-          borderColor:
-            tag === ALL_TAGS_TAG
-              ? randomFlatColors("blue")
-              : getColourFromTag(tagsCollection.firstWhere("name", tag.tag)),
-          pointRadius: 0,
-          hidden: tag !== ALL_TAGS_TAG && !displayTags.includes(tag),
-          fill: false
-        }))
-        .toArray()
+      datasets: [
+        ...getBacklogCountPerSprintByTag("runningTotal")
+          .map(({ tag, count }) => ({
+            tag,
+            type: "line",
+            data: count.toArray(),
+            color: getAsanaTagColor(tag).hex(),
+            pointRadius: 0,
+            xAxisID: "x-axis-running-total",
+            yAxisID: "y-axis-running-total"
+          }))
+          .toArray(),
+        ...getBacklogCountPerSprintByTag("createdAt")
+          .map(({ tag, count }) => ({
+            tag,
+            type: "bar",
+            data: count.toArray(),
+            color: getAsanaTagColor(tag)
+              .desaturate(0.3)
+              .hex(),
+            xAxisID: "x-axis-progress",
+            yAxisID: "y-axis-progress"
+          }))
+          .toArray(),
+        ...getBacklogCountPerSprintByTag("completedAt")
+          .map(({ tag, count }) => ({
+            tag,
+            type: "bar",
+            data: count.toArray(),
+            color: getAsanaTagColor(tag)
+              .saturate(0.3)
+              .hex(),
+            xAxisID: "x-axis-progress",
+            yAxisID: "y-axis-progress"
+          }))
+          .toArray()
+      ].map(({ tag, color, ...obj }) => ({
+        ...obj,
+        label: tag,
+        hidden: tag !== ALL_TAGS_TAG && !displayTags.includes(tag),
+        borderColor: color,
+        backgroundColor: color,
+        fill: false,
+        borderWidth: 1
+      }))
     }),
-    [backlogCountPerSprintByTag, tagsCollection, displayTags, sprintsCollection]
+    [
+      getBacklogCountPerSprintByTag,
+      displayTags,
+      sprintsCollection,
+      getAsanaTagColor
+    ]
   );
+
+  const maxMinCount = useMemo(() => {
+    const collection = collect(["runningTotal", "createdAt", "completedAt"])
+      .map(key => getBacklogCountPerSprintByTag(key))
+      .flatten(1)
+      .pluck("count")
+      .flatten(1)
+      .dump();
+    return {
+      min: collection.min(),
+      max: collection.max()
+    };
+  }, [getBacklogCountPerSprintByTag]);
 
   const options = useMemo(
     () => ({
@@ -164,17 +224,38 @@ const BacklogProgressPerSprint = ({
       maintainAspectRatio: false,
       responsive: true,
       scales: {
+        xAxes: [
+          { display: false, stacked: true, id: "x-axis-progress" },
+          { id: "x-axis-running-total" }
+        ],
         yAxes: [
+          {
+            type: "linear",
+            display: false,
+            stacked: true,
+            position: "right",
+            id: "y-axis-progress",
+            ticks: {
+              suggestedMin: maxMinCount.min,
+              suggestedMax: maxMinCount.max,
+              precision: 0
+            }
+          },
           {
             type: "linear",
             display: true,
             position: "left",
-            ticks: { beginAtZero: true, precision: 0 }
+            id: "y-axis-running-total",
+            ticks: {
+              suggestedMin: maxMinCount.min,
+              suggestedMax: maxMinCount.max,
+              precision: 0
+            }
           }
         ]
       }
     }),
-    []
+    [maxMinCount]
   );
 
   const legend = useMemo(
@@ -194,7 +275,7 @@ const BacklogProgressPerSprint = ({
       className="w-100 overflow-hidden"
       style={{ minHeight: "300px", height: "50vh" }}
     >
-      <Line data={data} options={options} legend={legend} />
+      <Bar data={data} options={options} legend={legend} />
     </div>
   );
 };
