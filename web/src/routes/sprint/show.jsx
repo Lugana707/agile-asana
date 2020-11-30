@@ -8,7 +8,7 @@ import SprintTimeProgress from "../../components/sprint/timeProgress";
 import SprintStoryPointProgress from "../../components/sprint/storyPointProgress";
 import SprintInfoCard from "../../components/sprint/infoCard";
 import BacklogAggregateRaised from "../../components/backlog/widgets/aggregateRaised";
-import BacklogProgressPerSprint from "../../components/backlog/charts/progressPerSprint";
+import BacklogProgressForSprint from "../../components/backlog/charts/progressForSprint";
 
 const Show = ({ match }) => {
   const { uuid } = match.params;
@@ -54,7 +54,7 @@ const Show = ({ match }) => {
           md={{ span: 7, order: 6 }}
           className="pb-4 d-block"
         >
-          <BacklogProgressPerSprint sprint={sprint} />
+          <BacklogProgressForSprint sprint={sprint} />
         </Col>
         <Col
           xs={{ span: 12, order: 6 }}
