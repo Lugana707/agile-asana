@@ -7,7 +7,6 @@ import Color from "color";
 import randomFlatColors from "random-flat-colors";
 import withBacklogTasks from "../withBacklogTasks";
 import withSprints from "../../sprint/withSprints";
-import { getColourFromTag } from "../../../scripts/helpers/asanaColours";
 
 const ALL_TAGS_TAG = "All";
 
@@ -20,15 +19,14 @@ const BacklogProgressPerSprint = ({
   const { asanaTags } = useSelector(state => state.asanaTags);
 
   const getAsanaTagColor = useCallback(
-    tag => {
-      const tagsCollection = collect(asanaTags);
-
-      const color =
+    tag =>
+      Color(
         tag === ALL_TAGS_TAG
           ? randomFlatColors("blue")
-          : getColourFromTag(tagsCollection.firstWhere("name", tag.tag));
-      return Color(color);
-    },
+          : collect(asanaTags)
+              .dump()
+              .firstWhere("name", tag).color
+      ),
     [asanaTags]
   );
 
@@ -205,18 +203,19 @@ const BacklogProgressPerSprint = ({
     ]
   );
 
-  const maxMinCount = useMemo(() => {
-    const collection = collect(["runningTotal", "createdAt", "completedAt"])
-      .map(key => getBacklogCountPerSprintByTag(key))
-      .flatten(1)
-      .pluck("count")
-      .flatten(1)
-      .dump();
-    return {
-      min: collection.min(),
-      max: collection.max()
-    };
-  }, [getBacklogCountPerSprintByTag]);
+  const maxMinCount = useMemo(
+    () =>
+      collect(["runningTotal", "createdAt", "completedAt"])
+        .map(key => getBacklogCountPerSprintByTag(key))
+        .flatten(1)
+        .pluck("count")
+        .flatten(1)
+        .pipe(collection => ({
+          min: collection.min(),
+          max: collection.max()
+        })),
+    [getBacklogCountPerSprintByTag]
+  );
 
   const options = useMemo(
     () => ({
