@@ -8,7 +8,7 @@ import BacklogStoryPoints from "../../components/backlog/widgets/storyPoints";
 
 const Forecast = ({ location }) => {
   const tags = useMemo(
-    () => (new URLSearchParams(location.search).get("tags") || "").split("."),
+    () => (new URLSearchParams(location.search).get("tags") || "").split(","),
     [location.search]
   );
 

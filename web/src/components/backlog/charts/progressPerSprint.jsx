@@ -1,4 +1,5 @@
 import React, { useMemo, useCallback } from "react";
+import { withRouter } from "react-router-dom";
 import { Bar } from "react-chartjs-2";
 import { useSelector } from "react-redux";
 import moment from "moment";
@@ -11,6 +12,8 @@ import withSprints from "../../sprint/withSprints";
 const ALL_TAGS_TAG = "All";
 
 const BacklogProgressPerSprint = ({
+  history,
+  location,
   backlogTasks,
   sprints,
   tags: displayTags,
@@ -23,9 +26,7 @@ const BacklogProgressPerSprint = ({
       Color(
         tag === ALL_TAGS_TAG
           ? randomFlatColors("blue")
-          : collect(asanaTags)
-              .dump()
-              .firstWhere("name", tag).color
+          : collect(asanaTags).firstWhere("name", tag).color
       ),
     [asanaTags]
   );
@@ -44,7 +45,7 @@ const BacklogProgressPerSprint = ({
           storyPoints
         }));
 
-      const backlogCountPerSprint = collect(sprintsCollection.toArray())
+      return sprintsCollection
         .map(({ startOn, finishedOn }) => ({
           startOn: startOn.unix(),
           finishedOn: finishedOn.unix()
@@ -114,10 +115,8 @@ const BacklogProgressPerSprint = ({
                   .sum()
             }
           };
-        });
-
-      backlogCountPerSprint.pop();
-      return backlogCountPerSprint;
+        })
+        .skip(1);
     },
     [backlogTasks, sprintsCollection]
   );
@@ -225,7 +224,7 @@ const BacklogProgressPerSprint = ({
       scales: {
         xAxes: [
           { display: false, stacked: true, id: "x-axis-progress" },
-          { id: "x-axis-running-total" }
+          { id: "x-axis-running-total", labelString: "Sprint" }
         ],
         yAxes: [
           {
@@ -260,9 +259,35 @@ const BacklogProgressPerSprint = ({
   const legend = useMemo(
     () => ({
       display: true,
-      position: "bottom"
+      position: "top",
+      onClick: (event, { text: tag }) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const pathname = location.pathname;
+
+        const tagSearch = collect(displayTags)
+          .dump()
+          .pipe(collection => {
+            if (collection.filter(obj => obj === tag).isEmpty()) {
+              return collection.merge([tag]);
+            }
+
+            return collection.filter(obj => obj !== tag);
+          })
+          .where(true)
+          .dump()
+          .unique()
+          .join(",");
+
+        if (tagSearch) {
+          history.push(`${pathname}?tags=${tagSearch}`);
+        } else {
+          history.push(pathname);
+        }
+      }
     }),
-    []
+    [history, displayTags, location.pathname]
   );
 
   if (getBacklogCountPerSprint(ALL_TAGS_TAG).isEmpty()) {
@@ -279,4 +304,6 @@ const BacklogProgressPerSprint = ({
   );
 };
 
-export default withBacklogTasks(withSprints(BacklogProgressPerSprint));
+export default withRouter(
+  withBacklogTasks(withSprints(BacklogProgressPerSprint))
+);
