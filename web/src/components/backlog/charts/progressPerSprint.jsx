@@ -31,7 +31,7 @@ const BacklogProgressPerSprint = ({
     [asanaTags]
   );
 
-  const sprintsCollection = useMemo(() => sprints.sortBy("week"), [sprints]);
+  const sprintsCollection = useMemo(() => sprints.sortBy("number"), [sprints]);
 
   const getBacklogCountPerSprint = useCallback(
     tag => {
