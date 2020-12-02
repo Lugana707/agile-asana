@@ -1,16 +1,15 @@
-import React, { useMemo } from "react";
+import React, { useState } from "react";
+import { withRouter } from "react-router-dom";
 import { Jumbotron, Container, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import TasksAtRiskWidget from "../../components/backlog/alerts/tasksAtRiskWidget";
 import BacklogProgressPerSprint from "../../components/backlog/charts/progressPerSprint";
 import BacklogStoryPoints from "../../components/backlog/widgets/storyPoints";
+import TagsFilter from "../../components/library/tags/filter";
 
-const Forecast = ({ location }) => {
-  const tags = useMemo(
-    () => (new URLSearchParams(location.search).get("tags") || "").split(","),
-    [location.search]
-  );
+const Forecast = ({ history }) => {
+  const [tags, setTags] = useState([]);
 
   return (
     <>
@@ -40,6 +39,11 @@ const Forecast = ({ location }) => {
           </Col>
         </Row>
         <Row className="mr-4 pt-4">
+          {false && (
+            <Col xs={12}>
+              <TagsFilter setTags={setTags} />
+            </Col>
+          )}
           <Col xs={12}>
             <BacklogProgressPerSprint weight="storyPoints" tags={tags} />
           </Col>
@@ -49,4 +53,4 @@ const Forecast = ({ location }) => {
   );
 };
 
-export default Forecast;
+export default withRouter(Forecast);

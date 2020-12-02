@@ -1,5 +1,4 @@
 import React, { useMemo, useCallback } from "react";
-import { withRouter } from "react-router-dom";
 import { Bar } from "react-chartjs-2";
 import { useSelector } from "react-redux";
 import moment from "moment";
@@ -12,8 +11,6 @@ import withSprints from "../../sprint/withSprints";
 const ALL_TAGS_TAG = "All";
 
 const BacklogProgressPerSprint = ({
-  history,
-  location,
   backlogTasks,
   sprints,
   tags: displayTags,
@@ -128,10 +125,12 @@ const BacklogProgressPerSprint = ({
         .flatten(1)
         .unique()
         .sort()
-        .reverse()
-        .push(ALL_TAGS_TAG)
-        .reverse(),
-    [backlogTasks]
+        .filter(a => !!displayTags.filter(b => a === b).length)
+        .when(
+          displayTags.includes(ALL_TAGS_TAG) || displayTags.length === 0,
+          collection => collection.prepend(ALL_TAGS_TAG)
+        ),
+    [backlogTasks, displayTags]
   );
 
   const getBacklogCountPerSprintByTag = useCallback(
@@ -187,22 +186,16 @@ const BacklogProgressPerSprint = ({
       ].map(({ tag, color, ...obj }) => ({
         ...obj,
         label: tag,
-        hidden: tag !== ALL_TAGS_TAG && !displayTags.includes(tag),
         borderColor: color,
         backgroundColor: color,
         fill: false,
         borderWidth: 1
       }))
     }),
-    [
-      getBacklogCountPerSprintByTag,
-      displayTags,
-      sprintsCollection,
-      getAsanaTagColor
-    ]
+    [getBacklogCountPerSprintByTag, sprintsCollection, getAsanaTagColor]
   );
 
-  const maxMinCount = useMemo(
+  const { min: suggestedMin, max: suggestedMax } = useMemo(
     () =>
       collect(["runningTotal", "createdAt", "completedAt"])
         .map(key => getBacklogCountPerSprintByTag(key))
@@ -229,13 +222,13 @@ const BacklogProgressPerSprint = ({
         yAxes: [
           {
             type: "linear",
-            display: false,
+            display: !false,
             stacked: true,
             position: "right",
             id: "y-axis-progress",
             ticks: {
-              suggestedMin: maxMinCount.min,
-              suggestedMax: maxMinCount.max,
+              suggestedMin,
+              suggestedMax,
               precision: 0
             }
           },
@@ -245,49 +238,15 @@ const BacklogProgressPerSprint = ({
             position: "left",
             id: "y-axis-running-total",
             ticks: {
-              suggestedMin: maxMinCount.min,
-              suggestedMax: maxMinCount.max,
+              suggestedMin,
+              suggestedMax,
               precision: 0
             }
           }
         ]
       }
     }),
-    [maxMinCount]
-  );
-
-  const legend = useMemo(
-    () => ({
-      display: true,
-      position: "top",
-      onClick: (event, { text: tag }) => {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const pathname = location.pathname;
-
-        const tagSearch = collect(displayTags)
-          .dump()
-          .pipe(collection => {
-            if (collection.filter(obj => obj === tag).isEmpty()) {
-              return collection.merge([tag]);
-            }
-
-            return collection.filter(obj => obj !== tag);
-          })
-          .where(true)
-          .dump()
-          .unique()
-          .join(",");
-
-        if (tagSearch) {
-          history.push(`${pathname}?tags=${tagSearch}`);
-        } else {
-          history.push(pathname);
-        }
-      }
-    }),
-    [history, displayTags, location.pathname]
+    [suggestedMin, suggestedMax]
   );
 
   if (getBacklogCountPerSprint(ALL_TAGS_TAG).isEmpty()) {
@@ -299,11 +258,9 @@ const BacklogProgressPerSprint = ({
       className="w-100 overflow-hidden"
       style={{ minHeight: "300px", height: "50vh" }}
     >
-      <Bar data={data} options={options} legend={legend} />
+      <Bar data={data} options={options} legend={{ display: false }} />
     </div>
   );
 };
 
-export default withRouter(
-  withBacklogTasks(withSprints(BacklogProgressPerSprint))
-);
+export default withBacklogTasks(withSprints(BacklogProgressPerSprint));
