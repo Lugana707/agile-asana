@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import collect from "collect.js";
-import SprintFilters from "../components/sprint/widgets/sprintFilters";
+import SprintFilter from "../components/sprint/filter";
 import SprintStoryPointsTrend from "../components/sprint/charts/sprintStoryPointsTrend";
 import SprintStoryPointPerDay from "../components/sprint/charts/storyPointsPerDay";
 import SprintTagsAreaChart from "../components/sprint/charts/sprintTagsAreaChart";
@@ -48,7 +48,7 @@ const Home = ({ sprints, location }) => {
       </Row>
       <Row>
         <Col xs={12} className="pb-4">
-          <SprintFilters
+          <SprintFilter
             sprints={recentSprints}
             setSprints={setFilteredSprints}
           />

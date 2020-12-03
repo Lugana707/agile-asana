@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Range } from "rc-slider";
 import collect from "collect.js";
 
-const SprintFilters = ({ sprints, setSprints }) => {
+const SprintFilter = ({ sprints, setSprints }) => {
   const sprintCollection = useMemo(
     () =>
       collect(sprints)
@@ -65,4 +65,4 @@ const SprintFilters = ({ sprints, setSprints }) => {
   );
 };
 
-export default SprintFilters;
+export default SprintFilter;
