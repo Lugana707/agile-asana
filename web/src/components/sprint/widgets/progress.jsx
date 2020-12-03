@@ -6,6 +6,10 @@ import SprintStoryPointProgress from "../storyPointProgress";
 import withCurrentSprint from "../withCurrentSprint";
 
 const TasksAtRiskCardAndTable = ({ currentSprint }) => {
+  if (!currentSprint) {
+    return <div />;
+  }
+
   const { uuid, number } = currentSprint;
 
   return (

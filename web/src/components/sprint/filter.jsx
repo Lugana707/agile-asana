@@ -1,47 +1,50 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { withRouter } from "react-router-dom";
 import { Range } from "rc-slider";
-import collect from "collect.js";
 
-const SprintFilter = ({ sprints, setSprints }) => {
-  const sprintCollection = useMemo(
-    () =>
-      collect(sprints)
-        .pluck("number")
-        .sort(),
-    [sprints]
-  );
+const SprintFilter = ({ sprints, setSprints, history }) => {
+  const { location } = history;
 
-  const [minSprint, maxSprint] = useMemo(
-    () => [sprintCollection.min(), sprintCollection.max()],
-    [sprintCollection]
-  );
+  const recentSprints = useMemo(() => {
+    const count = parseInt(
+      new URLSearchParams(location.search).get("count"),
+      10
+    );
+
+    return sprints.take(count || 20).reverse();
+  }, [location.search, sprints]);
+
+  const sprintNumbers = useMemo(() => recentSprints.pluck("number").sort(), [
+    recentSprints
+  ]);
+
   const [sprintRange, setSprintRange] = useState([0, 0]);
+  const [minSprint, maxSprint] = useMemo(
+    () => [sprintNumbers.min(), sprintNumbers.max()],
+    [sprintNumbers]
+  );
 
   useEffect(() => {
-    const lastSprint = sprintCollection.last() || {};
+    const lastSprint = sprintNumbers.last() || {};
     const lastCompletedSprint =
       maxSprint - (lastSprint.state === "COMPLETED" ? 0 : 1);
     setSprintRange([lastCompletedSprint - 6, lastCompletedSprint]);
-  }, [sprintCollection, maxSprint]);
+  }, [sprintNumbers, maxSprint]);
 
   useEffect(() => {
-    setSprints(
-      collect(sprints)
-        .whereBetween("number", sprintRange)
-        .all()
-    );
-  }, [setSprints, sprints, sprintRange]);
+    setSprints(recentSprints.whereBetween("number", sprintRange));
+  }, [setSprints, recentSprints, sprintRange]);
 
   const marks = useMemo(
     () =>
-      sprintCollection.reduce(
+      sprintNumbers.reduce(
         (accumulator, currentValue) => ({
           [currentValue]: currentValue,
           ...accumulator
         }),
         {}
       ),
-    [sprintCollection]
+    [sprintNumbers]
   );
 
   return (
@@ -65,4 +68,4 @@ const SprintFilter = ({ sprints, setSprints }) => {
   );
 };
 
-export default SprintFilter;
+export default withRouter(SprintFilter);
