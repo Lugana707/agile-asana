@@ -10,15 +10,18 @@ import SprintProgressWidget from "../components/sprint/widgets/progress";
 import BacklogStoryPoints from "../components/backlog/widgets/storyPoints";
 import withSprints from "../components/sprint/withSprints";
 
-const Home = ({ sprints }) => {
-  const recentSprints = useMemo(
-    () =>
-      collect(sprints)
-        .take(20)
-        .reverse()
-        .all(),
-    [sprints]
-  );
+const Home = ({ sprints, location }) => {
+  const recentSprints = useMemo(() => {
+    const count = parseInt(
+      new URLSearchParams(location.search).get("count"),
+      10
+    );
+
+    return collect(sprints)
+      .take(count || 20)
+      .reverse()
+      .all();
+  }, [location.search, sprints]);
 
   const [filteredSprints, setFilteredSprints] = useState(recentSprints);
   const sprintsForDisplay = useMemo(
