@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { withRouter } from "react-router-dom";
 import { Range } from "rc-slider";
+import randomFlatColors from "random-flat-colors";
 
 const SprintFilter = ({ sprints, setSprints, history }) => {
   const { location } = history;
@@ -54,6 +55,12 @@ const SprintFilter = ({ sprints, setSprints, history }) => {
     [sprintNumbers]
   );
 
+  const colors = {
+    track: randomFlatColors("blue"),
+    handle: randomFlatColors("white"),
+    rail: randomFlatColors("gray")
+  };
+
   return (
     <div className="pb-4">
       <Range
@@ -64,12 +71,12 @@ const SprintFilter = ({ sprints, setSprints, history }) => {
         onChange={setSprintRange}
         pushable
         marks={marks}
-        trackStyle={[{ backgroundColor: "skyBlue" }]}
+        trackStyle={[{ backgroundColor: colors.track }]}
         handleStyle={[
-          { backgroundColor: "white" },
-          { backgroundColor: "white" }
+          { backgroundColor: colors.handle },
+          { backgroundColor: colors.handle }
         ]}
-        railStyle={{ backgroundColor: "white" }}
+        railStyle={{ backgroundColor: colors.rail }}
       />
     </div>
   );
