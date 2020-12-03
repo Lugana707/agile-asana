@@ -24,16 +24,23 @@ const SprintFilter = ({ sprints, setSprints, history }) => {
     [sprintNumbers]
   );
 
-  useEffect(() => {
-    const lastSprint = sprintNumbers.last() || {};
+  const sprintRangeForDisplay = useMemo(() => {
+    const [min, max] = sprintRange;
+
+    if (min || max) {
+      return sprintRange;
+    }
+
+    const lastSprint = recentSprints.last() || {};
     const lastCompletedSprint =
       maxSprint - (lastSprint.state === "COMPLETED" ? 0 : 1);
-    setSprintRange([lastCompletedSprint - 6, lastCompletedSprint]);
-  }, [sprintNumbers, maxSprint]);
+
+    return [lastCompletedSprint - 6, lastCompletedSprint];
+  }, [recentSprints, maxSprint, sprintRange]);
 
   useEffect(() => {
-    setSprints(recentSprints.whereBetween("number", sprintRange));
-  }, [setSprints, recentSprints, sprintRange]);
+    setSprints(recentSprints.whereBetween("number", sprintRangeForDisplay));
+  }, [setSprints, recentSprints, sprintRangeForDisplay]);
 
   const marks = useMemo(
     () =>
@@ -50,8 +57,8 @@ const SprintFilter = ({ sprints, setSprints, history }) => {
   return (
     <div className="pb-4">
       <Range
-        defaultValue={[minSprint, maxSprint]}
-        value={sprintRange}
+        defaultValue={sprintRangeForDisplay}
+        value={sprintRangeForDisplay}
         min={minSprint}
         max={maxSprint}
         onChange={setSprintRange}
