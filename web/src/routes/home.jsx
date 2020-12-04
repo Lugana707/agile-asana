@@ -34,7 +34,11 @@ const Home = ({ sprints }) => {
       </Row>
       <Row>
         <Col xs={12} className="pb-4">
-          <SprintFilter sprints={sprints} setSprints={setFilteredSprints} />
+          <SprintFilter
+            defaultCount={20}
+            sprints={sprints}
+            setSprints={setFilteredSprints}
+          />
         </Col>
       </Row>
       {!sprintsForDisplay.length ? (

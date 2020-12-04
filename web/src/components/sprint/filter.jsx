@@ -3,7 +3,7 @@ import { withRouter } from "react-router-dom";
 import { Range } from "rc-slider";
 import randomFlatColors from "random-flat-colors";
 
-const SprintFilter = ({ sprints, setSprints, history }) => {
+const SprintFilter = ({ defaultCount, sprints, setSprints, history }) => {
   const { location } = history;
 
   const recentSprints = useMemo(() => {
@@ -12,8 +12,8 @@ const SprintFilter = ({ sprints, setSprints, history }) => {
       10
     );
 
-    return sprints.take(count || 20).reverse();
-  }, [location.search, sprints]);
+    return sprints.take(count || defaultCount || 20).reverse();
+  }, [location.search, sprints, defaultCount]);
 
   const sprintNumbers = useMemo(() => recentSprints.pluck("number").sort(), [
     recentSprints
