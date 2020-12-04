@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { withRouter } from "react-router-dom";
 import { Jumbotron, Container, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -6,9 +6,20 @@ import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import TasksAtRiskWidget from "../../components/backlog/alerts/tasksAtRiskWidget";
 import BacklogProgressPerSprint from "../../components/backlog/charts/progressPerSprint";
 import BacklogStoryPoints from "../../components/backlog/widgets/storyPoints";
+import SprintFilter from "../../components/sprint/filter";
 import TagsFilter from "../../components/library/tags/filter";
+import withSprints from "../../components/sprint/withSprints";
 
-const Forecast = ({ history }) => {
+const Forecast = ({ sprints, history }) => {
+  const [filteredSprints, setFilteredSprints] = useState(false);
+  const sprintsForDisplay = useMemo(
+    () =>
+      filteredSprints && filteredSprints.isNotEmpty()
+        ? filteredSprints.toArray()
+        : [],
+    [filteredSprints]
+  );
+
   const [tags, setTags] = useState([]);
 
   return (
@@ -22,7 +33,7 @@ const Forecast = ({ history }) => {
         </Container>
       </Jumbotron>
       <Container fluid>
-        <Row>
+        <Row className="pb-4">
           <Col xs={12} md={4} lg={3}>
             <TasksAtRiskWidget />
           </Col>
@@ -38,14 +49,25 @@ const Forecast = ({ history }) => {
             </div>
           </Col>
         </Row>
-        <Row className="mr-4 pt-4">
-          {false && (
-            <Col xs={12}>
-              <TagsFilter setTags={setTags} />
-            </Col>
-          )}
+        <Row className="pb-4">
           <Col xs={12}>
-            <BacklogProgressPerSprint weight="storyPoints" tags={tags} />
+            <SprintFilter
+              defaultCount={54}
+              sprints={sprints}
+              setSprints={setFilteredSprints}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12} className="pb-2">
+            <TagsFilter setTags={setTags} />
+          </Col>
+          <Col xs={12}>
+            <BacklogProgressPerSprint
+              sprints={sprintsForDisplay}
+              weight="storyPoints"
+              tags={tags}
+            />
           </Col>
         </Row>
       </Container>
@@ -53,4 +75,4 @@ const Forecast = ({ history }) => {
   );
 };
 
-export default withRouter(Forecast);
+export default withRouter(withSprints(Forecast));

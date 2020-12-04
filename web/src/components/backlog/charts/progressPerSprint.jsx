@@ -6,7 +6,6 @@ import collect from "collect.js";
 import Color from "color";
 import randomFlatColors from "random-flat-colors";
 import withBacklogTasks from "../withBacklogTasks";
-import withSprints from "../../sprint/withSprints";
 
 const ALL_TAGS_TAG = "All";
 
@@ -28,7 +27,9 @@ const BacklogProgressPerSprint = ({
     [asanaTags]
   );
 
-  const sprintsCollection = useMemo(() => sprints.sortBy("number"), [sprints]);
+  const sprintsCollection = useMemo(() => collect(sprints).sortBy("number"), [
+    sprints
+  ]);
 
   const getBacklogCountPerSprint = useCallback(
     tag => {
@@ -263,4 +264,4 @@ const BacklogProgressPerSprint = ({
   );
 };
 
-export default withBacklogTasks(withSprints(BacklogProgressPerSprint));
+export default withBacklogTasks(BacklogProgressPerSprint);
