@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import TasksAtRiskWidget from "../../components/backlog/alerts/tasksAtRiskWidget";
 import BacklogProgressPerSprint from "../../components/backlog/charts/progressPerSprint";
+import SprintStoryPointsTrend from "../../components/sprint/charts/sprintStoryPointsTrend";
 import BacklogStoryPoints from "../../components/backlog/widgets/storyPoints";
 import SprintFilter from "../../components/sprint/filter";
 import TagsFilter from "../../components/library/tags/filter";
@@ -62,12 +63,15 @@ const Forecast = ({ sprints, history }) => {
           <Col xs={12} className="pb-2">
             <TagsFilter setTags={setTags} />
           </Col>
-          <Col xs={12}>
+          <Col xs={12} lg={6} style={{ height: "50vh" }}>
             <BacklogProgressPerSprint
               sprints={sprintsForDisplay}
               weight="storyPoints"
               tags={tags}
             />
+          </Col>
+          <Col xs={12} lg={6} style={{ height: "50vh" }}>
+            <SprintStoryPointsTrend sprints={sprintsForDisplay} />
           </Col>
         </Row>
       </Container>
