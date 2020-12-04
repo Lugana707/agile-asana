@@ -145,56 +145,66 @@ const BacklogProgressPerSprint = ({
     [tags, getBacklogCountPerSprint, weight]
   );
 
-  const data = useMemo(
-    () => ({
+  const data = useMemo(() => {
+    const barChartConfig = {
+      xAxisID: "x-axis-progress",
+      yAxisID: "y-axis-progress",
+      type: "bar"
+    };
+
+    return {
       labels: sprintsCollection.pluck("number").toArray(),
-      datasets: [
-        ...getBacklogCountPerSprintByTag("runningTotal")
-          .map(({ tag, count }) => ({
-            tag,
-            type: "line",
-            data: count.toArray(),
-            color: getAsanaTagColor(tag).hex(),
-            pointRadius: 0,
-            xAxisID: "x-axis-running-total",
-            yAxisID: "y-axis-running-total"
-          }))
-          .toArray(),
-        ...getBacklogCountPerSprintByTag("createdAt")
-          .map(({ tag, count }) => ({
-            tag,
-            type: "bar",
-            data: count.toArray(),
-            color: getAsanaTagColor(tag)
-              .desaturate(0.3)
-              .hex(),
-            xAxisID: "x-axis-progress",
-            yAxisID: "y-axis-progress"
-          }))
-          .toArray(),
-        ...getBacklogCountPerSprintByTag("completedAt")
-          .map(({ tag, count }) => ({
-            tag,
-            type: "bar",
-            data: count.toArray(),
-            color: getAsanaTagColor(tag)
-              .saturate(0.3)
-              .hex(),
-            xAxisID: "x-axis-progress",
-            yAxisID: "y-axis-progress"
-          }))
-          .toArray()
-      ].map(({ tag, color, ...obj }) => ({
-        ...obj,
-        label: tag,
-        borderColor: color,
-        backgroundColor: color,
-        fill: false,
-        borderWidth: 1
-      }))
-    }),
-    [getBacklogCountPerSprintByTag, sprintsCollection, getAsanaTagColor]
-  );
+      datasets: collect([])
+        .merge(
+          getBacklogCountPerSprintByTag("runningTotal")
+            .map(({ tag, count }) => ({
+              label: tag,
+              key: `${tag}-running-total`,
+              type: "line",
+              data: count.toArray(),
+              color: getAsanaTagColor(tag).hex(),
+              pointRadius: 0,
+              xAxisID: "x-axis-running-total",
+              yAxisID: "y-axis-running-total"
+            }))
+            .toArray()
+        )
+        .merge(
+          getBacklogCountPerSprintByTag("createdAt")
+            .map(({ tag, count }) => ({
+              ...barChartConfig,
+              label: tag,
+              key: `${tag}-created-at`,
+              data: count.toArray(),
+              color: getAsanaTagColor(tag)
+                .desaturate(0.3)
+                .hex()
+            }))
+            .toArray()
+        )
+        .merge(
+          getBacklogCountPerSprintByTag("completedAt")
+            .map(({ tag, count }) => ({
+              ...barChartConfig,
+              label: tag,
+              key: `${tag}-completed-at`,
+              data: count.toArray(),
+              color: getAsanaTagColor(tag)
+                .saturate(0.3)
+                .hex()
+            }))
+            .toArray()
+        )
+        .map(({ tag, color, ...obj }) => ({
+          ...obj,
+          borderColor: color,
+          backgroundColor: color,
+          fill: false,
+          borderWidth: 1
+        }))
+        .toArray()
+    };
+  }, [getBacklogCountPerSprintByTag, sprintsCollection, getAsanaTagColor]);
 
   const { min: suggestedMin, max: suggestedMax } = useMemo(
     () =>
@@ -223,7 +233,7 @@ const BacklogProgressPerSprint = ({
         yAxes: [
           {
             type: "linear",
-            display: !false,
+            display: false,
             stacked: true,
             position: "right",
             id: "y-axis-progress",
@@ -259,7 +269,12 @@ const BacklogProgressPerSprint = ({
       className="w-100 overflow-hidden"
       style={{ minHeight: "300px", height: "50vh" }}
     >
-      <Bar data={data} options={options} legend={{ display: false }} />
+      <Bar
+        data={data}
+        options={options}
+        legend={{ display: false }}
+        datasetKeyProvider={({ key }) => key}
+      />
     </div>
   );
 };
