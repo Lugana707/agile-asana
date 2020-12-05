@@ -9,9 +9,12 @@ import SprintStoryPointsTrend from "../../components/sprint/charts/sprintStoryPo
 import BacklogStoryPoints from "../../components/backlog/widgets/storyPoints";
 import SprintFilter from "../../components/sprint/filter";
 import TagsFilter from "../../components/library/tags/filter";
+import TaskWeightKeySelector, {
+  withTaskWeightKeyFromURL
+} from "../../components/library/taskWeightKeySelector";
 import withSprints from "../../components/sprint/withSprints";
 
-const Forecast = ({ sprints, history }) => {
+const Forecast = ({ sprints, history, taskWeightKey }) => {
   const [filteredSprints, setFilteredSprints] = useState(false);
   const sprintsForDisplay = useMemo(
     () =>
@@ -60,17 +63,20 @@ const Forecast = ({ sprints, history }) => {
           </Col>
         </Row>
         <Row>
-          <Col xs={12} className="pb-2">
+          <Col xs={12} lg={{ span: 2, order: 1 }}>
+            <TaskWeightKeySelector />
+          </Col>
+          <Col xs={12} lg={{ span: 10, order: 0 }} className="pb-2">
             <TagsFilter setTags={setTags} />
           </Col>
-          <Col xs={12} lg={6} style={{ height: "50vh" }}>
+          <Col xs={12} lg={{ span: 6, order: 2 }} style={{ height: "50vh" }}>
             <BacklogProgressPerSprint
               sprints={sprintsForDisplay}
-              weight="storyPoints"
+              weight={taskWeightKey}
               tags={tags}
             />
           </Col>
-          <Col xs={12} lg={6} style={{ height: "50vh" }}>
+          <Col xs={12} lg={{ span: 6, order: 3 }} style={{ height: "50vh" }}>
             <SprintStoryPointsTrend sprints={sprintsForDisplay} />
           </Col>
         </Row>
@@ -79,4 +85,4 @@ const Forecast = ({ sprints, history }) => {
   );
 };
 
-export default withRouter(withSprints(Forecast));
+export default withRouter(withTaskWeightKeyFromURL(withSprints(Forecast)));
