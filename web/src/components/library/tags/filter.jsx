@@ -61,8 +61,9 @@ const TagsFilter = ({ history, setTags }) => {
 
   return (
     <div>
-      {tagsForRendering.map(({ name, color, active }) => (
+      {tagsForRendering.map(({ name, color, active }, index) => (
         <Button
+          key={index}
           variant="link"
           size="sm"
           className="p-0 pl-1 pr-1"
