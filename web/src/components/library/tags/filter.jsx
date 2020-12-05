@@ -45,18 +45,23 @@ const TagsFilter = ({ history, setTags }) => {
   }, [setTags, tagsFromLocationSearch]);
 
   const enableTag = tag => {
-    const { pathname } = location;
+    const { pathname, search } = location;
 
     const { active } = tagsForRendering.firstWhere("name", tag);
 
     const tagSearch = tagsFromLocationSearch
       .when(active, collection => collection.where(true, "!==", tag))
       .when(!active, collection => collection.merge([tag]));
+
+    const urlSearchParams = new URLSearchParams(search);
+
     if (tagSearch.isNotEmpty()) {
-      history.push(`${pathname}?tags=${tagSearch.join(",")}`);
+      urlSearchParams.set("tags", tagSearch.join(","));
     } else {
-      history.push(pathname);
+      urlSearchParams.delete("tags");
     }
+
+    history.push(`${pathname}?${urlSearchParams.toString()}`);
   };
 
   return (
