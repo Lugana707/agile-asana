@@ -2,8 +2,6 @@ import Logger from "js-logger";
 import moment from "moment";
 import collect from "collect.js";
 
-const RUNNING_AVERAGE_WEEK_COUNT = 3;
-
 const MATCH_PROJECT_BACKLOG = /^Product Backlog$/u;
 
 const SET_LOADING_SPRINTS = "SET_LOADING_SPRINTS";
@@ -170,20 +168,6 @@ const processProjectIntoSprint = ({
   };
 };
 
-const postProcessProjectIntoSprint = ({ sprint, sprints }) => {
-  const averageCompletedStoryPoints = collect(sprints)
-    .sortByDesc("number")
-    .where("number", "<", sprint.number)
-    .take(RUNNING_AVERAGE_WEEK_COUNT)
-    .pluck("completedStoryPoints")
-    .average();
-
-  return {
-    ...sprint,
-    averageCompletedStoryPoints: Math.round(averageCompletedStoryPoints)
-  };
-};
-
 const processSprints = () => {
   return async (dispatch, getState) => {
     try {
@@ -223,19 +207,12 @@ const processSprints = () => {
             asanaProjectsCollection
           })
         )
-        .sortBy("number")
-        .map((sprint, index, array) =>
-          postProcessProjectIntoSprint({
-            sprint,
-            sprints: array.slice(0, index)
-          })
-        )
         .sortByDesc("number")
         .map(sprint => {
           dispatch({ type: UPSERT_SPRINT, value: sprint, loading: true });
           return sprint;
         })
-        .all();
+        .toArray();
 
       Logger.info("Processing tasks into refined and unrefined...", {
         tasksCollection

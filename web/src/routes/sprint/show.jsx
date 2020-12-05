@@ -1,7 +1,5 @@
 import React, { useMemo } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import { useSelector } from "react-redux";
-import collect from "collect.js";
 import SprintBurnUpDown from "../../components/sprint/charts/burnUpDown";
 import SprintTagsBarChart from "../../components/sprint/charts/sprintTagsBarChart";
 import SprintTimeProgress from "../../components/sprint/timeProgress";
@@ -9,13 +7,12 @@ import SprintStoryPointProgress from "../../components/sprint/storyPointProgress
 import SprintInfoCard from "../../components/sprint/infoCard";
 import BacklogAggregateRaised from "../../components/backlog/widgets/aggregateRaised";
 import BacklogProgressForSprint from "../../components/backlog/charts/progressForSprint";
+import withSprints from "../../components/sprint/withSprints";
 
-const Show = ({ match }) => {
+const Show = ({ sprints, match }) => {
   const { uuid } = match.params;
 
-  const { sprints } = useSelector(state => state.sprints);
-
-  const sprint = useMemo(() => collect(sprints).firstWhere("uuid", uuid), [
+  const sprint = useMemo(() => sprints.firstWhere("uuid", uuid), [
     sprints,
     uuid
   ]);
@@ -72,4 +69,4 @@ const Show = ({ match }) => {
   );
 };
 
-export default Show;
+export default withSprints(Show);

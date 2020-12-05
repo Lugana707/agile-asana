@@ -1,8 +1,17 @@
-import React from "react";
-import { Button, Card, ListGroup } from "react-bootstrap";
+import React, { useMemo } from "react";
+import {
+  Button,
+  Card,
+  ListGroup,
+  OverlayTrigger,
+  Tooltip
+} from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExternalLinkAlt,
+  faInfoCircle
+} from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 
 const InfoCard = ({ sprint }) => {
@@ -18,12 +27,41 @@ const InfoCard = ({ sprint }) => {
     state
   } = sprint || {};
 
+  const completed = useMemo(() => state === "COMPLETED", [state]);
+
+  const AverageCompletedStoryPointsTooltipWrapper = ({ children }) => {
+    if (!completed) {
+      const AverageCompletedStoryPointsTooltip = props => (
+        <Tooltip id="api-key-tooltip" {...props}>
+          {
+            "calculating using this sprint's committed story points and the previous two sprints' completed story points"
+          }
+        </Tooltip>
+      );
+
+      return (
+        <OverlayTrigger
+          placement="right"
+          delay={{ show: 250, hide: 400 }}
+          overlay={AverageCompletedStoryPointsTooltip}
+        >
+          <span>
+            <span className="font-italic pr-1">{children}</span>
+            <FontAwesomeIcon icon={faInfoCircle} />
+          </span>
+        </OverlayTrigger>
+      );
+    }
+
+    return children;
+  };
+
   return (
     <Card bg="dark" text="light" className="text-left">
       <Card.Body>
         <Card.Title>
           <span>Sprint {number}</span>
-          {state === "COMPLETED" ? (
+          {completed ? (
             <span className="text-success"> Completed</span>
           ) : (
             <span className="text-warning"> (In Progress)</span>
@@ -45,10 +83,12 @@ const InfoCard = ({ sprint }) => {
       </Card.Body>
       <ListGroup variant="flush">
         <ListGroup.Item variant="info">
-          <span className="font-weight-bold">
-            {averageCompletedStoryPoints}
-          </span>
-          <span> three week avg. story points</span>
+          <AverageCompletedStoryPointsTooltipWrapper>
+            <span className="font-weight-bold">
+              {averageCompletedStoryPoints}
+            </span>
+            <span> three week avg.</span>
+          </AverageCompletedStoryPointsTooltipWrapper>
         </ListGroup.Item>
         <ListGroup.Item
           variant={
