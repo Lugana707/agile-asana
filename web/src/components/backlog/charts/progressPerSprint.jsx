@@ -6,8 +6,7 @@ import collect from "collect.js";
 import Color from "color";
 import randomFlatColors from "random-flat-colors";
 import withBacklogTasks from "../withBacklogTasks";
-
-const ALL_TAGS_TAG = "All";
+import { ALL_TAGS_TAG } from "../../library/tags/filter";
 
 const BacklogProgressPerSprint = ({
   backlogTasks,

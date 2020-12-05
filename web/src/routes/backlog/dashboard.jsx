@@ -8,13 +8,15 @@ import BacklogProgressPerSprint from "../../components/backlog/charts/progressPe
 import SprintStoryPointsTrend from "../../components/sprint/charts/sprintStoryPointsTrend";
 import BacklogStoryPoints from "../../components/backlog/widgets/storyPoints";
 import SprintFilter from "../../components/sprint/filter";
-import TagsFilter from "../../components/library/tags/filter";
+import TagsFilter, {
+  withTagsFilterFromURL
+} from "../../components/library/tags/filter";
 import TaskWeightKeySelector, {
   withTaskWeightKeyFromURL
 } from "../../components/library/taskWeightKeySelector";
 import withSprints from "../../components/sprint/withSprints";
 
-const Forecast = ({ sprints, history, taskWeightKey }) => {
+const Forecast = ({ sprints, history, taskWeightKey, tagsFilter }) => {
   const [filteredSprints, setFilteredSprints] = useState(false);
   const sprintsForDisplay = useMemo(
     () =>
@@ -23,8 +25,6 @@ const Forecast = ({ sprints, history, taskWeightKey }) => {
         : [],
     [filteredSprints]
   );
-
-  const [tags, setTags] = useState([]);
 
   return (
     <>
@@ -67,13 +67,13 @@ const Forecast = ({ sprints, history, taskWeightKey }) => {
             <TaskWeightKeySelector />
           </Col>
           <Col xs={12} lg={{ span: 10, order: 0 }} className="pb-2">
-            <TagsFilter setTags={setTags} />
+            <TagsFilter />
           </Col>
           <Col xs={12} lg={{ span: 6, order: 2 }} style={{ height: "50vh" }}>
             <BacklogProgressPerSprint
               sprints={sprintsForDisplay}
               weight={taskWeightKey}
-              tags={tags}
+              tags={tagsFilter}
             />
           </Col>
           <Col xs={12} lg={{ span: 6, order: 3 }} style={{ height: "50vh" }}>
@@ -85,4 +85,6 @@ const Forecast = ({ sprints, history, taskWeightKey }) => {
   );
 };
 
-export default withRouter(withTaskWeightKeyFromURL(withSprints(Forecast)));
+export default withRouter(
+  withTagsFilterFromURL(withTaskWeightKeyFromURL(withSprints(Forecast)))
+);

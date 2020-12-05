@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { withRouter } from "react-router-dom";
 import { Button, Badge } from "react-bootstrap";
 import { useSelector } from "react-redux";
@@ -6,20 +6,21 @@ import collect from "collect.js";
 import Color from "color";
 import randomFlatColors from "random-flat-colors";
 
-const ALL_TAGS_TAG = "All";
+export const ALL_TAGS_TAG = "All";
 
-const TagsFilter = ({ history, setTags }) => {
+const getTagsFilterFromURL = ({ search }) =>
+  collect((new URLSearchParams(search).get("tags") || "").split(",")).where(
+    true
+  );
+
+const TagsFilter = ({ history }) => {
   const { asanaTags } = useSelector(state => state.asanaTags);
 
   const { location } = history;
 
-  const tagsFromLocationSearch = useMemo(
-    () =>
-      collect(
-        (new URLSearchParams(location.search).get("tags") || "").split(",")
-      ).where(true),
-    [location.search]
-  );
+  const tagsFromLocationSearch = useMemo(() => getTagsFilterFromURL(location), [
+    location
+  ]);
 
   const tagsForRendering = useMemo(
     () =>
@@ -39,10 +40,6 @@ const TagsFilter = ({ history, setTags }) => {
         }),
     [asanaTags, tagsFromLocationSearch]
   );
-
-  useEffect(() => {
-    setTags(tagsFromLocationSearch.toArray());
-  }, [setTags, tagsFromLocationSearch]);
 
   const enableTag = tag => {
     const { pathname, search } = location;
@@ -86,6 +83,21 @@ const TagsFilter = ({ history, setTags }) => {
         </Button>
       ))}
     </div>
+  );
+};
+
+export const withTagsFilterFromURL = WrappedComponent => props => {
+  const { location } = props;
+
+  const tagsFromLocationSearch = useMemo(() => getTagsFilterFromURL(location), [
+    location
+  ]);
+
+  return (
+    <WrappedComponent
+      {...props}
+      tagsFilter={tagsFromLocationSearch.toArray()}
+    />
   );
 };
 
