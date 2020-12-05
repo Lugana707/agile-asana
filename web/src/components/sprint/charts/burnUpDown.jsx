@@ -15,6 +15,10 @@ const StoryPointsPerDay = ({ sprint }) => {
 
   const burnUp = useMemo(() => sprintState === "COMPLETED", [sprintState]);
 
+  const dayOfWeekForFirstDayOfSprint = useMemo(() => sprintStartOn.weekday(), [
+    sprintStartOn
+  ]);
+
   const daysOfTheWeek = useMemo(
     () =>
       collect(new Array(sprintLength + 1).fill(0)).map(
@@ -27,9 +31,12 @@ const StoryPointsPerDay = ({ sprint }) => {
     dayOfWeek =>
       collect(sprintTasksCompleted)
         .where("storyPoints")
-        .where("completedAtDayOfSprint", dayOfWeek + 1)
+        .where(
+          "completedAtDayOfSprint",
+          dayOfWeek + dayOfWeekForFirstDayOfSprint
+        )
         .sum("storyPoints"),
-    [sprintTasksCompleted]
+    [sprintTasksCompleted, dayOfWeekForFirstDayOfSprint]
   );
 
   const data = useMemo(
@@ -76,16 +83,14 @@ const StoryPointsPerDay = ({ sprint }) => {
             .map(obj => getStoryPointsForSprintDay(obj))
             .toArray()
         }
-      ]
-        .filter(Boolean)
-        .map(({ color, ...obj }) => ({
-          ...obj,
-          borderColor: color,
-          backgroundColor: color,
-          cubicInterpolationMode: "monotone",
-          fill: false,
-          borderWidth: 1
-        }))
+      ].map(({ color, ...obj }) => ({
+        ...obj,
+        borderColor: color,
+        backgroundColor: color,
+        cubicInterpolationMode: "monotone",
+        fill: false,
+        borderWidth: 1
+      }))
     }),
     [
       sprintStartOn,
