@@ -1,6 +1,15 @@
 import React, { useMemo } from "react";
 import { withRouter } from "react-router-dom";
-import { Button, ButtonGroup } from "react-bootstrap";
+import {
+  Button,
+  ButtonGroup,
+  Dropdown,
+  OverlayTrigger,
+  Tooltip
+} from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import collect from "collect.js";
 
 const getTaskWeightKeyFromURL = ({ search }) =>
   new URLSearchParams(search).get("weight") || "storyPoints";
@@ -19,24 +28,74 @@ const TaskWeightKeySelector = ({ history }) => {
     history.push(`${location.pathname}?${urlSearchParams.toString()}`);
   };
 
-  const weightMap = [
+  const weightMap = collect([
     { key: "Count", value: "count", variant: "info" },
     { key: "Story Points", value: "storyPoints", variant: "info" }
-  ];
+  ]);
+
+  const Description = ({ children, ...props }) => {
+    const TasksWeightedByTooltip = props => (
+      <Tooltip {...props}>
+        e.g. "count" will display the number of backlog tasks, as opposed to
+        displaying the sum of their "story points"
+      </Tooltip>
+    );
+
+    return (
+      <div {...props}>
+        <OverlayTrigger
+          placement="bottom"
+          delay={{ show: 250, hide: 400 }}
+          overlay={TasksWeightedByTooltip}
+        >
+          <span>
+            <span>Tasks Weighted by</span>
+            {children}
+            <FontAwesomeIcon className="pl-1" icon={faInfoCircle} />
+          </span>
+        </OverlayTrigger>
+      </div>
+    );
+  };
 
   return (
-    <ButtonGroup size="lg" vertical>
-      {weightMap.map(({ key, value, variant }) => (
-        <Button
-          variant={variant}
-          key={key}
-          disabled={value === weightFromLocationSearch}
-          onClick={() => setWeightInUrl(value)}
-        >
-          {key}
-        </Button>
-      ))}
-    </ButtonGroup>
+    <>
+      <Dropdown className="d-md-none">
+        <Dropdown.Toggle variant="info" id="dropdown-basic">
+          <Description>
+            <span className="pl-1">
+              {weightMap.firstWhere("value", weightFromLocationSearch).key}
+            </span>
+          </Description>
+        </Dropdown.Toggle>
+        <Dropdown.Menu>
+          {weightMap
+            .where("value", "!==", weightFromLocationSearch)
+            .map(({ key, value, variant }) => (
+              <Dropdown.Item
+                variant={variant}
+                key={key}
+                onClick={() => setWeightInUrl(value)}
+              >
+                {key}
+              </Dropdown.Item>
+            ))}
+        </Dropdown.Menu>
+      </Dropdown>
+      <ButtonGroup className="d-none d-md-block" size="md" vertical>
+        <Description className="p-2 bg-secondary rounded-top" />
+        {weightMap.map(({ key, value, variant }) => (
+          <Button
+            variant={variant}
+            key={key}
+            disabled={value === weightFromLocationSearch}
+            onClick={() => setWeightInUrl(value)}
+          >
+            {key}
+          </Button>
+        ))}
+      </ButtonGroup>
+    </>
   );
 };
 

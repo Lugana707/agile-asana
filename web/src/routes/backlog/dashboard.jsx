@@ -63,20 +63,30 @@ const Forecast = ({ sprints, history, taskWeightKey, tagsFilter }) => {
           </Col>
         </Row>
         <Row>
-          <Col xs={12} lg={{ span: 2, order: 1 }}>
+          <Col xs={12} md={{ span: 2, order: 1 }}>
             <TaskWeightKeySelector />
           </Col>
-          <Col xs={12} lg={{ span: 10, order: 0 }} className="pb-2">
+          <Col xs={12} md={{ span: 10, order: 0 }} className="pb-2">
             <TagsFilter />
           </Col>
-          <Col xs={12} lg={{ span: 6, order: 2 }} style={{ height: "50vh" }}>
+          <Col
+            xs={12}
+            md={{ span: 12, order: 2 }}
+            lg={6}
+            style={{ height: "50vh" }}
+          >
             <BacklogProgressPerSprint
               sprints={sprintsForDisplay}
               weight={taskWeightKey}
               tags={tagsFilter}
             />
           </Col>
-          <Col xs={12} lg={{ span: 6, order: 3 }} style={{ height: "50vh" }}>
+          <Col
+            xs={12}
+            md={{ span: 12, order: 3 }}
+            lg={6}
+            style={{ height: "50vh" }}
+          >
             <SprintStoryPointsTrend sprints={sprintsForDisplay} />
           </Col>
         </Row>
