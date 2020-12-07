@@ -34,7 +34,7 @@ const InfoCard = ({ sprint }) => {
       const AverageCompletedStoryPointsTooltip = props => (
         <Tooltip {...props}>
           {
-            "calculating using this sprint's committed story points and the previous two sprints' completed story points"
+            "calculated using this sprint's committed story points and the previous two sprints' completed story points"
           }
         </Tooltip>
       );
