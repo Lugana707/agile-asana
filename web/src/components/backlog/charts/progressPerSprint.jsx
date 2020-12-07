@@ -221,21 +221,29 @@ const BacklogProgressPerSprint = ({
 
   const options = useMemo(
     () => ({
+      responsive: true,
       showLines: true,
       maintainAspectRatio: false,
-      responsive: true,
       scales: {
         xAxes: [
-          { display: false, stacked: true, id: "x-axis-progress" },
-          { id: "x-axis-running-total", labelString: "Sprint" }
+          {
+            display: true,
+            stacked: true,
+            id: "x-axis-progress",
+            labelString: "Sprint"
+          },
+          {
+            display: false,
+            id: "x-axis-running-total",
+            labelString: "Sprint"
+          }
         ],
         yAxes: [
           {
             type: "linear",
-            display: false,
-            stacked: true,
-            position: "right",
-            id: "y-axis-progress",
+            display: true,
+            position: "left",
+            id: "y-axis-running-total",
             ticks: {
               suggestedMin,
               suggestedMax,
@@ -244,9 +252,10 @@ const BacklogProgressPerSprint = ({
           },
           {
             type: "linear",
-            display: true,
-            position: "left",
-            id: "y-axis-running-total",
+            display: false,
+            stacked: true,
+            position: "right",
+            id: "y-axis-progress",
             ticks: {
               suggestedMin,
               suggestedMax,
