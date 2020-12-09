@@ -8,7 +8,7 @@ import {
   Tooltip
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 
 const getTaskWeightKeyFromURL = ({ search }) =>
@@ -51,12 +51,14 @@ const TaskWeightKeySelector = ({ history }) => {
           <span>
             <span>Tasks Weighted by</span>
             {children}
-            <FontAwesomeIcon className="pl-1" icon={faInfoCircle} />
+            <FontAwesomeIcon className="ml-1" icon={faInfoCircle} />
           </span>
         </OverlayTrigger>
       </div>
     );
   };
+
+  const weightIsActive = weight => weight === weightFromLocationSearch;
 
   return (
     <>
@@ -87,11 +89,14 @@ const TaskWeightKeySelector = ({ history }) => {
         {weightMap.map(({ key, value, variant }) => (
           <Button
             variant={variant}
+            disabled={weightIsActive(value)}
             key={key}
-            disabled={value === weightFromLocationSearch}
             onClick={() => setWeightInUrl(value)}
           >
             {key}
+            {weightIsActive(value) && (
+              <FontAwesomeIcon className="ml-1 mr-1" icon={faCheckCircle} />
+            )}
           </Button>
         ))}
       </ButtonGroup>

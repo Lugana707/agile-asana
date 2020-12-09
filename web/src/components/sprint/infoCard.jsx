@@ -46,7 +46,7 @@ const InfoCard = ({ sprint }) => {
           overlay={AverageCompletedStoryPointsTooltip}
         >
           <span>
-            <span className="font-italic pr-1">{children}</span>
+            <span className="font-italic mr-1">{children}</span>
             <FontAwesomeIcon icon={faInfoCircle} />
           </span>
         </OverlayTrigger>
