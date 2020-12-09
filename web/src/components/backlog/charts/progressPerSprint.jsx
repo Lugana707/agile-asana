@@ -224,6 +224,10 @@ const BacklogProgressPerSprint = ({
       responsive: true,
       showLines: true,
       maintainAspectRatio: false,
+      tooltips: {
+        mode: "index",
+        intersect: false
+      },
       scales: {
         xAxes: [
           {
