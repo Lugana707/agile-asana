@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Bar } from "react-chartjs-2";
 import collect from "collect.js";
 import randomFlatColors from "random-flat-colors";
+import Color from "color";
 
 const SprintStoryPointsTrend = ({ sprints = [] }) => {
   const sprintsCollection = useMemo(() => collect(sprints).sortBy("number"), [
@@ -13,19 +14,24 @@ const SprintStoryPointsTrend = ({ sprints = [] }) => {
     [sprintsCollection]
   );
 
-  const data = useMemo(
-    () => ({
+  const data = useMemo(() => {
+    const gray = Color(randomFlatColors("gray")).darken(0.2);
+
+    return {
       labels: sprintsCollection.pluck("number").toArray(),
       datasets: [
         {
           label: "3 Week Average",
           type: "line",
-          color: randomFlatColors("gray"),
+          fill: true,
+          borderColor: gray.hex(),
+          backgroundColor: gray.fade(0.75).hex(),
           data: completedSprints.pluck("averageCompletedStoryPoints").toArray()
         },
         {
           label: "Overall Trend",
           type: "line",
+          hidden: true,
           color: randomFlatColors("white"),
           spanGaps: true,
           data: sprintsCollection
@@ -66,21 +72,24 @@ const SprintStoryPointsTrend = ({ sprints = [] }) => {
           data: sprintsCollection.pluck("completedStoryPoints").toArray()
         }
       ].map(({ color, ...obj }) => ({
-        ...obj,
         borderColor: color,
         backgroundColor: color,
         fill: false,
+        ...obj,
         borderWidth: 1
       }))
-    }),
-    [sprintsCollection, completedSprints]
-  );
+    };
+  }, [sprintsCollection, completedSprints]);
 
   const options = useMemo(
     () => ({
       responsive: true,
       showLines: true,
       maintainAspectRatio: false,
+      tooltips: {
+        mode: "index",
+        intersect: false
+      },
       scales: {
         xAxes: [
           {
