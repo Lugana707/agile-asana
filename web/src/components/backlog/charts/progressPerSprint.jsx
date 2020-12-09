@@ -145,11 +145,10 @@ const BacklogProgressPerSprint = ({
   );
 
   const data = useMemo(() => {
-    const barChartConfig = {
-      xAxisID: "x-axis-progress",
-      yAxisID: "y-axis-progress",
+    const getBarChartConfig = tag => ({
+      yAxisID: tag === ALL_TAGS_TAG ? "y-axis-progress-all" : "y-axis-progress",
       type: "bar"
-    };
+    });
 
     return {
       labels: sprintsCollection.pluck("number").toArray(),
@@ -163,7 +162,6 @@ const BacklogProgressPerSprint = ({
               data: count.toArray(),
               color: getAsanaTagColor(tag).hex(),
               pointRadius: 0,
-              xAxisID: "x-axis-running-total",
               yAxisID: "y-axis-running-total"
             }))
             .toArray()
@@ -171,7 +169,7 @@ const BacklogProgressPerSprint = ({
         .merge(
           getBacklogCountPerSprintByTag("createdAt")
             .map(({ tag, count }) => ({
-              ...barChartConfig,
+              ...getBarChartConfig(tag),
               label: tag,
               key: `${tag}-created-at`,
               data: count.toArray(),
@@ -179,12 +177,13 @@ const BacklogProgressPerSprint = ({
                 .desaturate(0.3)
                 .hex()
             }))
+            .reverse()
             .toArray()
         )
         .merge(
           getBacklogCountPerSprintByTag("completedAt")
             .map(({ tag, count }) => ({
-              ...barChartConfig,
+              ...getBarChartConfig(tag),
               label: tag,
               key: `${tag}-completed-at`,
               data: count.toArray(),
@@ -192,6 +191,7 @@ const BacklogProgressPerSprint = ({
                 .saturate(0.3)
                 .hex()
             }))
+            .reverse()
             .toArray()
         )
         .map(({ tag, color, ...obj }) => ({
@@ -219,8 +219,20 @@ const BacklogProgressPerSprint = ({
     [getBacklogCountPerSprintByTag]
   );
 
-  const options = useMemo(
-    () => ({
+  const options = useMemo(() => {
+    const barChartYAxis = {
+      type: "linear",
+      display: false,
+      stacked: true,
+      position: "right",
+      ticks: {
+        suggestedMin,
+        suggestedMax,
+        precision: 0
+      }
+    };
+
+    return {
       responsive: true,
       showLines: true,
       maintainAspectRatio: false,
@@ -233,12 +245,6 @@ const BacklogProgressPerSprint = ({
           {
             display: true,
             stacked: true,
-            id: "x-axis-progress",
-            labelString: "Sprint"
-          },
-          {
-            display: false,
-            id: "x-axis-running-total",
             labelString: "Sprint"
           }
         ],
@@ -246,6 +252,7 @@ const BacklogProgressPerSprint = ({
           {
             type: "linear",
             display: true,
+            stacked: false,
             position: "left",
             id: "y-axis-running-total",
             ticks: {
@@ -254,23 +261,12 @@ const BacklogProgressPerSprint = ({
               precision: 0
             }
           },
-          {
-            type: "linear",
-            display: false,
-            stacked: true,
-            position: "right",
-            id: "y-axis-progress",
-            ticks: {
-              suggestedMin,
-              suggestedMax,
-              precision: 0
-            }
-          }
+          { ...barChartYAxis, id: "y-axis-progress" },
+          { ...barChartYAxis, id: "y-axis-progress-all" }
         ]
       }
-    }),
-    [suggestedMin, suggestedMax]
-  );
+    };
+  }, [suggestedMin, suggestedMax]);
 
   if (getBacklogCountPerSprint(ALL_TAGS_TAG).isEmpty()) {
     return <div className="loading-spinner centre" />;

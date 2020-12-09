@@ -4,10 +4,11 @@ import collect from "collect.js";
 import randomFlatColors from "random-flat-colors";
 import Color from "color";
 
-const SprintStoryPointsTrend = ({ sprints = [] }) => {
-  const sprintsCollection = useMemo(() => collect(sprints).sortBy("number"), [
-    sprints
-  ]);
+const SprintStoryPointsTrend = ({ sprints }) => {
+  const sprintsCollection = useMemo(
+    () => collect(sprints || []).sortBy("number"),
+    [sprints]
+  );
 
   const completedSprints = useMemo(
     () => sprintsCollection.where("state", "COMPLETED"),
