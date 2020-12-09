@@ -1,0 +1,13 @@
+name: Publish Release
+
+on:
+  release:
+    types: released
+
+jobs:
+  publish-release:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug Action
+        uses: hmarr/debug-action@v1.0.0
