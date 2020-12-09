@@ -11,3 +11,5 @@ jobs:
     steps:
       - name: Debug Action
         uses: hmarr/debug-action@v1.0.0
+      - name: Test
+        run: echo "${{ github.event.release.name }} :: ${{ github.event.release.body }}"
