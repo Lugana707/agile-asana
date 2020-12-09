@@ -174,7 +174,7 @@ const BacklogProgressPerSprint = ({
               key: `${tag}-created-at`,
               data: count.toArray(),
               color: getAsanaTagColor(tag)
-                .desaturate(0.3)
+                .desaturate(0.15)
                 .hex()
             }))
             .reverse()
@@ -188,7 +188,7 @@ const BacklogProgressPerSprint = ({
               key: `${tag}-completed-at`,
               data: count.toArray(),
               color: getAsanaTagColor(tag)
-                .saturate(0.3)
+                .saturate(0.15)
                 .hex()
             }))
             .reverse()
