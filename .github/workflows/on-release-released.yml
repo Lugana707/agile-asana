@@ -25,7 +25,7 @@ jobs:
               attachments: [{
                 mrkdwn_in: ['text'],
                 color: 'good',
-                author_name: '<@${{ Lugana707 }}>',
+                author_name: '<@Lugana707>',
                 author_link: '${{ github.event.release.author.html_url }}',
                 author_icon: '${{ github.event.release.author.avatar_url }}'
                 pretext: ':sparkles: New release going into production now!',
