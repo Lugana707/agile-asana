@@ -1,0 +1,41 @@
+name: Publish Release
+
+on:
+  release:
+    types: released
+
+env:
+  SLACK_CHANNEL: development
+
+jobs:
+  publish-release:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Timestamp
+        run: echo "TIMESTAMP=$(date -d '${{ github.event.release.created_at }}' +%s)" >> $GITHUB_ENV
+      - name: action-slack
+        uses: 8398a7/action-slack@v3.5.0
+        with:
+          status: custom
+          custom_payload: |
+            {
+              icon_emoji: ':bookmark:',
+              channel: '${{ env.SLACK_CHANNEL }}',
+              attachments: [{
+                mrkdwn_in: ['text'],
+                color: 'good',
+                author_name: '<@${{ Lugana707 }}>',
+                author_link: '${{ github.event.release.author.html_url }}',
+                author_icon: '${{ github.event.release.author.avatar_url }}'
+                pretext: ':sparkles: New release going into production now!',
+                title: ':thrive: ${{ github.event.release.name }}',
+                title_link: '${{ github.event.release.html_url }}',
+                text: `${{ github.event.release.body }}`,
+                footer: ':octocat: Deployed via Github',
+                ts: '${{ env.TIMESTAMP }}'
+              }]
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ""
