@@ -27,7 +27,7 @@ jobs:
                 color: 'good',
                 author_name: '<@Lugana707>',
                 author_link: '${{ github.event.release.author.html_url }}',
-                author_icon: '${{ github.event.release.author.avatar_url }}'
+                author_icon: '${{ github.event.release.author.avatar_url }}',
                 pretext: ':sparkles: New release going into production now!',
                 title: ':thrive: ${{ github.event.release.name }}',
                 title_link: '${{ github.event.release.html_url }}',
