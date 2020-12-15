@@ -2,9 +2,14 @@ import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 
 export default WrappedComponent => props => {
-  const { asanaApiKey } = useSelector(state => state.settings);
+  const { asanaApiKey, asanaDefaultWorkspace } = useSelector(
+    state => state.settings
+  );
 
-  const asanaConfigured = useMemo(() => !!asanaApiKey, [asanaApiKey]);
+  const asanaConfigured = useMemo(
+    () => !!asanaApiKey && !!asanaDefaultWorkspace,
+    [asanaApiKey, asanaDefaultWorkspace]
+  );
   const configured = useMemo(() => !!asanaConfigured, [asanaConfigured]);
 
   return (

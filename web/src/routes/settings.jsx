@@ -35,11 +35,13 @@ const Settings = ({ loading: globalLoading, history }) => {
   const asanaDeveloperConsoleUrl = "https://app.asana.com/0/developer-console";
 
   const { asanaProjects } = useSelector(state => state.asanaProjects);
-  const { loading, asanaApiKey } = useSelector(state => state.settings);
+  const { loading, asanaApiKey, asanaDefaultWorkspace, user } = useSelector(
+    state => state.settings
+  );
 
   const [settings, setSettings] = useReducer(
     (accumulator, currentValue) => ({ ...accumulator, ...currentValue }),
-    { asanaApiKey }
+    { asanaApiKey, asanaDefaultWorkspace }
   );
 
   const dispatch = useDispatch();
@@ -48,6 +50,11 @@ const Settings = ({ loading: globalLoading, history }) => {
     event.preventDefault();
     event.stopPropagation();
     dispatch(updateSettings({ settings }));
+
+    if (!settings.asanaDefaultWorkspace) {
+      return false;
+    }
+
     history.push("/");
   };
 
@@ -73,6 +80,8 @@ const Settings = ({ loading: globalLoading, history }) => {
       this will be used to get data from Asana
     </Tooltip>
   );
+
+  const { workspaces } = user || {};
 
   return (
     <>
@@ -133,13 +142,45 @@ const Settings = ({ loading: globalLoading, history }) => {
                   type="password"
                   name="asanaApiKey"
                   placeholder="asana api key"
-                  value={settings.asanaApiKey || ""}
+                  value={
+                    (settings.asanaApiKey &&
+                      new Array(settings.asanaApiKey.length)
+                        .fill("*")
+                        .join("")) ||
+                    ""
+                  }
                   onChange={({ target }) =>
                     setSettings({ asanaApiKey: target.value })
                   }
                   required
                 />
               </Form.Group>
+              {workspaces && (
+                <Form.Group as={Col} xs="12" controlId="formAsanaWorkspace">
+                  <Form.Label>Asana Workspace</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="asanaWorkspace"
+                    placeholder="asana workspace"
+                    value={(settings.asanaDefaultWorkspace || {}).name || ""}
+                    onChange={({ target }) => {
+                      const { value } = target;
+                      const workspace = collect(workspaces)
+                        .where("name", value)
+                        .first();
+                      setSettings({ asanaDefaultWorkspace: workspace });
+                    }}
+                    required
+                  >
+                    <option value={false}>-- please select --</option>
+                    {workspaces.map(({ name }, index) => (
+                      <option key={index} value={name}>
+                        {name}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              )}
             </Row>
             <hr className="my-4" />
             <Row>

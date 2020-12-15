@@ -5,7 +5,7 @@ import axios from "axios";
 import Logger from "js-logger";
 import { loadAll } from "../scripts/redux/actions/asanaActions";
 import { processSprints } from "../scripts/redux/actions/sprintActions";
-import { loadUser, logout } from "../scripts/redux/actions/settingsActions";
+import { loadUser } from "../scripts/redux/actions/settingsActions";
 import withLoading from "./withLoading";
 import withConfigured from "./withConfigured";
 
@@ -38,7 +38,6 @@ const DataIntegrity = ({ history, configured, loading }) => {
 
   useEffect(() => {
     if (!configured) {
-      dispatch(logout());
       history.push("/settings");
     } else if (!user) {
       dispatch(loadUser());

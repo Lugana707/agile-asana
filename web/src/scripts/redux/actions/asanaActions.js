@@ -26,8 +26,7 @@ const getAsanaApiClient = ({ settings }) => {
   const { asanaApiKey } = settings;
 
   const client = Asana.Client.create().useAccessToken(asanaApiKey);
-  const { gid: workspace } =
-    settings.asanaDefaultWorkspace || settings.user.workspaces[0];
+  const { gid: workspace } = settings.asanaDefaultWorkspace;
 
   return {
     client,
