@@ -1,0 +1,18 @@
+name: Issue Closed
+
+on:
+  issues:
+    types: closed
+
+jobs:
+  update-release-notes:
+    name: Update Release Notes
+    runs-on: ubunut-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+      - name: Release notes generator
+        uses: Decathlon/release-notes-generator-action@v2.1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USE_MILESTONE_TITLE: "false"
