@@ -22,6 +22,10 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issues: true
+      - name: Delete Draft Releases
+        uses: hugo19941994/delete-draft-releases@v0.1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
