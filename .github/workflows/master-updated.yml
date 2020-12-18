@@ -23,7 +23,7 @@ jobs:
 
   create-release:
     runs-on: ubuntu-latest
-    if: ${{ needs.update-version.outputs.new_tag !== '' }}
+    if: ${{ needs.update-version.outputs.new_tag != '' }}
     needs:
       - update-version
     env:
