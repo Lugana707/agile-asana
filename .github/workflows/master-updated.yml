@@ -6,6 +6,7 @@ on:
 
 jobs:
   update-version:
+    name: Update Version
     runs-on: ubuntu-latest
     outputs:
       new_tag: ${{ steps.github-tag-action.outputs.new_tag }}
@@ -21,7 +22,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-  create-release:
+  create-draft-release:
+    name: Create Draft Release
     runs-on: ubuntu-latest
     if: ${{ needs.update-version.outputs.new_tag != '' }}
     needs:
