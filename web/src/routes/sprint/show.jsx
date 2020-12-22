@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
-import { Container, Row, Col, ButtonGroup, Button } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import SprintBurnUpDown from "../../components/sprint/charts/burnUpDown";
 import SprintTagsBarChart from "../../components/sprint/charts/sprintTagsBarChart";
 import SprintTimeProgress from "../../components/sprint/timeProgress";
@@ -12,7 +11,7 @@ import withSprintFromURL from "../../components/sprint/withSprintFromURL";
 import SprintJumbotron from "../../components/sprint/jumbotron";
 
 const Show = ({ sprint }) => {
-  const { startOn, finishedOn, state, uuid } = sprint || {};
+  const { startOn, finishedOn, state } = sprint || {};
 
   const isComplete = useMemo(() => state === "COMPLETED", [state]);
 
@@ -22,16 +21,7 @@ const Show = ({ sprint }) => {
 
   return (
     <>
-      <SprintJumbotron sprint={sprint}>
-        <ButtonGroup>
-          <LinkContainer to={`/sprint/${uuid}/task`}>
-            <Button variant="dark">Tasks</Button>
-          </LinkContainer>
-          <LinkContainer to={`/sprint/${uuid}/report`}>
-            <Button variant="dark">Report</Button>
-          </LinkContainer>
-        </ButtonGroup>
-      </SprintJumbotron>
+      <SprintJumbotron sprint={sprint} />
       <Container>
         <Row>
           <Col xs={{ span: 12, order: 0 }} md={12} className="pb-4">
