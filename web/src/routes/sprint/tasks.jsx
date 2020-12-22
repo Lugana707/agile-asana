@@ -1,6 +1,5 @@
 import React from "react";
 import { Container, Jumbotron, Row, Col } from "react-bootstrap";
-import Table from "../../components/library/table";
 import withSprintFromURL from "../../components/sprint/withSprintFromURL";
 import SprintCardAndTable from "../../components/sprint/task/sprintCardAndTable";
 
@@ -9,7 +8,7 @@ const Tasks = ({ sprint }) => {
     return <div />;
   }
 
-  const { number, tasks } = sprint;
+  const { number } = sprint;
 
   return (
     <>
