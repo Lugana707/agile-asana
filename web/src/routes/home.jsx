@@ -20,7 +20,7 @@ const Home = ({ sprints }) => {
   );
 
   return (
-    <Container fluid>
+    <Container fluid className="pt-4">
       <Row className="pb-4">
         <Col xs={4} lg={3}>
           <SprintProgressWidget />

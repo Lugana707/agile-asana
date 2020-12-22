@@ -20,8 +20,8 @@ const Show = ({ sprint }) => {
   }
 
   return (
-    <Container>
-      <Row>
+    <Container className="pt-4">
+      <Row className="pb-4">
         <Col xs={12}>
           <ButtonGroup>
             <LinkContainer to={`/sprint/${uuid}/task`}>

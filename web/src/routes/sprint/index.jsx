@@ -71,7 +71,7 @@ const Sprints = ({ currentSprint, sprints }) => {
   };
 
   return (
-    <Container>
+    <Container className="pt-4">
       <Row>
         <Col>
           <Table
