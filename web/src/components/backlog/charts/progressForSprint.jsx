@@ -146,7 +146,11 @@ const BacklogProgressPerSprint = ({ sprint, backlogTasks }) => {
     []
   );
 
-  return <Bar data={data} options={options} legend={{ display: false }} />;
+  return (
+    <div className="chartjs-min-height">
+      <Bar data={data} options={options} legend={{ display: false }} />
+    </div>
+  );
 };
 
 export default withBacklogTasks(BacklogProgressPerSprint);

@@ -143,7 +143,7 @@ const StoryPointsPerDay = ({ sprint }) => {
   }
 
   return (
-    <div className="h-100" style={{ minHeight: "300px" }}>
+    <div className="chartjs-min-height">
       <Bar data={data} options={options} />
     </div>
   );

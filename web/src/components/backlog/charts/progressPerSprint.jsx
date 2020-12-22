@@ -274,8 +274,8 @@ const BacklogProgressPerSprint = ({
 
   return (
     <div
-      className="w-100 overflow-hidden"
-      style={{ minHeight: "300px", height: "50vh" }}
+      className="chartjs-min-height w-100 overflow-hidden"
+      style={{ height: "50vh" }}
     >
       <Bar
         data={data}
