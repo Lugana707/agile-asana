@@ -59,7 +59,7 @@ const StoryPointsPerDay = ({ sprints, showBurnUp, showBurnDown }) => {
                   .format("dddd");
 
                 if (weekday === 6 || weekday === 0) {
-                  return `${text}!`;
+                  return `${text}*`;
                 }
 
                 return text;
