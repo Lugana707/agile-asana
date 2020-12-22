@@ -6,7 +6,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import moment from "moment";
-import TagBadge from "./tags/badge";
+import TagBadge from "../../library/tags/badge";
 
 const SprintTaskTableRow = ({ data }) => {
   const { gid, name, dueOn, storyPoints, sprints, tags } = data;

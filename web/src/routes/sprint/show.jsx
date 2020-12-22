@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, ButtonGroup, Button } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
 import SprintBurnUpDown from "../../components/sprint/charts/burnUpDown";
 import SprintTagsBarChart from "../../components/sprint/charts/sprintTagsBarChart";
 import SprintTimeProgress from "../../components/sprint/timeProgress";
@@ -7,17 +8,10 @@ import SprintStoryPointProgress from "../../components/sprint/storyPointProgress
 import SprintInfoCard from "../../components/sprint/infoCard";
 import BacklogAggregateRaised from "../../components/backlog/widgets/aggregateRaised";
 import BacklogProgressForSprint from "../../components/backlog/charts/progressForSprint";
-import withSprints from "../../components/sprint/withSprints";
+import withSprintFromURL from "../../components/sprint/withSprintFromURL";
 
-const Show = ({ sprints, match }) => {
-  const { uuid } = match.params;
-
-  const sprint = useMemo(() => sprints.firstWhere("uuid", uuid), [
-    sprints,
-    uuid
-  ]);
-
-  const { startOn, finishedOn, state } = sprint || {};
+const Show = ({ sprint }) => {
+  const { startOn, finishedOn, state, uuid } = sprint || {};
 
   const isComplete = useMemo(() => state === "COMPLETED", [state]);
 
@@ -27,6 +21,18 @@ const Show = ({ sprints, match }) => {
 
   return (
     <Container>
+      <Row>
+        <Col xs={12}>
+          <ButtonGroup>
+            <LinkContainer to={`/sprint/${uuid}/task`}>
+              <Button variant="secondary">Tasks</Button>
+            </LinkContainer>
+            <LinkContainer to={`/sprint/${uuid}/report`}>
+              <Button variant="secondary">Report</Button>
+            </LinkContainer>
+          </ButtonGroup>
+        </Col>
+      </Row>
       <Row>
         <Col xs={{ span: 12, order: 0 }} md={12} className="pb-4">
           <SprintBurnUpDown sprint={sprint} />
@@ -69,4 +75,4 @@ const Show = ({ sprints, match }) => {
   );
 };
 
-export default withSprints(Show);
+export default withSprintFromURL(Show);

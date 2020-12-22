@@ -1,52 +1,25 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import { useSelector } from "react-redux";
-import moment from "moment";
 import Table from "../../components/library/table";
+import withSprintFromURL from "../../components/sprint/withSprintFromURL";
+import SprintCardAndTable from "../../components/sprint/task/sprintCardAndTable";
 
-const Tasks = ({ match }) => {
-  const { loading, asanaProjectTasks } = useSelector(
-    state => state.asanaProjectTasks
-  );
-
-  const { projectGid } = match.params;
-  const projectGidMemo = useMemo(() => decodeURIComponent(projectGid), [
-    projectGid
-  ]);
-
-  const TableRow = ({ data }) => {
-    const { name, completed_at, "Story Points": storyPoints } = data;
-    return (
-      <>
-        <td>{name}</td>
-        <td>{storyPoints}</td>
-        <td>{completed_at && moment(completed_at).format("LLL")}</td>
-      </>
-    );
-  };
-
-  if (!asanaProjectTasks) {
+const Tasks = ({ sprint }) => {
+  if (!sprint) {
     return <div />;
   }
 
-  const { completedTasks } = asanaProjectTasks.find(
-    obj => obj.gid === projectGidMemo
-  );
+  const { tasks } = sprint;
 
   return (
-    <Container>
+    <Container fluid>
       <Row>
-        <Col>
-          <Table
-            id={asanaProjectTasks.name}
-            loading={loading}
-            data={completedTasks}
-            row={TableRow}
-          />
+        <Col xs={12}>
+          <SprintCardAndTable sprint={sprint} />
         </Col>
       </Row>
     </Container>
   );
 };
 
-export default Tasks;
+export default withSprintFromURL(Tasks);
