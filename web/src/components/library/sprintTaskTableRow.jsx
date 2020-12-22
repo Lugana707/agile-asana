@@ -12,9 +12,7 @@ const SprintTaskTableRow = ({ data }) => {
   const { gid, name, dueOn, storyPoints, sprints, tags } = data;
 
   const [sprintUUID] = sprints;
-  const sortedTags = collect(tags)
-    .sort()
-    .all();
+  const sortedTags = collect(tags).sort();
 
   const computeVariant = dueOn => {
     if (dueOn) {
@@ -45,10 +43,10 @@ const SprintTaskTableRow = ({ data }) => {
         <span className="text-left d-block">
           <span>{name}</span>
         </span>
-        {sortedTags.length > 0 && (
+        {sortedTags.isNotEmpty() && (
           <span className="ml-1">
             {sortedTags.map((tag, index) => (
-              <TagBadge tag={tag} />
+              <TagBadge key={index} tag={tag} />
             ))}
           </span>
         )}
