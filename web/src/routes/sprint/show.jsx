@@ -34,7 +34,7 @@ const Show = ({ sprint }) => {
             )}
           </Col>
           <Col xs={{ span: 12, order: 3 }} md={5} className="pb-4">
-            <SprintInfoCard sprint={sprint} />
+            <SprintInfoCard sprint={sprint} showSummary showLinks />
           </Col>
           <Col xs={{ span: 12, order: 4 }} md={7} className="pb-4 d-block">
             <SprintTagsBarChart sprint={sprint} />

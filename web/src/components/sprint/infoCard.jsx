@@ -14,7 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 
-const InfoCard = ({ sprint }) => {
+const InfoCard = ({ sprint, showSummary, showLinks }) => {
   const {
     uuid,
     name,
@@ -81,51 +81,55 @@ const InfoCard = ({ sprint }) => {
           </span>
         </Card.Subtitle>
       </Card.Body>
-      <ListGroup variant="flush">
-        <ListGroup.Item variant="info">
-          <AverageCompletedStoryPointsTooltipWrapper>
-            <span className="font-weight-bold">
-              {averageCompletedStoryPoints}
-            </span>
-            <span> three week avg.</span>
-          </AverageCompletedStoryPointsTooltipWrapper>
-        </ListGroup.Item>
-        <ListGroup.Item
-          variant={
-            storyPoints <= averageCompletedStoryPoints ? "success" : "warning"
-          }
-        >
-          <span className="font-weight-bold">{storyPoints}</span>
-          <span> committed story points</span>
-        </ListGroup.Item>
-        <ListGroup.Item
-          variant={completedStoryPoints >= storyPoints ? "success" : "danger"}
-        >
-          <span className="font-weight-bold">{completedStoryPoints}</span>
-          <span> completed story points</span>
-        </ListGroup.Item>
-      </ListGroup>
-      <Card.Footer className="text-right">
-        <LinkContainer to={`/sprint/${uuid}/report`}>
-          <Button size="sm" className="mr-1">
-            Report
-          </Button>
-        </LinkContainer>
-        <LinkContainer to={`/sprint/${uuid}/task`}>
-          <Button size="sm" className="mr-1" hidden>
-            Tasks
-          </Button>
-        </LinkContainer>
-        <a
-          href={`https://app.asana.com/0/${uuid}/board`}
-          rel="noopener noreferrer"
-          target="_blank"
-          className="btn btn-secondary btn-sm"
-        >
-          <span className="pr-1">Asana</span>
-          <FontAwesomeIcon icon={faExternalLinkAlt} />
-        </a>
-      </Card.Footer>
+      {showSummary && (
+        <ListGroup variant="flush">
+          <ListGroup.Item variant="info">
+            <AverageCompletedStoryPointsTooltipWrapper>
+              <span className="font-weight-bold">
+                {averageCompletedStoryPoints}
+              </span>
+              <span> three week avg.</span>
+            </AverageCompletedStoryPointsTooltipWrapper>
+          </ListGroup.Item>
+          <ListGroup.Item
+            variant={
+              storyPoints <= averageCompletedStoryPoints ? "success" : "warning"
+            }
+          >
+            <span className="font-weight-bold">{storyPoints}</span>
+            <span> committed story points</span>
+          </ListGroup.Item>
+          <ListGroup.Item
+            variant={completedStoryPoints >= storyPoints ? "success" : "danger"}
+          >
+            <span className="font-weight-bold">{completedStoryPoints}</span>
+            <span> completed story points</span>
+          </ListGroup.Item>
+        </ListGroup>
+      )}
+      {showLinks && (
+        <Card.Footer className="text-right">
+          <LinkContainer to={`/sprint/${uuid}/report`}>
+            <Button size="sm" className="mr-1">
+              Report
+            </Button>
+          </LinkContainer>
+          <LinkContainer to={`/sprint/${uuid}/task`}>
+            <Button size="sm" className="mr-1" hidden>
+              Tasks
+            </Button>
+          </LinkContainer>
+          <a
+            href={`https://app.asana.com/0/${uuid}/board`}
+            rel="noopener noreferrer"
+            target="_blank"
+            className="btn btn-secondary btn-sm"
+          >
+            <span className="pr-1">Asana</span>
+            <FontAwesomeIcon icon={faExternalLinkAlt} />
+          </a>
+        </Card.Footer>
+      )}
     </Card>
   );
 };
