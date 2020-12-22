@@ -11,7 +11,7 @@ const BacklogStoryPoints = ({ incompleteBacklogTasks }) => {
   return (
     <Widget to="/backlog/dashboard" bg="info" text="dark">
       <h1 className="text-nowrap d-inline">{storyPoints}</h1>
-      <small className="d-block">Backlog Story Points</small>
+      <small className="d-block">backlog story points</small>
     </Widget>
   );
 };

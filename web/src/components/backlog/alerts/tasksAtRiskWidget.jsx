@@ -35,7 +35,7 @@ const TasksAtRiskCardAndTable = () => {
   return (
     <Widget to="/backlog/forecast" bg="danger" text="dark">
       <h1 className="text-nowrap d-inline">{tasksDueSoonCount}</h1>
-      <small className="d-block">Deadlines at Risk</small>
+      <small className="d-block">deadlines at risk</small>
     </Widget>
   );
 };
