@@ -1,9 +1,8 @@
 import React, { useMemo } from "react";
-import { LinkContainer } from "react-router-bootstrap";
-import { Card, Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import collect from "collect.js";
+import Widget from "../../library/widget";
 
 const TasksAtRiskCardAndTable = () => {
   const { sprints } = useSelector(state => state.sprints);
@@ -34,20 +33,10 @@ const TasksAtRiskCardAndTable = () => {
   }, [unrefinedBacklogTasks, refinedBacklogTasks, sprints]);
 
   return (
-    <LinkContainer to="/backlog/forecast" className="btn p-0">
-      <Card bg="danger" text="dark" className="text-left">
-        <Card.Body>
-          <Card.Title className="m-0">
-            <Row>
-              <Col xs={4} as="h1" className="text-nowrap">
-                {tasksDueSoonCount}
-              </Col>
-              <Col>Commitments at Risk</Col>
-            </Row>
-          </Card.Title>
-        </Card.Body>
-      </Card>
-    </LinkContainer>
+    <Widget to="/backlog/forecast" bg="danger" text="dark">
+      <h1 className="text-nowrap d-inline">{tasksDueSoonCount}</h1>
+      <small className="d-block">Deadlines at Risk</small>
+    </Widget>
   );
 };
 

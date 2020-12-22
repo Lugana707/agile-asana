@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
-import { LinkContainer } from "react-router-bootstrap";
-import { Card, Row, Col } from "react-bootstrap";
 import withIncompleteBacklogTasks from "../withIncompleteBacklogTasks";
+import Widget from "../../library/widget";
 
 const BacklogStoryPoints = ({ incompleteBacklogTasks }) => {
   const storyPoints = useMemo(
@@ -10,20 +9,10 @@ const BacklogStoryPoints = ({ incompleteBacklogTasks }) => {
   );
 
   return (
-    <LinkContainer to="/backlog/dashboard" className="btn p-0">
-      <Card bg="info" text="dark" className="text-left">
-        <Card.Body>
-          <Card.Title className="m-0">
-            <Row>
-              <Col xs={4} as="h1" className="text-nowrap">
-                {storyPoints}
-              </Col>
-              <Col>Backlog Story Points</Col>
-            </Row>
-          </Card.Title>
-        </Card.Body>
-      </Card>
-    </LinkContainer>
+    <Widget to="/backlog/dashboard" bg="info" text="dark">
+      <h1 className="text-nowrap d-inline">{storyPoints}</h1>
+      <small className="d-block">Backlog Story Points</small>
+    </Widget>
   );
 };
 

@@ -15,6 +15,7 @@ import TaskWeightKeySelector, {
   withTaskWeightKeyFromURL
 } from "../../components/library/taskWeightKeySelector";
 import withSprints from "../../components/sprint/withSprints";
+import Widget from "../../components/library/widget";
 
 const Forecast = ({ sprints, history, taskWeightKey, tagsFilter }) => {
   const [filteredSprints, setFilteredSprints] = useState(false);
@@ -38,20 +39,14 @@ const Forecast = ({ sprints, history, taskWeightKey, tagsFilter }) => {
       </Jumbotron>
       <Container fluid>
         <Row className="pb-4">
-          <Col xs={12} md={4} lg={3}>
-            <TasksAtRiskWidget />
-          </Col>
-          <Col xs={12} md={4} lg={3}>
-            <BacklogStoryPoints />
-          </Col>
-          <Col xs={12} md={4} lg={6}>
-            <div className="w-100 h-100 bg-warning text-dark rounded pt-4 pb-4">
-              <h4 className="mx-auto">
-                <FontAwesomeIcon icon={faExclamationTriangle} />
-                <span> Work In Progress!</span>
-              </h4>
-            </div>
-          </Col>
+          <TasksAtRiskWidget />
+          <BacklogStoryPoints />
+          <Widget bg="warning" text="dark">
+            <h1 className="text-nowrap d-inline">
+              <FontAwesomeIcon icon={faExclamationTriangle} />
+            </h1>
+            <small className="d-block">Work in Progress!</small>
+          </Widget>
         </Row>
         <Row className="pb-4">
           <Col xs={12}>
