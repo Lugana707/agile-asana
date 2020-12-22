@@ -1,12 +1,10 @@
 import React, { useMemo, useState } from "react";
 import { withRouter } from "react-router-dom";
 import { Jumbotron, Container, Row, Col } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import TasksAtRiskWidget from "../../components/backlog/alerts/tasksAtRiskWidget";
 import BacklogProgressPerSprint from "../../components/backlog/charts/progressPerSprint";
 import SprintStoryPointsTrend from "../../components/sprint/charts/sprintStoryPointsTrend";
-import BacklogStoryPoints from "../../components/backlog/widgets/storyPoints";
+import BacklogStoryPointsWidget from "../../components/backlog/widgets/storyPoints";
 import SprintFilter from "../../components/sprint/filter";
 import TagsFilter, {
   withTagsFilterFromURL
@@ -15,7 +13,6 @@ import TaskWeightKeySelector, {
   withTaskWeightKeyFromURL
 } from "../../components/library/taskWeightKeySelector";
 import withSprints from "../../components/sprint/withSprints";
-import Widget from "../../components/library/widget";
 
 const Forecast = ({ sprints, history, taskWeightKey, tagsFilter }) => {
   const [filteredSprints, setFilteredSprints] = useState(false);
@@ -40,13 +37,7 @@ const Forecast = ({ sprints, history, taskWeightKey, tagsFilter }) => {
       <Container fluid>
         <Row className="pb-4">
           <TasksAtRiskWidget />
-          <BacklogStoryPoints />
-          <Widget bg="warning" text="dark">
-            <h1 className="text-nowrap d-inline">
-              <FontAwesomeIcon icon={faExclamationTriangle} />
-            </h1>
-            <small className="d-block">Work in Progress!</small>
-          </Widget>
+          <BacklogStoryPointsWidget />
         </Row>
         <Row className="pb-4">
           <Col xs={12}>
