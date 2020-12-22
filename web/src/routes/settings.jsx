@@ -107,7 +107,8 @@ const Settings = ({ loading: globalLoading, history }) => {
         <Row>
           <Col xs={12}>
             <span className="pr-2">Currently logged in as</span>
-            <User badge access />
+            <User badge />
+            <span>.</span>
           </Col>
         </Row>
         <hr className="my-4" />
