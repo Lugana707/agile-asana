@@ -10,3 +10,7 @@ $body-bg: #282c34;
     filter: brightness(115%);
   }
 }
+
+.jumbotron {
+  @extend .text-left;
+}

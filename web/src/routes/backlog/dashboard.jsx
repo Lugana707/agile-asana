@@ -28,7 +28,7 @@ const Forecast = ({ sprints, history, taskWeightKey, tagsFilter }) => {
 
   return (
     <>
-      <Jumbotron fluid className="bg-primary text-left">
+      <Jumbotron fluid className="bg-primary">
         <Container>
           <h1>Backlog / Dashboard</h1>
           <p hidden>

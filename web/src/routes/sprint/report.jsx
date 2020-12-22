@@ -68,7 +68,7 @@ const Report = ({ match }) => {
 
   return (
     <>
-      <Jumbotron fluid className="bg-primary text-left">
+      <Jumbotron fluid className="bg-primary">
         <Container>
           <h1>Sprint {number} Report</h1>
         </Container>
