@@ -9,6 +9,7 @@ import SprintInfoCard from "../../components/sprint/infoCard";
 import BacklogAggregateRaised from "../../components/backlog/widgets/aggregateRaised";
 import BacklogProgressForSprint from "../../components/backlog/charts/progressForSprint";
 import withSprintFromURL from "../../components/sprint/withSprintFromURL";
+import SprintJumbotron from "../../components/sprint/jumbotron";
 
 const Show = ({ sprint }) => {
   const { startOn, finishedOn, state, uuid } = sprint || {};
@@ -20,58 +21,58 @@ const Show = ({ sprint }) => {
   }
 
   return (
-    <Container className="pt-4">
-      <Row className="pb-4">
-        <Col xs={12}>
-          <ButtonGroup>
-            <LinkContainer to={`/sprint/${uuid}/task`}>
-              <Button variant="secondary">Tasks</Button>
-            </LinkContainer>
-            <LinkContainer to={`/sprint/${uuid}/report`}>
-              <Button variant="secondary">Report</Button>
-            </LinkContainer>
-          </ButtonGroup>
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={{ span: 12, order: 0 }} md={12} className="pb-4">
-          <SprintBurnUpDown sprint={sprint} />
-        </Col>
-        <Col xs={{ span: 12, order: 1 }} className="pb-4">
-          <SprintStoryPointProgress sprint={sprint} />
-          {!isComplete && (
-            <SprintTimeProgress className="mt-1" sprint={sprint} />
-          )}
-        </Col>
-        <Col xs={{ span: 12, order: 3 }} md={5} className="pb-4">
-          <SprintInfoCard sprint={sprint} />
-        </Col>
-        <Col xs={{ span: 12, order: 4 }} md={7} className="pb-4 d-block">
-          <SprintTagsBarChart sprint={sprint} />
-        </Col>
-        <Col md={{ span: 12, order: 5 }} className="d-hidden d-md-block">
-          <hr />
-        </Col>
-        <Col
-          xs={{ span: 12, order: 7 }}
-          md={{ span: 7, order: 6 }}
-          className="pb-4 d-block"
-        >
-          <BacklogProgressForSprint sprint={sprint} />
-        </Col>
-        <Col
-          xs={{ span: 12, order: 6 }}
-          md={{ span: 5, order: 7 }}
-          className="pb-4"
-        >
-          <BacklogAggregateRaised
-            dateFrom={startOn}
-            dateTo={finishedOn}
-            includeTag={["bug", "feature"]}
-          />
-        </Col>
-      </Row>
-    </Container>
+    <>
+      <SprintJumbotron sprint={sprint}>
+        <ButtonGroup>
+          <LinkContainer to={`/sprint/${uuid}/task`}>
+            <Button variant="dark">Tasks</Button>
+          </LinkContainer>
+          <LinkContainer to={`/sprint/${uuid}/report`}>
+            <Button variant="dark">Report</Button>
+          </LinkContainer>
+        </ButtonGroup>
+      </SprintJumbotron>
+      <Container>
+        <Row>
+          <Col xs={{ span: 12, order: 0 }} md={12} className="pb-4">
+            <SprintBurnUpDown sprint={sprint} />
+          </Col>
+          <Col xs={{ span: 12, order: 1 }} className="pb-4">
+            <SprintStoryPointProgress sprint={sprint} />
+            {!isComplete && (
+              <SprintTimeProgress className="mt-1" sprint={sprint} />
+            )}
+          </Col>
+          <Col xs={{ span: 12, order: 3 }} md={5} className="pb-4">
+            <SprintInfoCard sprint={sprint} />
+          </Col>
+          <Col xs={{ span: 12, order: 4 }} md={7} className="pb-4 d-block">
+            <SprintTagsBarChart sprint={sprint} />
+          </Col>
+          <Col md={{ span: 12, order: 5 }} className="d-hidden d-md-block">
+            <hr />
+          </Col>
+          <Col
+            xs={{ span: 12, order: 7 }}
+            md={{ span: 7, order: 6 }}
+            className="pb-4 d-block"
+          >
+            <BacklogProgressForSprint sprint={sprint} />
+          </Col>
+          <Col
+            xs={{ span: 12, order: 6 }}
+            md={{ span: 5, order: 7 }}
+            className="pb-4"
+          >
+            <BacklogAggregateRaised
+              dateFrom={startOn}
+              dateTo={finishedOn}
+              includeTag={["bug", "feature"]}
+            />
+          </Col>
+        </Row>
+      </Container>
+    </>
   );
 };
 

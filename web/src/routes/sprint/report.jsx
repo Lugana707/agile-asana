@@ -1,10 +1,11 @@
 import React, { useMemo } from "react";
-import { Container, Jumbotron, Row, Col } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import { useSelector } from "react-redux";
 import SprintBreakdown from "../../components/sprint/tables/breakdown";
+import SprintJumbotron from "../../components/sprint/jumbotron";
 
 const sprintBreakdownCount = 5;
 
@@ -30,7 +31,7 @@ const Report = ({ match }) => {
     return <div className="loading-spinner centre" />;
   }
 
-  const { number, tasks, tasksCompleted } = sprint;
+  const { tasks, tasksCompleted } = sprint;
 
   const commitmentsMet = collect(tasksCompleted).where("tags.length");
   const unplannedWork = collect(tasks).filter(({ tags }) =>
@@ -68,11 +69,7 @@ const Report = ({ match }) => {
 
   return (
     <>
-      <Jumbotron fluid className="bg-primary">
-        <Container>
-          <h1>Sprint {number} Report</h1>
-        </Container>
-      </Jumbotron>
+      <SprintJumbotron sprint={sprint} title="Report" />
       <Container className="text-left">
         <Row>
           <Col>
