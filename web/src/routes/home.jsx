@@ -22,15 +22,9 @@ const Home = ({ sprints }) => {
   return (
     <Container fluid className="pt-4">
       <Row className="pb-4">
-        <Col xs={4} lg={3}>
-          <SprintProgressWidget />
-        </Col>
-        <Col xs={4} lg={3}>
-          <TasksAtRiskWidget />
-        </Col>
-        <Col xs={4} lg={3}>
-          <BacklogStoryPoints />
-        </Col>
+        <SprintProgressWidget />
+        <TasksAtRiskWidget />
+        <BacklogStoryPoints />
       </Row>
       <Row>
         <Col xs={12} className="pb-4">

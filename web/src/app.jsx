@@ -14,6 +14,7 @@ import Sprints from "./routes/sprint/index";
 import SprintShow from "./routes/sprint/show";
 import SprintTasks from "./routes/sprint/tasks";
 import SprintReport from "./routes/sprint/report";
+import TaskShow from "./routes/task/show";
 import Settings from "./routes/settings";
 
 axios.interceptors.response.use(null, error => {
@@ -44,6 +45,7 @@ function App() {
             <Route exact path="/sprint/:uuid" component={SprintShow} />
             <Route exact path="/sprint/:uuid/task" component={SprintTasks} />
             <Route exact path="/sprint/:uuid/report" component={SprintReport} />
+            <Route exact path="/task/:uuid" component={TaskShow} />
             <Route exact path="/settings" component={Settings} />
           </Switch>
           <Footer />
