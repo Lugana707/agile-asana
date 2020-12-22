@@ -38,6 +38,7 @@ const SprintJumobtron = ({ sprint, title, children, location, history }) => {
         </h1>
         <hr />
         <ToggleButtonGroup
+          as="p"
           name="sprintPageRadio"
           size="sm"
           type="radio"
@@ -55,7 +56,7 @@ const SprintJumobtron = ({ sprint, title, children, location, history }) => {
             </ToggleButton>
           ))}
         </ToggleButtonGroup>
-        {children}
+        {children && <p>{children}</p>}
       </Container>
     </Jumbotron>
   );
