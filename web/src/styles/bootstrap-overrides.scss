@@ -12,5 +12,5 @@ $body-bg: #282c34;
 }
 
 .jumbotron {
-  @extend .text-left, .pt-4, .pb-4;
+  @extend .text-left, .pt-4, .pb-4, .bg-secondary, .text-dark;
 }

@@ -85,7 +85,7 @@ const TaskWeightKeySelector = ({ history }) => {
         </Dropdown.Menu>
       </Dropdown>
       <ButtonGroup className="d-none d-md-block" size="md" vertical>
-        <Description className="p-2 bg-secondary rounded-top" />
+        <Description className="p-2 bg-primary text-dark rounded-top" />
         {weightMap.map(({ key, value, variant }) => (
           <Button
             variant={variant}

@@ -35,12 +35,13 @@ const SprintTimeProgress = ({ className = "", sprint }) => {
       <ProgressBar
         animated
         now={timeProgress}
+        variant="secondary"
         label={timeProgress >= 50 && `ends ${finishedOn.from(moment())}`}
       />
       <ProgressBar
         animated
         now={100 - timeProgress}
-        variant="info"
+        variant="dark"
         label={timeProgress < 50 && `ends ${finishedOn.from(moment())}`}
       />
     </ProgressBar>

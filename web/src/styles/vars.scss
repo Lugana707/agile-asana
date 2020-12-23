@@ -1,0 +1,17 @@
+$primary: #007bff;
+
+$color-primary: #bce7d4; // teal
+//$color-base: #15171a;
+$color-secondary: #DA70D6; // purple: orchid
+//$color-border: #c7d5d8;
+//$color-bg: #f5f5f5;
+
+$theme-colors: () !default;
+$theme-colors: map-merge(
+  (
+    "primary": $color-primary,
+    "secondary": $color-secondary,
+    //"dark": #131313,
+  ),
+  $theme-colors
+);

@@ -19,7 +19,7 @@ const Forecast = ({ forecastSprints, currentSprint }) => {
 
   return (
     <>
-      <Jumbotron fluid className="bg-primary">
+      <Jumbotron fluid>
         <Container>
           <h1>Backlog / Forecast</h1>
           <hr />

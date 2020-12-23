@@ -8,7 +8,7 @@ const TaskJumobtron = ({ task, title, children, history }) => {
   const { name, uuid, mostRecentSprint } = task;
 
   return (
-    <Jumbotron fluid className="bg-primary">
+    <Jumbotron fluid>
       <Container>
         <h1>
           <span>Task</span>

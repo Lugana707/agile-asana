@@ -25,7 +25,7 @@ const SprintJumobtron = ({ sprint, title, children, location, history }) => {
     .map(obj => ({ ...obj, disabled: pathname === obj.url }));
 
   return (
-    <Jumbotron fluid className="bg-primary">
+    <Jumbotron fluid>
       <Container>
         <h1>
           <span>Sprint {number}</span>
