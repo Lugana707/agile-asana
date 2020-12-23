@@ -1,4 +1,4 @@
-name: Cloudformation CD
+name: CloudFormation CD
 
 on:
   push:
