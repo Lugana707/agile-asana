@@ -30,7 +30,7 @@ jobs:
       - name: Convert Website Name
         run: |
           SAFE_WEBSITE_NAME=$(echo $WEBSITE_NAME | sed 's/\./-/g')
-          "SAFE_WEBSITE_NAME=${SAFE_WEBSITE_NAME}" >> $GITHUB_ENV
+          echo "SAFE_WEBSITE_NAME=${SAFE_WEBSITE_NAME}" >> $GITHUB_ENV
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
