@@ -6,7 +6,7 @@ const User = ({ badge }) => {
   const { user } = useSelector(state => state.settings);
 
   if (!user) {
-    return <div>Unauthenticated</div>;
+    return <div className="d-inline-block">Unauthenticated</div>;
   }
 
   const { name, photo } = user;

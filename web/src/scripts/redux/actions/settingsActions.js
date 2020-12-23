@@ -14,6 +14,8 @@ const logout = () => {
         value
       })
     );
+
+    dispatch({ type: "LOGOUT" });
   };
 };
 

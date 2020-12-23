@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useEffect } from "react";
 import {
   Container,
   Jumbotron,
@@ -16,13 +16,18 @@ import {
   faCircleNotch,
   faSave,
   faExternalLinkAlt,
-  faInfoCircle
+  faInfoCircle,
+  faSignInAlt,
+  faSignOutAlt
 } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import collect from "collect.js";
 import User from "../components/user";
-import { updateSettings } from "../scripts/redux/actions/settingsActions";
+import {
+  updateSettings,
+  logout
+} from "../scripts/redux/actions/settingsActions";
 import {
   reloadProject,
   lookForNewProjects,
@@ -30,8 +35,9 @@ import {
 } from "../scripts/redux/actions/asanaActions";
 import { loadAll } from "../scripts/redux/actions/asanaActions";
 import withLoading from "../components/withLoading";
+import withConfigured from "../components/withConfigured";
 
-const Settings = ({ loading: globalLoading, history }) => {
+const Settings = ({ loading: globalLoading, configured, history }) => {
   const asanaDeveloperConsoleUrl = "https://app.asana.com/0/developer-console";
 
   const { asanaProjects } = useSelector(state => state.asanaProjects);
@@ -43,6 +49,10 @@ const Settings = ({ loading: globalLoading, history }) => {
     (accumulator, currentValue) => ({ ...accumulator, ...currentValue }),
     { asanaApiKey, asanaDefaultWorkspace }
   );
+
+  useEffect(() => {
+    setSettings({ asanaApiKey, asanaDefaultWorkspace });
+  }, [asanaApiKey, asanaDefaultWorkspace]);
 
   const dispatch = useDispatch();
 
@@ -104,14 +114,18 @@ const Settings = ({ loading: globalLoading, history }) => {
         </Container>
       </Jumbotron>
       <Container className="text-left">
-        <Row>
-          <Col xs={12}>
-            <span className="pr-2">Currently logged in as</span>
-            <User badge />
-            <span>.</span>
-          </Col>
-        </Row>
-        <hr className="my-4" />
+        {configured && (
+          <>
+            <Row>
+              <Col xs={12}>
+                <span className="pr-2">Currently logged in as</span>
+                <User badge />
+                <span>.</span>
+              </Col>
+            </Row>
+            <hr className="my-4" />
+          </>
+        )}
         <Form onSubmit={handleSubmit}>
           <fieldset disabled={loading}>
             <Row>
@@ -186,20 +200,40 @@ const Settings = ({ loading: globalLoading, history }) => {
             <hr className="my-4" />
             <Row>
               <Form.Group as={Col} xs="12">
-                <Button type="submit" variant="warning">
-                  {loading && (
+                <Button
+                  type="submit"
+                  variant={configured ? "warning" : "primary"}
+                >
+                  {loading ? (
                     <>
                       <FontAwesomeIcon icon={faCircleNotch} spin />
                       <span className="pl-1">Updating...</span>
                     </>
-                  )}
-                  {!loading && (
+                  ) : configured ? (
                     <>
                       <FontAwesomeIcon icon={faSave} />
                       <span className="pl-1">Update</span>
                     </>
+                  ) : (
+                    <>
+                      <FontAwesomeIcon icon={faSignInAlt} />
+                      <span className="pl-1">Sign In</span>
+                    </>
                   )}
                 </Button>
+                {configured && (
+                  <Button
+                    variant="danger"
+                    className="float-right"
+                    onClick={() => {
+                      dispatch(logout());
+                      setSettings({ asanaApiKey: undefined });
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faSignOutAlt} />
+                    <span className="pl-1">Logout</span>
+                  </Button>
+                )}
               </Form.Group>
             </Row>
           </fieldset>
@@ -209,4 +243,4 @@ const Settings = ({ loading: globalLoading, history }) => {
   );
 };
 
-export default withLoading(Settings);
+export default withConfigured(withLoading(Settings));
