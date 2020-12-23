@@ -17,7 +17,7 @@ defaults:
 
 jobs:
   deploy:
-    name: Update Static Sites
+    name: Update Static Site
     runs-on: ubuntu-latest
     strategy:
       matrix:
