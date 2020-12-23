@@ -27,6 +27,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2.3.4
+      - name: Convert Website Name
+        run: |
+          SAFE_WEBSITE_NAME=$(echo $WEBSITE_NAME | sed 's/\./-/g')
+          "SAFE_WEBSITE_NAME=${SAFE_WEBSITE_NAME}" >> $GITHUB_ENV
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -36,7 +40,7 @@ jobs:
       - name: Deploy to AWS CloudFormation
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
-          name: ${{ env.WEBSITE_NAME}}-${{ env.ENVIRONMENT_NAME }}
+          name: ${{ env.SAFE_WEBSITE_NAME }}-${{ env.ENVIRONMENT_NAME }}
           template: .orchestration/cloudformation/s3-static-site.yml
           parameter-overrides: "EnvironmentName=${{ env.ENVIRONMENT_NAME }},WebsiteName=${{ env.WEBSITE_NAME }}"
           tags: >
