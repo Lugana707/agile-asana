@@ -27,7 +27,7 @@ export default () => {
     return { ...state, ids, data };
   };
 
-  return (state = initialState, { type, sprint }) => {
+  return (state = initialState, { type, sprint } = {}) => {
     switch (type) {
       case "BEGIN_LOADING_SPRINTS":
         return { ...state, loading: true };

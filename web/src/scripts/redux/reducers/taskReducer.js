@@ -25,7 +25,7 @@ export default () => {
     return { ...state, ids, data };
   };
 
-  return (state = initialState, { type, tasks, ...obj }) => {
+  return (state = initialState, { type, tasks } = {}) => {
     switch (type) {
       case "SPRINT_ADDED":
       case "BACKLOG_ADDED":

@@ -27,7 +27,7 @@ export default () => {
     return { ...state, ids, data };
   };
 
-  return (state = initialState, { type, backlog }) => {
+  return (state = initialState, { type, backlog } = {}) => {
     switch (type) {
       case "BEGIN_LOADING_BACKLOGS":
         return { ...state, loading: true };
