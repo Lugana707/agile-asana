@@ -3,15 +3,9 @@ import { useSelector } from "react-redux";
 import collect from "collect.js";
 
 export default WrappedComponent => props => {
-  const { sprints } = useSelector(state => state.sprints);
+  const { data: tasks } = useSelector(state => state.tasks);
 
-  const tasksCollection = useMemo(
-    () =>
-      collect(sprints)
-        .pluck("tasks")
-        .flatten(1),
-    [sprints]
-  );
+  const tasksCollection = useMemo(() => collect(tasks), [tasks]);
 
   return <WrappedComponent {...props} tasks={tasksCollection} />;
 };

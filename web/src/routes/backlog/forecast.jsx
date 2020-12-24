@@ -13,7 +13,7 @@ const Forecast = ({ forecastSprints, currentSprint }) => {
     return 0;
   }, [currentSprint]);
 
-  if (!forecastSprints) {
+  if (forecastSprints.isEmpty()) {
     return <div />;
   }
 

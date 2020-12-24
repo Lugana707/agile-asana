@@ -67,54 +67,6 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
       return task;
     });
 
-const processBacklogIntoForecastedSprints = ({
-  sprints,
-  asanaProjectBacklog,
-  refinedBacklogTasks
-}) => {
-  const [currentSprint] = sprints.filter(({ state }) => state === "ACTIVE");
-
-  const { averageCompletedStoryPoints: forecastStoryPoints } = currentSprint;
-
-  Logger.debug("Processing backlog tasks into forecasted sprints...", {
-    forecastStoryPoints,
-    refinedBacklogTasks
-  });
-
-  return collect(refinedBacklogTasks)
-    .where("mostRecentSprint", "!==", currentSprint.uuid)
-    .where("storyPoints")
-    .reduce((accumulator, currentValue) => {
-      const storyPoints = currentValue.storyPoints || 0;
-      let sprint = accumulator.firstWhere(
-        "storyPoints",
-        "<=",
-        forecastStoryPoints - storyPoints
-      );
-
-      if (!sprint) {
-        sprint = { storyPoints: 0, tasks: [] };
-        accumulator.push(sprint);
-      }
-
-      sprint.tasks.push(currentValue);
-      sprint.storyPoints += storyPoints;
-
-      return accumulator;
-    }, collect([]))
-    .map(({ tasks, storyPoints }, index) => ({
-      uuid: false,
-      number: index + 1 + currentSprint.number,
-      state: "FORECAST",
-      storyPoints,
-      startOn: moment(currentSprint.startOn).add(index + 1, "weeks"),
-      completedAt: moment(currentSprint.completedAt).add(index + 1, "weeks"),
-      averageCompletedStoryPoints: false,
-      tasks
-    }))
-    .all();
-};
-
 const processProjectIntoSprint = ({
   asanaProject,
   tasksCollection,
@@ -263,24 +215,6 @@ const processSprints = () => {
         type: SUCCESS_LOADING_UNREFINED_BACKLOG_TASKS,
         value: { unrefinedBacklogTasks: unrefinedBacklogTasks.all() },
         loading: false
-      });
-
-      Logger.info("Processing backlog into forecasted sprints...", {
-        sprints,
-        asanaProjectBacklog,
-        refinedBacklogTasks
-      });
-      processBacklogIntoForecastedSprints({
-        sprints,
-        asanaProjectBacklog,
-        refinedBacklogTasks
-      }).forEach(sprint => {
-        dispatch({
-          type: "SPRINT_ADDED",
-          sprint,
-          tasks: sprint.tasks,
-          loading: true
-        });
       });
     } catch (error) {
       Logger.error(error);

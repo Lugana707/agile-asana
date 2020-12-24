@@ -1,23 +1,15 @@
 import React, { useMemo } from "react";
-import { useSelector } from "react-redux";
 import moment from "moment";
 import collect from "collect.js";
 import Widget from "../../library/widget";
+import withTasks from "../../task/withTasks";
+import withSprints from "../../sprint/withSprints";
 
-const TasksAtRiskCardAndTable = () => {
-  const { sprints } = useSelector(state => state.sprints);
-  const { refinedBacklogTasks } = useSelector(
-    state => state.refinedBacklogTasks
-  );
-  const { unrefinedBacklogTasks } = useSelector(
-    state => state.unrefinedBacklogTasks
-  );
-
+const TasksAtRiskCardAndTable = ({ sprints, tasks }) => {
   const tasksDueSoonCount = useMemo(() => {
-    return collect(unrefinedBacklogTasks || [])
-      .merge(refinedBacklogTasks || [])
-      .filter()
+    const tasksDueSoon = collect(tasks)
       .where("dueOn")
+      .where("completedAt", false)
       .filter(({ dueOn }) => dueOn.isBefore(moment().add(14, "days")))
       .filter(({ gid, dueOn, projects }) => {
         const sprint = collect(sprints)
@@ -28,9 +20,10 @@ const TasksAtRiskCardAndTable = () => {
         }
         return true;
       })
-      .sortBy("dueOn")
-      .count();
-  }, [unrefinedBacklogTasks, refinedBacklogTasks, sprints]);
+      .sortBy("dueOn");
+
+    return tasksDueSoon.count();
+  }, [tasks, sprints]);
 
   return (
     <Widget to="/backlog/forecast" bg="danger" text="dark">
@@ -40,4 +33,4 @@ const TasksAtRiskCardAndTable = () => {
   );
 };
 
-export default TasksAtRiskCardAndTable;
+export default withSprints(withTasks(TasksAtRiskCardAndTable));

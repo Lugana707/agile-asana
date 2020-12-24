@@ -1,31 +1,22 @@
 import React, { useMemo } from "react";
 import { Container, Row } from "react-bootstrap";
-import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamation } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import collect from "collect.js";
 import SprintCardAndTable from "../../sprint/task/sprintCardAndTable";
+import withForecastSprints from "../withForecastSprints";
+import withTasks from "../../task/withTasks";
 
-const TasksAtRiskCardAndTable = ({ hideIfNoData }) => {
-  const { sprints } = useSelector(state => state.sprints);
-  const { unrefinedBacklogTasks } = useSelector(
-    state => state.unrefinedBacklogTasks
-  );
-  const { refinedBacklogTasks } = useSelector(
-    state => state.refinedBacklogTasks
-  );
-
+const TasksAtRiskCardAndTable = ({ hideIfNoData, tasks, forecastSprints }) => {
   const tasksDueSoon = useMemo(
     () =>
-      collect(unrefinedBacklogTasks || [])
-        .merge(refinedBacklogTasks || [])
-        .filter()
+      collect(tasks)
         .where("dueOn")
+        .where("completedAt", false)
         .filter(({ dueOn }) => dueOn.isBefore(moment().add(14, "days")))
         .filter(({ uuid, dueOn }) => {
-          const sprint = collect(sprints)
-            .where("state", "FORECAST")
+          const sprint = forecastSprints
             .filter(({ tasks }) => collect(tasks).contains("uuid", uuid))
             .first();
           if (sprint) {
@@ -35,7 +26,7 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData }) => {
         })
         .sortBy("dueOn")
         .all(),
-    [unrefinedBacklogTasks, refinedBacklogTasks, sprints]
+    [tasks, forecastSprints]
   );
 
   const storyPoints = useMemo(
@@ -77,4 +68,4 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData }) => {
   );
 };
 
-export default TasksAtRiskCardAndTable;
+export default withTasks(withForecastSprints(TasksAtRiskCardAndTable));

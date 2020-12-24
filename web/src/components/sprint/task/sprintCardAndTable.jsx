@@ -19,20 +19,20 @@ const SprintCardAndTable = ({ title, sprint, variant, showSprintCard }) => {
   return (
     <>
       {showSprintCard && (
-        <Col key={number} xs={3} className="pr-1">
+        <Col key={number} xs={12} md={3} className="pr-1">
           <Card bg={variants.card} text="light" className="text-left h-100">
             <Card.Body>
               <Card.Title>
-                <h1 className="float-right text-info">{number}</h1>
+                <h1 className="text-info float-right">{number}</h1>
                 <span>{title || completedAt.format("YYYY-MM-DD")}</span>
+                <div className="clearfix" />
               </Card.Title>
-              {!!storyPoints && (
-                <Card.Subtitle className={`text-${variants.subtitle}`}>
-                  <span className="text-nowrap">
-                    {storyPoints} story points
-                  </span>
-                </Card.Subtitle>
-              )}
+              <Card.Subtitle
+                className={`text-${variants.subtitle} text-nowrap`}
+              >
+                {!!storyPoints && <div>{storyPoints} story points</div>}
+                <div>{sprint.tasks.length} tasks</div>
+              </Card.Subtitle>
             </Card.Body>
           </Card>
         </Col>
