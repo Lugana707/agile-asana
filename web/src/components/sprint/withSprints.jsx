@@ -5,7 +5,7 @@ import collect from "collect.js";
 const RUNNING_AVERAGE_WEEK_COUNT = 3;
 
 export default WrappedComponent => props => {
-  const { sprints } = useSelector(state => state.sprints);
+  const { data: sprints } = useSelector(state => state.sprints);
 
   const sprintCollection = useMemo(
     () =>

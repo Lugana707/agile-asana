@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import collect from "collect.js";
 
 export default WrappedComponent => props => {
-  const { sprints } = useSelector(state => state.sprints);
+  const { data: sprints } = useSelector(state => state.sprints);
 
   const sprintCollection = useMemo(
     () =>

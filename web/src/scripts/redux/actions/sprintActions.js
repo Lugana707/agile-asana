@@ -4,9 +4,6 @@ import collect from "collect.js";
 
 const MATCH_PROJECT_BACKLOG = /^Product Backlog$/u;
 
-const SET_LOADING_SPRINTS = "SET_LOADING_SPRINTS";
-const UPSERT_SPRINT = "UPSERT_SPRINT";
-
 const SUCCESS_LOADING_BACKLOG_TASKS = "SUCCESS_LOADING_BACKLOGTASKS";
 const SUCCESS_LOADING_REFINED_BACKLOG_TASKS =
   "SUCCESS_LOADING_REFINEDBACKLOGTASKS";
@@ -171,7 +168,7 @@ const processProjectIntoSprint = ({
 const processSprints = () => {
   return async (dispatch, getState) => {
     try {
-      dispatch({ type: SET_LOADING_SPRINTS, loading: true });
+      dispatch({ type: "BEGIN_LOADING_SPRINTS" });
 
       const state = getState();
 
@@ -209,7 +206,12 @@ const processSprints = () => {
         )
         .sortByDesc("number")
         .map(sprint => {
-          dispatch({ type: UPSERT_SPRINT, value: sprint, loading: true });
+          dispatch({
+            type: "SPRINT_ADDED",
+            sprint,
+            tasks: sprint.tasks,
+            loading: true
+          });
           return sprint;
         })
         .toArray();
@@ -242,9 +244,14 @@ const processSprints = () => {
             value => value.toLowerCase() === "unrefined"
           )
         );
+
       dispatch({
         type: SUCCESS_LOADING_BACKLOG_TASKS,
-        value: { backlogTasks: backlogTasks.all() },
+        value: {
+          backlogTasks: backlogTasks.all()
+        },
+        backlog: undefined,
+        tasks: backlogTasks.toArray(),
         loading: false
       });
       dispatch({
@@ -268,13 +275,18 @@ const processSprints = () => {
         asanaProjectBacklog,
         refinedBacklogTasks
       }).forEach(sprint => {
-        dispatch({ type: UPSERT_SPRINT, value: sprint, loading: true });
+        dispatch({
+          type: "SPRINT_ADDED",
+          sprint,
+          tasks: sprint.tasks,
+          loading: true
+        });
       });
     } catch (error) {
       Logger.error(error);
     }
 
-    dispatch({ type: SET_LOADING_SPRINTS, loading: false });
+    dispatch({ type: "FINISH_LOADING_SPRINTS" });
   };
 };
 
