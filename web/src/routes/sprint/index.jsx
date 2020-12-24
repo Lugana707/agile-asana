@@ -26,14 +26,14 @@ const Sprints = ({ currentSprint, sprints }) => {
         <td className="text-left align-middle">
           <LinkContainer
             to={`/sprint/${uuid}`}
-            className={inProgress && "text-secondary"}
+            className={inProgress ? "text-secondary" : ""}
           >
             <Button variant="link">Week {number}</Button>
           </LinkContainer>
         </td>
         <td className="text-center align-middle">{storyPoints}</td>
         <td className="text-center align-middle">
-          <span className={inProgress && "text-secondary"}>
+          <span className={inProgress ? "text-secondary" : ""}>
             {completedStoryPoints}
           </span>
         </td>
