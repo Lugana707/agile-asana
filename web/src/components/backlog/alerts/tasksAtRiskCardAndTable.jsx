@@ -60,7 +60,7 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData, tasks, forecastSprints }) => {
         <SprintCardAndTable
           sprint={sprint}
           variant="danger"
-          title={<span className="text-light">Commitments at Risk</span>}
+          title={<span className="text-light">Deadlines at Risk</span>}
           showSprintCard
         />
       </Row>
