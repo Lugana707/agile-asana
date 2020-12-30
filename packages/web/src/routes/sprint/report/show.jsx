@@ -3,27 +3,18 @@ import { Container, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
-import { useSelector } from "react-redux";
 import SprintBreakdown from "../../../components/sprint/tables/breakdown";
 import SprintJumbotron from "../../../components/sprint/jumbotron";
+import withSprintFromURL from "../../../components/sprint/withSprintFromURL";
 
 const sprintBreakdownCount = 5;
 
-const Report = ({ match }) => {
-  const { uuid } = match.params;
-
-  const { sprints, loading } = useSelector(state => state.sprints);
-
-  const sprint = useMemo(() => collect(sprints).firstWhere("uuid", uuid), [
-    sprints,
-    uuid
-  ]);
+const Report = ({ sprint, sprints }) => {
   const recentSprints = useMemo(
     () =>
-      collect(sprints)
+      sprints
         .filter(({ finishedOn }) => sprint.finishedOn.isSameOrAfter(finishedOn))
-        .take(sprintBreakdownCount)
-        .all(),
+        .take(sprintBreakdownCount),
     [sprints, sprint]
   );
 
@@ -80,7 +71,7 @@ const Report = ({ match }) => {
         <Row>
           <Col>
             <h2>Sprint Breakdown</h2>
-            <SprintBreakdown loading={loading} sprints={recentSprints} />
+            <SprintBreakdown loading={!sprint} sprints={recentSprints} />
           </Col>
         </Row>
         <Row>
@@ -97,4 +88,4 @@ const Report = ({ match }) => {
   );
 };
 
-export default Report;
+export default withSprintFromURL(Report);

@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import withSprints from "./withSprints";
 
 export default WrappedComponent =>
-  withSprints(({ sprints, match, ...props }) => {
+  withSprints(({ match, sprints, ...props }) => {
     const { uuid } = match.params;
 
     const sprint = useMemo(() => sprints.firstWhere("uuid", uuid), [
@@ -10,5 +10,12 @@ export default WrappedComponent =>
       sprints
     ]);
 
-    return <WrappedComponent {...props} sprint={sprint} />;
+    return (
+      <WrappedComponent
+        {...props}
+        match={match}
+        sprints={sprints}
+        sprint={sprint}
+      />
+    );
   });
