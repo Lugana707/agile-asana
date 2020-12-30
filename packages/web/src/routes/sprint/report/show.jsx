@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import { useSelector } from "react-redux";
-import SprintBreakdown from "../../components/sprint/tables/breakdown";
-import SprintJumbotron from "../../components/sprint/jumbotron";
+import SprintBreakdown from "../../../components/sprint/tables/breakdown";
+import SprintJumbotron from "../../../components/sprint/jumbotron";
 
 const sprintBreakdownCount = 5;
 

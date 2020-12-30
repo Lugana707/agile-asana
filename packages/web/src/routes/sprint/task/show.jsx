@@ -1,8 +1,8 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import withSprintFromURL from "../../components/sprint/withSprintFromURL";
-import SprintCardAndTable from "../../components/sprint/task/sprintCardAndTable";
-import SprintJumbotron from "../../components/sprint/jumbotron";
+import withSprintFromURL from "../../../components/sprint/withSprintFromURL";
+import SprintCardAndTable from "../../../components/sprint/task/sprintCardAndTable";
+import SprintJumbotron from "../../../components/sprint/jumbotron";
 
 const Tasks = ({ sprint }) => {
   if (!sprint) {

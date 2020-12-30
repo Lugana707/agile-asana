@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import axios from "axios";
-import jsLogger from "js-logger";
+import Logger from "js-logger";
 import DataProvider from "./dataProvider";
 import DataIntegrity from "./components/dataIntegrity";
 import UpdateProjects from "./components/updateProjects";
@@ -12,16 +12,16 @@ import BacklogDashboard from "./routes/backlog/dashboard";
 import BacklogForecast from "./routes/backlog/forecast";
 import Sprints from "./routes/sprint/index";
 import SprintShow from "./routes/sprint/show";
-import SprintTasks from "./routes/sprint/tasks";
-import SprintReport from "./routes/sprint/report";
+import SprintTaskShow from "./routes/sprint/task/show";
+import SprintReportShow from "./routes/sprint/report/show";
 import TaskShow from "./routes/task/show";
 import Settings from "./routes/settings";
 
 axios.interceptors.response.use(null, error => {
   if (error.response && error.response.status === 401) {
-    jsLogger.warn("Unauthorised!", { request: error.request });
+    Logger.warn("Unauthorised!", { request: error.request });
   }
-  jsLogger.error(error);
+  Logger.error(error);
   return Promise.reject(error);
 });
 
@@ -43,8 +43,12 @@ function App() {
             <Route exact path="/backlog/forecast" component={BacklogForecast} />
             <Route exact path="/sprint" component={Sprints} />
             <Route exact path="/sprint/:uuid" component={SprintShow} />
-            <Route exact path="/sprint/:uuid/task" component={SprintTasks} />
-            <Route exact path="/sprint/:uuid/report" component={SprintReport} />
+            <Route exact path="/sprint/:uuid/task" component={SprintTaskShow} />
+            <Route
+              exact
+              path="/sprint/:uuid/report"
+              component={SprintReportShow}
+            />
             <Route exact path="/task/:uuid" component={TaskShow} />
             <Route exact path="/settings" component={Settings} />
           </Switch>
