@@ -1,21 +1,13 @@
-version: "3.3"
+version: "3.5"
 services:
   web:
-    image: node:12-alpine
+    build:
+      context: packages/web
+      target: base
     command: sh -c "yarn install --immutable --production=false && yarn start"
     user: node
     working_dir: /src
     ports:
       - 80:3000
     volumes:
-      - ./web/:/src/:cached
-
-  web-production:
-    image: node:12-alpine
-    command: sh -c "yarn install --immutable && yarn build && yarn global add serve && npx serve -s build"
-    user: node
-    working_dir: /src
-    ports:
-      - 80:5000
-    volumes:
-      - ./web/:/src/:cached
+      - ./packages/web/:/src/:cached
