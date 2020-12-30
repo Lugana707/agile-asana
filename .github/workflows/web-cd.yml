@@ -5,7 +5,7 @@ on:
     branches: master
     paths:
       - ".github/workflows/web-cd.yml"
-      - "web/**"
+      - "packages/web/**"
 
 jobs:
   build-test-deploy:
