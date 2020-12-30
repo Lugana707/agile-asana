@@ -52,7 +52,7 @@ const TagsFilter = ({ history }) => {
 
     const urlSearchParams = new URLSearchParams(search);
 
-    if (tagSearch.isNotEmpty()) {
+    if (tagSearch.isNotEmpty() && tag !== ALL_TAGS_TAG) {
       urlSearchParams.set("tags", tagSearch.join(","));
     } else {
       urlSearchParams.delete("tags");
@@ -93,12 +93,7 @@ export const withTagsFilterFromURL = WrappedComponent => props => {
     location
   ]);
 
-  return (
-    <WrappedComponent
-      {...props}
-      tagsFilter={tagsFromLocationSearch.toArray()}
-    />
-  );
+  return <WrappedComponent {...props} tagsFilter={tagsFromLocationSearch} />;
 };
 
 export default withRouter(TagsFilter);

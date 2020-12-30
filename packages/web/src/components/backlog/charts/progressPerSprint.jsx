@@ -125,10 +125,9 @@ const BacklogProgressPerSprint = ({
         .flatten(1)
         .unique()
         .sort()
-        .filter(a => !!displayTags.filter(b => a === b).length)
-        .when(
-          displayTags.includes(ALL_TAGS_TAG) || displayTags.length === 0,
-          collection => collection.prepend(ALL_TAGS_TAG)
+        .filter(tag => displayTags.where(true, tag).isNotEmpty())
+        .when(displayTags.isEmpty(), collection =>
+          collection.prepend(ALL_TAGS_TAG)
         ),
     [backlogTasks, displayTags]
   );
