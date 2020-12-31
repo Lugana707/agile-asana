@@ -1,20 +1,19 @@
 import React, { useMemo } from "react";
+import { Link } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import SprintBreakdown from "../../../components/sprint/tables/breakdown";
 import SprintJumbotron from "../../../components/sprint/jumbotron";
 import withSprintFromURL from "../../../components/sprint/withSprintFromURL";
 
-const sprintBreakdownCount = 5;
+const SPRINT_BREAKDOWN_COUNT = 5;
 
 const Report = ({ sprint, sprints }) => {
   const recentSprints = useMemo(
     () =>
       sprints
         .filter(({ finishedOn }) => sprint.finishedOn.isSameOrAfter(finishedOn))
-        .take(sprintBreakdownCount),
+        .take(SPRINT_BREAKDOWN_COUNT),
     [sprints, sprint]
   );
 
@@ -39,19 +38,15 @@ const Report = ({ sprint, sprints }) => {
           {tasks.count()} {title}
         </h2>
         <ol>
-          {tasks.map(({ uuid, name, mostRecentSprint }) => (
-            <a
-              key={uuid}
-              href={`https://app.asana.com/0/${mostRecentSprint}/${uuid}/f`}
-              rel="noopener noreferrer"
-              target="_blank"
-              className="btn btn-link text-left text-light p-0 d-block"
-            >
-              <li>
+          {tasks.map(({ uuid, name }) => (
+            <li>
+              <Link
+                className="btn btn-link text-left text-light p-0 d-block"
+                to={`/task/${uuid}`}
+              >
                 <span className="pl-1 pr-1">{name}</span>
-                <FontAwesomeIcon icon={faExternalLinkAlt} />
-              </li>
-            </a>
+              </Link>
+            </li>
           ))}
         </ol>
       </Col>
