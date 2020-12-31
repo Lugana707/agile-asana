@@ -87,8 +87,8 @@ const ShowTask = ({ task, sprints }) => {
               <Col xs={12}>
                 <h4>Completed in</h4>
               </Col>
-              <Col xs={6} className="pb-4">
-                <SprintInfoCard sprint={completedAtSprint} />
+              <Col xs={12} md={6} className="pb-4">
+                <SprintInfoCard sprint={completedAtSprint} showSummary />
               </Col>
             </>
           )}

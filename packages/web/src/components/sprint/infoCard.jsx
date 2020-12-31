@@ -18,7 +18,6 @@ import moment from "moment";
 const InfoCard = ({ sprint, showSummary, showLinks }) => {
   const {
     uuid,
-    name,
     number,
     startOn,
     finishedOn,
@@ -70,13 +69,12 @@ const InfoCard = ({ sprint, showSummary, showLinks }) => {
             )}
             {completed && !showSummary && (
               <span className="text-muted float-right">
-                {Math.floor((completedStoryPoints / storyPoints) * 100)}%
+                {completedStoryPoints} / {storyPoints}
               </span>
             )}
           </Link>
         </Card.Title>
         <Card.Subtitle className="text-muted">
-          <span className="d-block">{name}</span>
           <hr />
           <span className="d-block">
             <span className="font-weight-bold">
@@ -86,6 +84,11 @@ const InfoCard = ({ sprint, showSummary, showLinks }) => {
             <span className="font-weight-bold">
               {moment(finishedOn).format("MMM D")}
             </span>
+            {completed && !showSummary && (
+              <span className="float-right">
+                {Math.floor((completedStoryPoints / storyPoints) * 100)}%
+              </span>
+            )}
           </span>
         </Card.Subtitle>
       </Card.Body>
