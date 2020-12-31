@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   Button,
   Card,
@@ -60,12 +61,14 @@ const InfoCard = ({ sprint, showSummary, showLinks }) => {
     <Card bg="dark" text="light" className="text-left">
       <Card.Body>
         <Card.Title>
-          <span>Sprint {number}</span>
-          {completed ? (
-            <span className="text-success"> Completed</span>
-          ) : (
-            <span className="text-warning"> (In Progress)</span>
-          )}
+          <Link to={`/sprint/${uuid}`}>
+            <span className="text-light">Sprint {number}</span>
+            {completed ? (
+              <span className="text-success"> Completed</span>
+            ) : (
+              <span className="text-warning"> (In Progress)</span>
+            )}
+          </Link>
         </Card.Title>
         <Card.Subtitle className="text-muted">
           <span className="d-block">{name}</span>
