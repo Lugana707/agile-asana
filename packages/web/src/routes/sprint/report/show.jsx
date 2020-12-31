@@ -39,7 +39,7 @@ const Report = ({ sprint, sprints }) => {
         </h2>
         <ol>
           {tasks.map(({ uuid, name }) => (
-            <li>
+            <li key={uuid}>
               <Link
                 className="btn btn-link text-left text-light p-0 d-block"
                 to={`/task/${uuid}`}
