@@ -6,11 +6,11 @@ import collect from "collect.js";
 import { pluraliseText } from "../../../scripts/helpers";
 
 export default ({ className, tag, count, children }) => {
-  const { asanaTags } = useSelector(state => state.asanaTags);
+  const { tags: fullListOfTags } = useSelector(state => state.tags);
 
   const colour = useMemo(
-    () => collect(asanaTags).firstWhere("name", tag).color,
-    [asanaTags, tag]
+    () => collect(fullListOfTags).firstWhere("name", tag).color,
+    [fullListOfTags, tag]
   );
 
   return (

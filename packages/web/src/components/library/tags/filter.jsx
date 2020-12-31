@@ -14,7 +14,7 @@ const getTagsFilterFromURL = ({ search }) =>
   );
 
 const TagsFilter = ({ history }) => {
-  const { asanaTags } = useSelector(state => state.asanaTags);
+  const { tags: fullListOfTags } = useSelector(state => state.tags);
 
   const { location } = history;
 
@@ -24,7 +24,7 @@ const TagsFilter = ({ history }) => {
 
   const tagsForRendering = useMemo(
     () =>
-      collect(asanaTags)
+      collect(fullListOfTags)
         .sortBy(({ name }) => name.toLowerCase())
         .map(({ name, color }) => ({
           name,
@@ -38,7 +38,7 @@ const TagsFilter = ({ history }) => {
             tagsFromLocationSearch.isEmpty() ||
             tagsFromLocationSearch.contains(ALL_TAGS_TAG)
         }),
-    [asanaTags, tagsFromLocationSearch]
+    [fullListOfTags, tagsFromLocationSearch]
   );
 
   const enableTag = tag => {

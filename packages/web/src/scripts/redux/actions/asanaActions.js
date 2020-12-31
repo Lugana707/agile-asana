@@ -5,10 +5,6 @@ import camelcase from "camelcase";
 import collect from "collect.js";
 import { ASANA_API_URL } from "../../api";
 import { isLoading } from "../../helpers";
-import { getColourFromTag } from "../../helpers/asanaColours";
-
-const SET_LOADING_ASANA_TAGS = "SET_LOADING_ASANATAGS";
-const SUCCESS_LOADING_ASANA_TAGS = "SUCCESS_LOADING_ASANATAGS";
 
 const SET_LOADING_ASANA_PROJECTS = "SET_LOADING_ASANAPROJECTS";
 const SUCCESS_LOADING_ASANA_PROJECTS = "SUCCESS_LOADING_ASANAPROJECTS";
@@ -74,20 +70,52 @@ const getSections = async (getState, { gid: projectGid }) => {
   return sections;
 };
 
+const getTasksFromProject = async (asanaClient, { gid: projectGid }) => {
+  Logger.trace("Getting project tasks from API...", { projectGid });
+
+  const collection = await asanaClient.tasks.getTasks({
+    project: projectGid,
+    // opt_expand: ".",
+    opt_fields: [
+      "name",
+      "created_at",
+      "completed_at",
+      "started_at",
+      "custom_fields",
+      "tags.(name|color)",
+      "due_on",
+      "notes",
+      "projects.sections",
+      "assignee.(name|email|photo)",
+      "memberships.(project|section)"
+    ]
+  });
+
+  const tasks = (await collection.fetch()).map(task => ({
+    ...task
+  }));
+  Logger.debug("Gotten project tasks from API!", { tasks });
+
+  return tasks;
+};
+
 const getTasks = async (asanaClient, { gid: sectionGid, ...section }) => {
   Logger.trace("Getting project tasks from API...", { sectionGid });
 
   const collection = await asanaClient.tasks.getTasks({
     section: sectionGid,
     opt_fields: [
-      "projects",
       "name",
       "created_at",
       "completed_at",
       "started_at",
       "custom_fields",
-      "tags",
-      "due_on"
+      "tags.(name|color)",
+      "due_on",
+      "notes",
+      "projects.sections",
+      "assignee.(name|email|photo)",
+      "memberships.(project|section)"
     ]
   });
 
@@ -95,41 +123,9 @@ const getTasks = async (asanaClient, { gid: sectionGid, ...section }) => {
     ...task,
     sections: [{ gid: sectionGid, ...section }]
   }));
-  Logger.debug("Gotten project tasks from API!", { tasks });
+  Logger.debug("Gotten section tasks from API!", { tasks });
 
   return tasks;
-};
-
-const loadTags = async (dispatch, getState) => {
-  try {
-    dispatch({ type: SET_LOADING_ASANA_TAGS, loading: true });
-
-    Logger.trace("Getting tags from API...");
-    const { client, workspace } = getAsanaApiClient(getState());
-
-    const collection = await client.tags.getTags({
-      workspace,
-      opt_fields: ["name", "color"]
-    });
-    const asanaTags = (await collection.fetch()).map(tag => ({
-      ...tag,
-      color: getColourFromTag(tag)
-    }));
-    Logger.trace("Gotten tags from API!", { asanaTags });
-
-    dispatch({
-      type: SUCCESS_LOADING_ASANA_TAGS,
-      loading: false,
-      value: { asanaTags },
-      timestamp: new Date()
-    });
-
-    return asanaTags;
-  } catch (error) {
-    dispatch({ type: SET_LOADING_ASANA_TAGS, loading: false });
-    Logger.error(error.callStack || error);
-    return false;
-  }
 };
 
 const loadProjects = async dispatch => {
@@ -188,42 +184,29 @@ const loadTasks = async (dispatch, getState, { asanaSections }) => {
 
     const { asanaTasks } = getState().asanaTasks;
 
-    const asanaTags = await loadTags(dispatch, getState);
-
     const tasksCollection = collect(
       await Promise.all(asanaSections.map(section => getTasks(client, section)))
     )
       .flatten(1)
-      .map(
-        (
-          { sections, tags, projects, custom_fields, ...task },
-          index,
-          tasks
-        ) => ({
-          ...task,
-          tags: collect(tags)
-            .pluck("gid")
-            .map(gid => (collect(asanaTags).firstWhere("gid", gid) || {}).name)
-            .filter()
-            .toArray(),
-          sections: collect(tasks)
-            .where("gid", task.gid)
-            .pluck("sections")
-            .flatten(1)
-            .pluck("name")
-            .all(),
-          projects: collect(projects)
-            .pluck("gid")
-            .all(),
-          ...custom_fields.reduce(
-            (accumulator, { name, number_value, enum_value }) => ({
-              [camelcase(name)]: number_value || enum_value,
-              ...accumulator
-            }),
-            {}
-          )
-        })
-      )
+      .map(({ sections, projects, custom_fields, ...task }, index, tasks) => ({
+        ...task,
+        sections: collect(tasks)
+          .where("gid", task.gid)
+          .pluck("sections")
+          .flatten(1)
+          .pluck("name")
+          .all(),
+        projects: collect(projects)
+          .pluck("gid")
+          .all(),
+        ...custom_fields.reduce(
+          (accumulator, { name, number_value, enum_value }) => ({
+            [camelcase(name)]: number_value || enum_value,
+            ...accumulator
+          }),
+          {}
+        )
+      }))
       .unique("gid");
 
     const taskKeyMap = tasksCollection
@@ -238,7 +221,7 @@ const loadTasks = async (dispatch, getState, { asanaSections }) => {
     dispatch({
       type: SUCCESS_LOADING_ASANA_TASKS,
       loading: false,
-      value: { asanaTasks: merged.all() },
+      value: { asanaTasks: merged.toArray() },
       timestamp: new Date()
     });
 

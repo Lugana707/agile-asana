@@ -17,13 +17,7 @@ import BacklogReducer from "./reducers/backlogReducer";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: [
-    "asanaTags",
-    "asanaProjects",
-    "asanaSections",
-    "asanaTasks",
-    "settings"
-  ],
+  whitelist: ["asanaProjects", "asanaSections", "asanaTasks", "settings"],
   transforms: [
     createTransform(
       ({ loading, ...inboundState }) => inboundState,
@@ -45,13 +39,13 @@ const initialiseReduxStore = preloadedState => {
 
   const rootReducer = combineReducers({
     globalReducer,
-    asanaTags: crudReducer("asanaTags", "gid"),
     asanaProjects: crudReducer("asanaProjects", "gid"),
     asanaSections: crudReducer("asanaSections", "gid"),
     asanaTasks: crudReducer("asanaTasks", "gid"),
     backlogTasks: crudReducer("backlogTasks", "uuid"),
     refinedBacklogTasks: crudReducer("refinedBacklogTasks", "uuid"),
     unrefinedBacklogTasks: crudReducer("unrefinedBacklogTasks", "uuid"),
+    tags: crudReducer("tags", "uuid"),
     tasks: TaskReducer(),
     sprints: SprintReducer(),
     backlogs: BacklogReducer(),

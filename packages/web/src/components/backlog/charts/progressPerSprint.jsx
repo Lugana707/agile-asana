@@ -14,16 +14,16 @@ const BacklogProgressPerSprint = ({
   tags: displayTags,
   weight = false
 }) => {
-  const { asanaTags } = useSelector(state => state.asanaTags);
+  const { tags: fullListOfTags } = useSelector(state => state.tags);
 
   const getAsanaTagColor = useCallback(
     tag =>
       Color(
         tag === ALL_TAGS_TAG
           ? randomFlatColors("blue")
-          : collect(asanaTags).firstWhere("name", tag).color
+          : collect(fullListOfTags).firstWhere("name", tag).color
       ),
-    [asanaTags]
+    [fullListOfTags]
   );
 
   const sprintsCollection = useMemo(() => collect(sprints).sortBy("number"), [

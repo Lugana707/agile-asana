@@ -6,11 +6,11 @@ import Color from "color";
 import withBacklogTasks from "../withBacklogTasks";
 
 const BacklogProgressPerSprint = ({ sprint, backlogTasks }) => {
-  const { asanaTags } = useSelector(state => state.asanaTags);
+  const { tags: fullListOfTags } = useSelector(state => state.tags);
 
   const getAsanaTag = useCallback(
-    tag => collect(asanaTags).firstWhere("name", tag),
-    [asanaTags]
+    tag => collect(fullListOfTags).firstWhere("name", tag),
+    [fullListOfTags]
   );
 
   backlogTasks.macro("groupByTagAndCount", function() {

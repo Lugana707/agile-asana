@@ -1,14 +1,30 @@
 import Logger from "js-logger";
 import moment from "moment";
 import collect from "collect.js";
+import { getColourFromTag } from "../../helpers/asanaColours";
 
 const MATCH_PROJECT_BACKLOG = /^Product Backlog$/u;
+
+const SUCCESS_LOADING_TAGS = "SUCCESS_LOADING_TAGS";
 
 const SUCCESS_LOADING_BACKLOG_TASKS = "SUCCESS_LOADING_BACKLOGTASKS";
 const SUCCESS_LOADING_REFINED_BACKLOG_TASKS =
   "SUCCESS_LOADING_REFINEDBACKLOGTASKS";
 const SUCCESS_LOADING_UNREFINED_BACKLOG_TASKS =
   "SUCCESS_LOADING_UNREFINEDBACKLOGTASKS";
+
+const processTasksForUniqueTags = ({ asanaTasks }) => {
+  return collect(asanaTasks)
+    .pluck("tags")
+    .flatten(1)
+    .where("name")
+    .unique("name")
+    .map(({ gid, color, ...tag }) => ({
+      ...tag,
+      uuid: gid,
+      color: getColourFromTag({ color })
+    }));
+};
 
 const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
   collect(asanaTasks)
@@ -22,7 +38,9 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         storyPoints,
         tags,
         sections,
-        projects
+        projects,
+        notes,
+        assignee
       }) => ({
         uuid: gid,
         name,
@@ -30,9 +48,13 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         createdAt: created_at ? moment(created_at) : false,
         completedAt: completed_at ? moment(completed_at) : false,
         storyPoints,
-        tags,
+        tags: collect(tags)
+          .pluck("name")
+          .toArray(),
         sections,
-        sprints: projects
+        sprints: projects,
+        description: notes,
+        assignee
       })
     )
     .map(task => {
@@ -137,6 +159,14 @@ const processSprints = () => {
       const asanaProjectBacklog = asanaProjectsCollection
         .filter(({ name }) => matchBacklog.test(name))
         .first();
+
+      const tags = processTasksForUniqueTags({ asanaTasks });
+      dispatch({
+        type: SUCCESS_LOADING_TAGS,
+        loading: false,
+        value: { tags: tags.toArray() },
+        timestamp: new Date()
+      });
 
       const tasksCollection = processTasks({
         asanaTasks,

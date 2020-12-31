@@ -4,10 +4,12 @@ import { useSelector } from "react-redux";
 import collect from "collect.js";
 
 const GraphStoryPointsTrend = ({ sprints }) => {
-  const { asanaTags } = useSelector(state => state.asanaTags);
+  const { tags: fullListOfTags } = useSelector(state => state.tags);
 
   const sprintCollection = useMemo(() => collect(sprints), [sprints]);
-  const tagsCollection = useMemo(() => collect(asanaTags), [asanaTags]);
+  const tagsCollection = useMemo(() => collect(fullListOfTags), [
+    fullListOfTags
+  ]);
 
   const tasksByTag = useMemo(
     () =>
