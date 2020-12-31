@@ -4,8 +4,11 @@ import {
   Jumbotron,
   Container,
   ToggleButtonGroup,
-  ToggleButton
+  ToggleButton,
+  Button
 } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 
 const SprintJumobtron = ({ sprint, title, children, location, history }) => {
@@ -55,6 +58,20 @@ const SprintJumobtron = ({ sprint, title, children, location, history }) => {
               {title}
             </ToggleButton>
           ))}
+          <Button variant="dark">
+            <a
+              href={`https://app.asana.com/0/${uuid}/board`}
+              rel="noopener noreferrer"
+              target="_blank"
+              className="text-light"
+              style={{ textDecoration: "none" }}
+            >
+              <span>View in Asana</span>
+              <span className="pl-2">
+                <FontAwesomeIcon icon={faExternalLinkAlt} />
+              </span>
+            </a>
+          </Button>
         </ToggleButtonGroup>
         {children && <p>{children}</p>}
       </Container>
