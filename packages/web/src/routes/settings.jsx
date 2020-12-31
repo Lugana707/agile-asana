@@ -103,10 +103,10 @@ const Settings = ({ loading: globalLoading, configured, history }) => {
           <hr className="my-4" />
           <fieldset disabled={globalLoading}>
             <ButtonGroup>
-              <Button variant="secondary" onClick={() => dispatch(loadAll())}>
+              <Button variant="dark" onClick={() => dispatch(loadAll())}>
                 Reload All
               </Button>
-              <Button variant="secondary" onClick={() => refreshRecent()}>
+              <Button variant="dark" onClick={() => refreshRecent()}>
                 Refresh Recent
               </Button>
             </ButtonGroup>
