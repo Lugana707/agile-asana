@@ -68,6 +68,11 @@ const InfoCard = ({ sprint, showSummary, showLinks }) => {
             ) : (
               <span className="text-warning"> (In Progress)</span>
             )}
+            {completed && !showSummary && (
+              <span className="text-muted float-right">
+                {Math.floor((completedStoryPoints / storyPoints) * 100)}%
+              </span>
+            )}
           </Link>
         </Card.Title>
         <Card.Subtitle className="text-muted">

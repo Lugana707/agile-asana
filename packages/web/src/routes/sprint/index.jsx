@@ -9,7 +9,7 @@ const Sprints = ({ sprints }) => {
       <Row>
         {sprints.map(sprint => (
           <Col key={sprint.uuid} xs={12} md={6} lg={4} className="pb-4">
-            <SprintInfoCard sprint={sprint} showSummary />
+            <SprintInfoCard sprint={sprint} />
           </Col>
         ))}
       </Row>
