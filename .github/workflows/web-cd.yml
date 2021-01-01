@@ -2,7 +2,7 @@ name: Web CD
 
 on:
   push:
-    branches: master
+    branches: trunk
     paths:
       - ".github/workflows/web-cd.yml"
       - "packages/web/**"

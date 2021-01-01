@@ -2,7 +2,7 @@ name: CloudFormation CD
 
 on:
   push:
-    branches: master
+    branches: trunk
     paths:
       - ".github/workflows/cloudformation-cd.yml"
       - ".orchestration/cloudformation/**"

@@ -1,8 +1,8 @@
-name: Master Updated
+name: Trunk Updated
 
 on:
   push:
-    branches: master
+    branches: trunk
 
 jobs:
   update-version:
