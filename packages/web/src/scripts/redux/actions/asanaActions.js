@@ -118,7 +118,7 @@ const loadTasks = async (dispatch, getState, { asanaProjects }) => {
     )
       .flatten(1)
       .unique("gid")
-      .map(({ custom_fields, ...task }, index, tasks) => ({
+      .map(({ custom_fields, ...task }) => ({
         ...task,
         ...custom_fields.reduce(
           (accumulator, { name, number_value, enum_value }) => ({
