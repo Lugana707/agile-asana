@@ -37,8 +37,7 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         completed_at,
         storyPoints,
         tags,
-        sections,
-        projects,
+        memberships,
         notes,
         assignee
       }) => ({
@@ -51,8 +50,12 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         tags: collect(tags)
           .pluck("name")
           .toArray(),
-        sections,
-        sprints: projects,
+        sections: collect(memberships)
+          .pluck("section.name")
+          .toArray(),
+        sprints: collect(memberships)
+          .pluck("project.gid")
+          .toArray(),
         description: notes,
         assignee
       })
@@ -238,12 +241,12 @@ const processSprints = () => {
       });
       dispatch({
         type: SUCCESS_LOADING_REFINED_BACKLOG_TASKS,
-        value: { refinedBacklogTasks: refinedBacklogTasks.all() },
+        value: { refinedBacklogTasks: refinedBacklogTasks.toArray() },
         loading: false
       });
       dispatch({
         type: SUCCESS_LOADING_UNREFINED_BACKLOG_TASKS,
-        value: { unrefinedBacklogTasks: unrefinedBacklogTasks.all() },
+        value: { unrefinedBacklogTasks: unrefinedBacklogTasks.toArray() },
         loading: false
       });
     } catch (error) {

@@ -13,10 +13,6 @@ const Forecast = ({ forecastSprints, currentSprint }) => {
     return 0;
   }, [currentSprint]);
 
-  if (forecastSprints.isEmpty()) {
-    return <div />;
-  }
-
   return (
     <>
       <Jumbotron fluid>

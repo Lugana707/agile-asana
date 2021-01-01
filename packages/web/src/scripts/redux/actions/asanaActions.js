@@ -3,14 +3,12 @@ import Asana from "asana";
 import Logger from "js-logger";
 import camelcase from "camelcase";
 import collect from "collect.js";
+import moment from "moment";
 import { ASANA_API_URL } from "../../api";
 import { isLoading } from "../../helpers";
 
 const SET_LOADING_ASANA_PROJECTS = "SET_LOADING_ASANAPROJECTS";
 const SUCCESS_LOADING_ASANA_PROJECTS = "SUCCESS_LOADING_ASANAPROJECTS";
-
-const SET_LOADING_ASANA_SECTIONS = "SET_LOADING_ASANASECTIONS";
-const SUCCESS_LOADING_ASANA_SECTIONS = "SUCCESS_LOADING_ASANASECTIONS";
 
 const SET_LOADING_ASANA_TASKS = "SET_LOADING_ASANATASKS";
 const SUCCESS_LOADING_ASANA_TASKS = "SUCCESS_LOADING_ASANATASKS";
@@ -55,22 +53,7 @@ const getProjects = async archived => {
   return projects;
 };
 
-const getSections = async (getState, { gid: projectGid }) => {
-  Logger.trace("Getting section list from API...", {
-    projectGid
-  });
-
-  const { client } = getAsanaApiClient(getState());
-
-  const collection = await client.sections.getSectionsForProject(projectGid);
-  const sections = await collection.fetch();
-
-  Logger.trace("Gotten sections!", { sections });
-
-  return sections;
-};
-
-const getTasksFromProject = async (asanaClient, { gid: projectGid }) => {
+const getTasks = async (asanaClient, { gid: projectGid, name }) => {
   Logger.trace("Getting project tasks from API...", { projectGid });
 
   const collection = await asanaClient.tasks.getTasks({
@@ -85,45 +68,16 @@ const getTasksFromProject = async (asanaClient, { gid: projectGid }) => {
       "tags.(name|color)",
       "due_on",
       "notes",
-      "projects.sections",
       "assignee.(name|email|photo)",
-      "memberships.(project|section)"
+      "memberships.(project.name|section.name)"
     ]
   });
 
-  const tasks = (await collection.fetch()).map(task => ({
-    ...task
-  }));
-  Logger.debug("Gotten project tasks from API!", { tasks });
-
-  return tasks;
-};
-
-const getTasks = async (asanaClient, { gid: sectionGid, ...section }) => {
-  Logger.trace("Getting project tasks from API...", { sectionGid });
-
-  const collection = await asanaClient.tasks.getTasks({
-    section: sectionGid,
-    opt_fields: [
-      "name",
-      "created_at",
-      "completed_at",
-      "started_at",
-      "custom_fields",
-      "tags.(name|color)",
-      "due_on",
-      "notes",
-      "projects.sections",
-      "assignee.(name|email|photo)",
-      "memberships.(project|section)"
-    ]
+  const tasks = await collection.fetch();
+  Logger.debug("Gotten project tasks from API!", {
+    project: name,
+    tasks
   });
-
-  const tasks = (await collection.fetch()).map(task => ({
-    ...task,
-    sections: [{ gid: sectionGid, ...section }]
-  }));
-  Logger.debug("Gotten section tasks from API!", { tasks });
 
   return tasks;
 };
@@ -151,32 +105,7 @@ const loadProjects = async dispatch => {
   }
 };
 
-const loadSections = async (dispatch, getState, { asanaProjects }) => {
-  try {
-    dispatch({ type: SET_LOADING_ASANA_SECTIONS, loading: true });
-
-    const asanaSections = (
-      await Promise.all(
-        asanaProjects.map(project => getSections(getState, project))
-      )
-    ).flat();
-
-    dispatch({
-      type: SUCCESS_LOADING_ASANA_SECTIONS,
-      loading: false,
-      value: { asanaSections },
-      timestamp: new Date()
-    });
-
-    return asanaSections;
-  } catch (error) {
-    dispatch({ type: SET_LOADING_ASANA_SECTIONS, loading: false });
-    Logger.error(error.callStack || error);
-    return false;
-  }
-};
-
-const loadTasks = async (dispatch, getState, { asanaSections }) => {
+const loadTasks = async (dispatch, getState, { asanaProjects }) => {
   try {
     dispatch({ type: SET_LOADING_ASANA_TASKS, loading: true });
 
@@ -185,20 +114,12 @@ const loadTasks = async (dispatch, getState, { asanaSections }) => {
     const { asanaTasks } = getState().asanaTasks;
 
     const tasksCollection = collect(
-      await Promise.all(asanaSections.map(section => getTasks(client, section)))
+      await Promise.all(asanaProjects.map(project => getTasks(client, project)))
     )
       .flatten(1)
-      .map(({ sections, projects, custom_fields, ...task }, index, tasks) => ({
+      .unique("gid")
+      .map(({ custom_fields, ...task }, index, tasks) => ({
         ...task,
-        sections: collect(tasks)
-          .where("gid", task.gid)
-          .pluck("sections")
-          .flatten(1)
-          .pluck("name")
-          .all(),
-        projects: collect(projects)
-          .pluck("gid")
-          .all(),
         ...custom_fields.reduce(
           (accumulator, { name, number_value, enum_value }) => ({
             [camelcase(name)]: number_value || enum_value,
@@ -206,8 +127,7 @@ const loadTasks = async (dispatch, getState, { asanaSections }) => {
           }),
           {}
         )
-      }))
-      .unique("gid");
+      }));
 
     const taskKeyMap = tasksCollection
       .mapWithKeys(({ gid }) => [gid, true])
@@ -260,11 +180,8 @@ const lookForNewProjects = ({ forceReload = false } = {}) => {
       return false;
     }
 
-    const asanaSections = await loadSections(dispatch, getState, {
-      asanaProjects: forceReload ? asanaProjects : newAsanaProjects.all()
-    });
     await loadTasks(dispatch, getState, {
-      asanaSections
+      asanaProjects
     });
   };
 };
@@ -290,22 +207,37 @@ const reloadProject = ({ projects }) => {
       return false;
     }
 
-    const { asanaProjects } = state.asanaProjects;
-    const { asanaSections } = state.asanaSections;
-
-    const sections = collect(asanaProjects)
-      .filter(({ gid }) => projects.pluck("gid").contains(gid))
-      .pluck("sections")
-      .flatten(1)
-      .map(({ gid: sectionGid }) =>
-        collect(asanaSections).firstWhere("gid", sectionGid)
-      )
-      .all();
-
     await loadTasks(dispatch, getState, {
-      asanaSections: sections
+      asanaProjects: projects
     });
   };
 };
 
-export { loadAll, lookForNewProjects, reloadProject, MATCH_PROJECT_BACKLOG };
+const reloadRecentProjects = () => {
+  return (dispatch, getState) => {
+    const { asanaProjects } = getState().asanaProjects;
+
+    dispatch(
+      reloadProject({
+        projects: collect(asanaProjects)
+          .sortByDesc(({ created_at }) => moment(created_at).unix())
+          .take(2)
+          .merge(
+            collect(asanaProjects)
+              .filter(({ name }) => MATCH_PROJECT_BACKLOG.test(name))
+              .all()
+          )
+          .where()
+      })
+    );
+    dispatch(lookForNewProjects());
+  };
+};
+
+export {
+  loadAll,
+  lookForNewProjects,
+  reloadProject,
+  reloadRecentProjects,
+  MATCH_PROJECT_BACKLOG
+};

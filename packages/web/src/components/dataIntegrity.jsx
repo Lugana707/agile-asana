@@ -12,7 +12,6 @@ import withConfigured from "./withConfigured";
 const DataIntegrity = ({ history, configured, loading }) => {
   const { user, asanaApiKey } = useSelector(state => state.settings);
   const { asanaProjects } = useSelector(state => state.asanaProjects);
-  const { asanaSections } = useSelector(state => state.asanaSections);
   const { asanaTasks } = useSelector(state => state.asanaTasks);
 
   const dispatch = useDispatch();
@@ -46,12 +45,12 @@ const DataIntegrity = ({ history, configured, loading }) => {
   useEffect(() => {
     if (loading || !configured) {
       return;
-    } else if (!asanaProjects || !asanaSections || !asanaTasks) {
+    } else if (!asanaProjects || !asanaTasks) {
       dispatch(loadAll());
     } else {
       dispatch(processSprints());
     }
-  }, [loading, configured, dispatch, asanaProjects, asanaSections, asanaTasks]);
+  }, [loading, configured, dispatch, asanaProjects, asanaTasks]);
 
   return <div />;
 };

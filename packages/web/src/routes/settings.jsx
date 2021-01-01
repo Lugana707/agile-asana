@@ -21,7 +21,6 @@ import {
   faSignOutAlt
 } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
-import moment from "moment";
 import collect from "collect.js";
 import User from "../components/user";
 import {
@@ -29,18 +28,15 @@ import {
   logout
 } from "../scripts/redux/actions/settingsActions";
 import {
-  reloadProject,
-  lookForNewProjects,
-  MATCH_PROJECT_BACKLOG
+  loadAll,
+  reloadRecentProjects
 } from "../scripts/redux/actions/asanaActions";
-import { loadAll } from "../scripts/redux/actions/asanaActions";
 import withLoading from "../components/withLoading";
 import withConfigured from "../components/withConfigured";
 
 const Settings = ({ loading: globalLoading, configured, history }) => {
   const asanaDeveloperConsoleUrl = "https://app.asana.com/0/developer-console";
 
-  const { asanaProjects } = useSelector(state => state.asanaProjects);
   const { loading, asanaApiKey, asanaDefaultWorkspace, user } = useSelector(
     state => state.settings
   );
@@ -69,20 +65,7 @@ const Settings = ({ loading: globalLoading, configured, history }) => {
   };
 
   const refreshRecent = () => {
-    dispatch(
-      reloadProject({
-        projects: collect(asanaProjects)
-          .sortBy(({ created_at }) => moment(created_at).unix())
-          .take(2)
-          .merge(
-            collect(asanaProjects)
-              .filter(({ name }) => MATCH_PROJECT_BACKLOG.test(name))
-              .all()
-          )
-          .where()
-      })
-    );
-    dispatch(lookForNewProjects());
+    dispatch(reloadRecentProjects());
   };
 
   const ApiKeyTooltip = props => (
