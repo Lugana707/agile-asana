@@ -86,14 +86,16 @@ const TagsFilter = ({ history }) => {
   );
 };
 
-export const withTagsFilterFromURL = WrappedComponent => props => {
-  const { location } = props;
+export const withTagsFilterFromURL = WrappedComponent =>
+  withRouter(props => {
+    const { location } = props;
 
-  const tagsFromLocationSearch = useMemo(() => getTagsFilterFromURL(location), [
-    location
-  ]);
+    const tagsFromLocationSearch = useMemo(
+      () => getTagsFilterFromURL(location),
+      [location]
+    );
 
-  return <WrappedComponent {...props} tagsFilter={tagsFromLocationSearch} />;
-};
+    return <WrappedComponent {...props} tagsFilter={tagsFromLocationSearch} />;
+  });
 
 export default withRouter(TagsFilter);
