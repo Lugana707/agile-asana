@@ -41,6 +41,8 @@ const Settings = ({ loading: globalLoading, configured, history }) => {
     state => state.settings
   );
 
+  const dispatch = useDispatch();
+
   const [settings, setSettings] = useReducer(
     (accumulator, currentValue) => ({ ...accumulator, ...currentValue }),
     { asanaApiKey, asanaDefaultWorkspace }
@@ -50,7 +52,27 @@ const Settings = ({ loading: globalLoading, configured, history }) => {
     setSettings({ asanaApiKey, asanaDefaultWorkspace });
   }, [asanaApiKey, asanaDefaultWorkspace]);
 
-  const dispatch = useDispatch();
+  useEffect(() => {
+    if (!user || !settings) {
+      return;
+    }
+
+    const { workspaces } = user;
+    const { asanaApiKey, asanaDefaultWorkspace } = settings;
+
+    if (workspaces.length !== 1 || !!asanaDefaultWorkspace || !asanaApiKey) {
+      return;
+    }
+
+    const [workspace] = workspaces;
+    setSettings({ asanaDefaultWorkspace: workspace });
+    dispatch(
+      updateSettings({
+        settings: { ...settings, asanaDefaultWorkspace: workspace }
+      })
+    );
+    history.push("/");
+  }, [user, settings, dispatch, history]);
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -156,27 +178,33 @@ const Settings = ({ loading: globalLoading, configured, history }) => {
               {workspaces && (
                 <Form.Group as={Col} xs="12" controlId="formAsanaWorkspace">
                   <Form.Label>Asana Workspace</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="asanaWorkspace"
-                    placeholder="asana workspace"
-                    value={(settings.asanaDefaultWorkspace || {}).name || ""}
-                    onChange={({ target }) => {
-                      const { value } = target;
-                      const workspace = collect(workspaces)
-                        .where("name", value)
-                        .first();
-                      setSettings({ asanaDefaultWorkspace: workspace });
-                    }}
-                    required
-                  >
-                    <option value={false}>-- please select --</option>
-                    {workspaces.map(({ name }, index) => (
-                      <option key={index} value={name}>
-                        {name}
-                      </option>
-                    ))}
-                  </Form.Control>
+                  {workspaces.length === 1 && asanaDefaultWorkspace ? (
+                    <span className="d-block">
+                      {asanaDefaultWorkspace.name}
+                    </span>
+                  ) : (
+                    <Form.Control
+                      as="select"
+                      name="asanaWorkspace"
+                      placeholder="asana workspace"
+                      value={(settings.asanaDefaultWorkspace || {}).name || ""}
+                      onChange={({ target }) => {
+                        const { value } = target;
+                        const workspace = collect(workspaces)
+                          .where("name", value)
+                          .first();
+                        setSettings({ asanaDefaultWorkspace: workspace });
+                      }}
+                      required
+                    >
+                      <option value={false}>-- please select --</option>
+                      {workspaces.map(({ name }, index) => (
+                        <option key={index} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </Form.Control>
+                  )}
                 </Form.Group>
               )}
             </Row>
