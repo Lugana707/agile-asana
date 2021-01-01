@@ -6,9 +6,10 @@ import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import moment from "moment";
 import TagBadge from "../../library/tags/badge";
+import UserBadge from "../../userBadge";
 
 const SprintTaskTableRow = ({ data }) => {
-  const { uuid, name, dueOn, storyPoints, tags } = data;
+  const { uuid, name, dueOn, storyPoints, tags, assignee } = data;
 
   const sortedTags = collect(tags).sort();
 
@@ -37,7 +38,7 @@ const SprintTaskTableRow = ({ data }) => {
           />
         )}
       </td>
-      <td className="align-middle col" colSpan={dueOn ? 2 : 1}>
+      <td className="align-middle col">
         <LinkContainer to={`/task/${uuid}`}>
           <Button className="text-left d-block text-light p-0" variant="link">
             {name}
@@ -51,11 +52,12 @@ const SprintTaskTableRow = ({ data }) => {
           </span>
         )}
       </td>
-      {dueOn && (
-        <td className={`align-middle text-${variant} text-nowrap col-2`}>
-          {dueOn.fromNow()}
-        </td>
-      )}
+      <td className="align-middle">
+        {assignee && <UserBadge user={assignee} />}
+      </td>
+      <td className={`align-middle text-${variant} text-nowrap col-2`}>
+        {dueOn && dueOn.fromNow()}
+      </td>
     </tr>
   );
 };

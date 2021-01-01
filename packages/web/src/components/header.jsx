@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 import Logo from "../logo.png";
-import User from "./user";
+import CurrentUserBadge from "./currentUserBadge";
 import withLoading from "./withLoading";
 import withConfigured from "./withConfigured";
 
@@ -58,7 +58,7 @@ const Header = ({ loading: globalLoading, configured }) => {
                   spin={!!globalLoading}
                 />
               </span>
-              <User badge />
+              <CurrentUserBadge />
             </NavLink>
           </Nav>
         </Navbar.Collapse>

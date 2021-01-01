@@ -22,7 +22,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import collect from "collect.js";
-import User from "../components/user";
+import CurrentUserBadge from "../components/currentUserBadge";
 import {
   updateSettings,
   logout
@@ -102,7 +102,7 @@ const Settings = ({ loading: globalLoading, configured, history }) => {
             <Row>
               <Col xs={12}>
                 <span className="pr-2">Currently logged in as</span>
-                <User badge />
+                <CurrentUserBadge />
                 <span>.</span>
               </Col>
             </Row>
