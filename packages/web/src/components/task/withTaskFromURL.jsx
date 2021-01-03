@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
-import withTasks from "./withTasks";
+import withGetTask from "./withGetTask";
 
 export default WrappedComponent =>
-  withTasks(({ tasks, match, ...props }) => {
+  withGetTask(({ getTask, match, ...props }) => {
     const { uuid } = match.params;
 
-    const task = useMemo(() => tasks.firstWhere("uuid", uuid), [uuid, tasks]);
+    const task = useMemo(() => getTask(uuid), [uuid, getTask]);
 
-    return <WrappedComponent {...props} task={task} />;
+    return <WrappedComponent {...props} match={match} task={task} />;
   });

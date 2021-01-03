@@ -51,6 +51,8 @@ const ShowTask = ({ task, sprints }) => {
     return <div />;
   }
 
+  collect(task).dump();
+
   return (
     <>
       <TaskJumbotron task={task} />

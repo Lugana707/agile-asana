@@ -42,7 +42,11 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         html_notes,
         assignee,
         created_by,
-        permalink_url
+        permalink_url,
+        parent,
+        subtasks,
+        dependencies,
+        dependents
       }) => ({
         uuid: gid,
         name,
@@ -50,19 +54,29 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         createdAt: created_at ? moment(created_at) : false,
         completedAt: completed_at ? moment(completed_at) : false,
         storyPoints,
-        tags: collect(tags)
+        tags: collect(tags || [])
           .pluck("name")
           .toArray(),
-        sections: collect(memberships)
+        sections: collect(memberships || [])
           .pluck("section.name")
           .toArray(),
-        sprints: collect(memberships)
+        sprints: collect(memberships || [])
           .pluck("project.gid")
           .toArray(),
         description: html_notes || notes,
         assignee,
         createdBy: created_by,
-        externalLink: permalink_url
+        externalLink: permalink_url,
+        parent: parent && parent.gid,
+        subtasks: collect(subtasks || [])
+          .pluck("gid")
+          .toArray(),
+        dependencies: collect(dependencies || [])
+          .pluck("gid")
+          .toArray(),
+        dependents: collect(dependents || [])
+          .pluck("gid")
+          .toArray()
       })
     )
     .map(task => {
