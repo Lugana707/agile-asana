@@ -12,15 +12,11 @@ const TaskJumobtron = ({ task, title, children, history }) => {
       <Container>
         <h1>
           <span>Task</span>
-          {title && (
-            <>
-              <span className="text-muted"> | </span>
-              <span>{title}</span>
-            </>
-          )}
+          <span className="text-muted"> | </span>
+          <span>{title || name}</span>
         </h1>
         <hr />
-        <p>{name}</p>
+        <p className="alert alert-warning text-dark">Work in Progress!</p>
         <ButtonGroup as="p">
           <LinkContainer to={`/sprint/${mostRecentSprint}`}>
             <Button variant="dark" size="sm">

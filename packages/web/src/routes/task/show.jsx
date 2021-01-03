@@ -53,10 +53,7 @@ const ShowTask = ({ task, sprints }) => {
 
   return (
     <>
-      <TaskJumbotron
-        task={task}
-        title={<span className="text-warning">Work in Progress!</span>}
-      />
+      <TaskJumbotron task={task} />
       <Container className="text-left">
         <Row>
           {tagsSorted.isNotEmpty() && (
