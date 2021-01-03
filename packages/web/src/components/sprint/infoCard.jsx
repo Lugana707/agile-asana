@@ -7,7 +7,6 @@ import {
   OverlayTrigger,
   Tooltip
 } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExternalLinkAlt,
@@ -121,25 +120,34 @@ const InfoCard = ({ sprint, showSummary, showLinks }) => {
       )}
       {showLinks && (
         <Card.Footer className="text-right">
-          <LinkContainer to={`/sprint/${uuid}/report`}>
-            <Button size="sm" className="mr-1">
-              Report
-            </Button>
-          </LinkContainer>
-          <LinkContainer to={`/sprint/${uuid}/task`}>
-            <Button size="sm" className="mr-1" hidden>
-              Tasks
-            </Button>
-          </LinkContainer>
-          <a
-            href={externalLink}
-            rel="noopener noreferrer"
-            target="_blank"
-            className="btn btn-secondary btn-sm"
+          <Button
+            as={Link}
+            to={`/sprint/${uuid}/report`}
+            size="sm"
+            className="mr-1"
           >
-            <span className="pr-1">Asana</span>
-            <FontAwesomeIcon icon={faExternalLinkAlt} />
-          </a>
+            Report
+          </Button>
+          <Button
+            as={Link}
+            to={`/sprint/${uuid}/task`}
+            size="sm"
+            className="mr-1"
+            hidden
+          >
+            Tasks
+          </Button>
+          {externalLink && (
+            <a
+              href={externalLink}
+              rel="noopener noreferrer"
+              target="_blank"
+              className="btn btn-secondary btn-sm"
+            >
+              <span className="pr-1">Asana</span>
+              <FontAwesomeIcon icon={faExternalLinkAlt} />
+            </a>
+          )}
         </Card.Footer>
       )}
     </Card>
