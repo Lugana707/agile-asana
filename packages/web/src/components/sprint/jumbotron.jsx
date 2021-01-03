@@ -23,7 +23,7 @@ const SprintJumobtron = ({
 }) => {
   const { pathname } = location;
 
-  const { number, uuid } = sprint;
+  const { number, uuid, externalLink } = sprint;
 
   const links = collect([
     { title: "Home", url: "" },
@@ -81,7 +81,7 @@ const SprintJumobtron = ({
           ))}
           <Button variant="dark">
             <a
-              href={`https://app.asana.com/0/${uuid}/board`}
+              href={externalLink}
               rel="noopener noreferrer"
               target="_blank"
               className="text-light"

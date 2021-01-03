@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 const TaskJumobtron = ({ task, title, children, history }) => {
-  const { name, uuid, mostRecentSprint } = task;
+  const { name, mostRecentSprint, externalLink } = task;
 
   return (
     <Jumbotron fluid>
@@ -28,7 +28,7 @@ const TaskJumobtron = ({ task, title, children, history }) => {
             </Button>
           </LinkContainer>
           <a
-            href={`https://app.asana.com/0/${mostRecentSprint}/${uuid}/f`}
+            href={externalLink}
             rel="noopener noreferrer"
             target="_blank"
             className="btn btn-dark btn-sm"

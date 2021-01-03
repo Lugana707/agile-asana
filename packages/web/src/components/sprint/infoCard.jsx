@@ -24,7 +24,8 @@ const InfoCard = ({ sprint, showSummary, showLinks }) => {
     storyPoints,
     completedStoryPoints,
     averageCompletedStoryPoints,
-    state
+    state,
+    externalLink
   } = sprint || {};
 
   const completed = useMemo(() => state === "COMPLETED", [state]);
@@ -131,7 +132,7 @@ const InfoCard = ({ sprint, showSummary, showLinks }) => {
             </Button>
           </LinkContainer>
           <a
-            href={`https://app.asana.com/0/${uuid}/board`}
+            href={externalLink}
             rel="noopener noreferrer"
             target="_blank"
             className="btn btn-secondary btn-sm"
