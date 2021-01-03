@@ -1,19 +1,19 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { faQuestion, faCheck } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import moment from "moment";
 import TagBadge from "../library/tags/badge";
 import UserBadge from "../userBadge";
 
-const TaskTableRow = ({ data }) => {
-  const { uuid, name, dueOn, storyPoints, tags, assignee } = data;
+const TaskTableRow = ({ data: task }) => {
+  const { uuid, name, dueOn, storyPoints, tags, assignee, completedAt } = task;
 
-  const sortedTags = collect(tags).sort();
+  const sortedTags = useMemo(() => collect(tags).sort(), [tags]);
 
-  const computeVariant = dueOn => {
+  const variant = useMemo(() => {
     if (dueOn) {
       const now = moment();
       if (dueOn.isBefore(now.add(7, "days"))) {
@@ -23,8 +23,7 @@ const TaskTableRow = ({ data }) => {
       }
     }
     return "";
-  };
-  const variant = computeVariant(dueOn);
+  }, [dueOn]);
 
   return (
     <tr key={uuid} className="d-flex pr-1">
@@ -43,6 +42,7 @@ const TaskTableRow = ({ data }) => {
           to={`/task/${uuid}`}
           as={Button}
           className="text-left d-block text-light p-0"
+          style={{ textDecoration: !!completedAt && "line-through" }}
           variant="link"
         >
           {name}
@@ -60,10 +60,16 @@ const TaskTableRow = ({ data }) => {
           <UserBadge user={assignee} />
         </td>
       )}
-      <td
-        className={`align-middle text-${variant} text-right text-nowrap col-2 d-none d-md-block`}
-      >
-        {dueOn && dueOn.fromNow()}
+      <td className="align-middle text-right text-nowrap col-2 d-none d-md-block">
+        {!!completedAt ? (
+          <FontAwesomeIcon
+            className="text-success mr-1"
+            icon={faCheck}
+            size="2x"
+          />
+        ) : (
+          dueOn && <span className={`text-${variant}`}>{dueOn.fromNow()}</span>
+        )}
       </td>
     </tr>
   );
