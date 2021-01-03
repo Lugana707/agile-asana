@@ -68,7 +68,7 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         assignee,
         createdBy: created_by,
         externalLink: permalink_url,
-        parent: parent || parent.gid,
+        parent: parent && parent.gid,
         subtasks: collect(subtasks || [])
           .pluck("gid")
           .toArray(),
