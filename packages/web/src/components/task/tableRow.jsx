@@ -1,6 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
@@ -39,11 +39,14 @@ const TaskTableRow = ({ data }) => {
         )}
       </td>
       <td className="align-middle col">
-        <LinkContainer to={`/task/${uuid}`}>
-          <Button className="text-left d-block text-light p-0" variant="link">
-            {name}
-          </Button>
-        </LinkContainer>
+        <Link
+          to={`/task/${uuid}`}
+          as={Button}
+          className="text-left d-block text-light p-0"
+          variant="link"
+        >
+          {name}
+        </Link>
         {sortedTags.isNotEmpty() && (
           <span className="ml-1">
             {sortedTags.map((tag, index) => (
@@ -52,13 +55,13 @@ const TaskTableRow = ({ data }) => {
           </span>
         )}
       </td>
-      {false && (
-        <td className="align-middle">
-          {assignee && <UserBadge user={assignee} />}
+      {assignee && (
+        <td className="align-middle col-3 d-none d-md-block">
+          <UserBadge user={assignee} />
         </td>
       )}
       <td
-        className={`align-middle text-${variant} text-right text-nowrap col-2`}
+        className={`align-middle text-${variant} text-right text-nowrap col-2 d-none d-md-block`}
       >
         {dueOn && dueOn.fromNow()}
       </td>
