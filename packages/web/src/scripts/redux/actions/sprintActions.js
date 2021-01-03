@@ -41,6 +41,7 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         notes,
         html_notes,
         assignee,
+        created_by,
         permalink_url
       }) => ({
         uuid: gid,
@@ -60,6 +61,7 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
           .toArray(),
         description: html_notes || notes,
         assignee,
+        createdBy: created_by,
         externalLink: permalink_url
       })
     )

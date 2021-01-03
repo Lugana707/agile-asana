@@ -8,6 +8,7 @@ import TaskJumbotron from "../../components/task/jumbotron";
 import SprintInfoCard from "../../components/sprint/infoCard";
 import TagBadge from "../../components/library/tags/badge";
 import Widget from "../../components/library/widget";
+import UserBadge from "../../components/userBadge";
 
 const ShowTask = ({ task, sprints }) => {
   const {
@@ -17,10 +18,10 @@ const ShowTask = ({ task, sprints }) => {
     tags,
     completedAt,
     mostRecentSprint,
-    sprints: taskSprintUUIDs
+    sprints: taskSprintUUIDs,
+    createdBy,
+    assignee
   } = task || {};
-
-  collect(task).dump();
 
   const tagsSorted = useMemo(() => collect(tags).sort(), [tags]);
 
@@ -86,7 +87,14 @@ const ShowTask = ({ task, sprints }) => {
           <Col xs={12}>
             <Card bg="dark" text="light">
               <Card.Body>
-                <div
+                <Card.Subtitle className="text-muted pb-2">
+                  {assignee ? "Assigned to" : "Created by"}
+                </Card.Subtitle>
+                <Card.Title>
+                  <UserBadge user={assignee || createdBy} />
+                </Card.Title>
+                <hr />
+                <Card.Text
                   dangerouslySetInnerHTML={{
                     __html: description.replace(/\n/gimu, "<br />")
                   }}
