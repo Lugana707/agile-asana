@@ -61,7 +61,7 @@ const InfoCard = ({ sprint, showSummary, showLinks }) => {
     <Card bg="dark" text="light" className="text-left">
       <Card.Body>
         <Card.Title>
-          <Link to={`/sprint/${uuid}`}>
+          <Link as={Button} to={`/sprint/${uuid}`} variant="link">
             <span className="text-light">Sprint {number}</span>
             {completed ? (
               <span className="text-success"> Completed</span>
