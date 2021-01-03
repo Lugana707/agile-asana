@@ -40,9 +40,9 @@ const getProjects = async archived => {
         "created_at",
         "due_on",
         "start_on",
-        "permalink_url",
-        "followers.(name|email|photo)",
-        "created_by.(name|email|photo)"
+        "permalink_url"
+        //"followers.(name|email|photo)",
+        //"created_by.(name|email|photo)"
       ].join(","),
       archived
     },
@@ -77,14 +77,14 @@ const getTasks = async (asanaClient, { gid: projectGid, name }) => {
       "notes",
       "html_notes",
       "assignee.(name|email|photo)",
-      "followers.(name|email|photo)",
+      //"followers.(name|email|photo)",
       "created_by.(name|email|photo)",
       "memberships.(project.name|section.name)",
       "permalink_url",
       "parent",
-      "subtasks",
-      "dependencies",
-      "dependents"
+      "subtasks"
+      //"dependencies",
+      //"dependents"
     ]
   });
 
