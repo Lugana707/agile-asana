@@ -52,10 +52,14 @@ const TaskTableRow = ({ data }) => {
           </span>
         )}
       </td>
-      <td className="align-middle">
-        {assignee && <UserBadge user={assignee} />}
-      </td>
-      <td className={`align-middle text-${variant} text-nowrap col-2`}>
+      {false && (
+        <td className="align-middle">
+          {assignee && <UserBadge user={assignee} />}
+        </td>
+      )}
+      <td
+        className={`align-middle text-${variant} text-right text-nowrap col-2`}
+      >
         {dueOn && dueOn.fromNow()}
       </td>
     </tr>
