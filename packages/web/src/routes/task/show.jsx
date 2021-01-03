@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
 import collect from "collect.js";
 import pluralise from "pluralise";
 import withTaskFromURL from "../../components/task/withTaskFromURL";
@@ -11,6 +11,7 @@ import Widget from "../../components/library/widget";
 
 const ShowTask = ({ task, sprints }) => {
   const {
+    description,
     createdAt,
     storyPoints,
     tags,
@@ -79,6 +80,20 @@ const ShowTask = ({ task, sprints }) => {
               <small className="d-block">from creation to done</small>
             </Widget>
           )}
+        </Row>
+        <hr />
+        <Row>
+          <Col xs={12}>
+            <Card bg="dark" text="light">
+              <Card.Body>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: description.replace(/\n/gimu, "<br />")
+                  }}
+                />
+              </Card.Body>
+            </Card>
+          </Col>
         </Row>
         <hr />
         <Row>
