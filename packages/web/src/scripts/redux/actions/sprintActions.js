@@ -39,7 +39,9 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         tags,
         memberships,
         notes,
-        assignee
+        html_notes,
+        assignee,
+        permalink_url
       }) => ({
         uuid: gid,
         name,
@@ -56,8 +58,9 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         sprints: collect(memberships)
           .pluck("project.gid")
           .toArray(),
-        description: notes,
-        assignee
+        description: html_notes || notes,
+        assignee,
+        externalLink: permalink_url
       })
     )
     .map(task => {
@@ -103,7 +106,15 @@ const processProjectIntoSprint = ({
     asanaProjectsCollection
   });
 
-  const { gid, archived, name, due_on, start_on, created_at } = asanaProject;
+  const {
+    gid,
+    archived,
+    name,
+    due_on,
+    start_on,
+    created_at,
+    permalink_url
+  } = asanaProject;
 
   const sprintTasksCollection = tasksCollection.filter(task =>
     collect(task.sprints).contains(gid)
@@ -138,7 +149,8 @@ const processProjectIntoSprint = ({
     finishedOn,
     sprintLength,
     tasks: sprintTasksCollection.all(),
-    tasksCompleted: tasksCompletedCollection.all()
+    tasksCompleted: tasksCompletedCollection.all(),
+    externalLink: permalink_url
   };
 };
 

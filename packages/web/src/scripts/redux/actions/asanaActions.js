@@ -34,9 +34,16 @@ const getProjects = async archived => {
 
   const { data } = await axios.get(url, {
     params: {
-      opt_fields: ["sections", "name", "created_at", "due_on", "start_on"].join(
-        ","
-      ),
+      opt_fields: [
+        "sections",
+        "name",
+        "created_at",
+        "due_on",
+        "start_on",
+        "permalink_url",
+        "followers.(name|email|photo)",
+        "created_by.(name|email|photo)"
+      ].join(","),
       archived
     },
     validateStatus: status => status === 200
@@ -58,7 +65,7 @@ const getTasks = async (asanaClient, { gid: projectGid, name }) => {
 
   const collection = await asanaClient.tasks.getTasks({
     project: projectGid,
-    // opt_expand: ".",
+    //opt_expand: "."
     opt_fields: [
       "name",
       "created_at",
@@ -68,8 +75,14 @@ const getTasks = async (asanaClient, { gid: projectGid, name }) => {
       "tags.(name|color)",
       "due_on",
       "notes",
+      "html_notes",
       "assignee.(name|email|photo)",
-      "memberships.(project.name|section.name)"
+      "followers.(name|email|photo)",
+      "created_by.(name|email|photo)",
+      "memberships.(project.name|section.name)",
+      "permalink_url",
+      "parent",
+      "subtasks"
     ]
   });
 
