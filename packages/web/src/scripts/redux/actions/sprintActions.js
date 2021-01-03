@@ -28,6 +28,7 @@ const processTasksForUniqueTags = ({ asanaTasks }) => {
 
 const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
   collect(asanaTasks)
+    /* jshint maxcomplexity:false */
     .map(
       ({
         gid,
@@ -67,7 +68,7 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         assignee,
         createdBy: created_by,
         externalLink: permalink_url,
-        parent: parent && parent.gid,
+        parent: parent || parent.gid,
         subtasks: collect(subtasks || [])
           .pluck("gid")
           .toArray(),
@@ -79,6 +80,7 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
           .toArray()
       })
     )
+    /* jshint maxcomplexity:6 */
     .map(task => {
       const mostRecentSprint = collect(task.sprints)
         .map(uuid => asanaProjectsCollection.firstWhere("gid", uuid))
