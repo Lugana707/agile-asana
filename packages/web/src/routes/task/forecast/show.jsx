@@ -13,8 +13,6 @@ import SprintCardAndTable from "../../../components/sprint/task/sprintCardAndTab
 const ShowTask = ({ history, task, sprints, getTask }) => {
   const { uuid, subtasks } = task || {};
 
-  collect(task).dump();
-
   const forecastSprints = useMemo(() => {
     if (!subtasks) {
       return collect([]);
