@@ -7,5 +7,5 @@ export default WrappedComponent =>
 
     const task = useMemo(() => getTask(uuid), [uuid, getTask]);
 
-    return <WrappedComponent {...props} match={match} task={task} />;
+    return <WrappedComponent {...props} task={task} />;
   });

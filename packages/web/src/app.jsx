@@ -15,6 +15,7 @@ import SprintShow from "./routes/sprint/show";
 import SprintTaskShow from "./routes/sprint/task/show";
 import SprintReportShow from "./routes/sprint/report/show";
 import TaskShow from "./routes/task/show";
+import TaskForecastShow from "./routes/task/forecast/show";
 import Settings from "./routes/settings";
 
 axios.interceptors.response.use(null, error => {
@@ -50,6 +51,11 @@ function App() {
               component={SprintReportShow}
             />
             <Route exact path="/task/:uuid" component={TaskShow} />
+            <Route
+              exact
+              path="/task/:uuid/forecast"
+              component={TaskForecastShow}
+            />
             <Route exact path="/settings" component={Settings} />
           </Switch>
           <Footer />

@@ -4,6 +4,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import collect from "collect.js";
 import SprintBreakdown from "../../../components/sprint/tables/breakdown";
 import SprintJumbotron from "../../../components/sprint/jumbotron";
+import withSprints from "../../../components/sprint/withSprints";
 import withSprintFromURL from "../../../components/sprint/withSprintFromURL";
 
 const SPRINT_BREAKDOWN_COUNT = 5;
@@ -83,4 +84,4 @@ const Report = ({ sprint, sprints }) => {
   );
 };
 
-export default withSprintFromURL(Report);
+export default withSprintFromURL(withSprints(Report));

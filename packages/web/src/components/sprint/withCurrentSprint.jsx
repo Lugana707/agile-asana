@@ -7,11 +7,5 @@ export default WrappedComponent =>
       sprints
     ]);
 
-    return (
-      <WrappedComponent
-        {...props}
-        sprints={sprints}
-        currentSprint={currentSprint}
-      />
-    );
+    return <WrappedComponent {...props} currentSprint={currentSprint} />;
   });

@@ -1,14 +1,17 @@
 import React, { useMemo } from "react";
-import { Container, Row, Col, Card } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import collect from "collect.js";
 import pluralise from "pluralise";
-import withTaskFromURL from "../../components/task/withTaskFromURL";
 import withSprints from "../../components/sprint/withSprints";
+import withTaskFromURL from "../../components/task/withTaskFromURL";
 import TaskJumbotron from "../../components/task/jumbotron";
 import SprintInfoCard from "../../components/sprint/infoCard";
 import TagBadge from "../../components/library/tags/badge";
 import Widget from "../../components/library/widget";
 import UserBadge from "../../components/userBadge";
+import Table from "../../components/library/table";
+import TaskTableRow from "../../components/task/tableRow";
 
 const ShowTask = ({ task, sprints }) => {
   const {
@@ -20,7 +23,9 @@ const ShowTask = ({ task, sprints }) => {
     mostRecentSprint,
     sprints: taskSprintUUIDs,
     createdBy,
-    assignee
+    assignee,
+    parent,
+    subtasks
   } = task || {};
 
   const tagsSorted = useMemo(() => collect(tags).sort(), [tags]);
@@ -55,32 +60,56 @@ const ShowTask = ({ task, sprints }) => {
     <>
       <TaskJumbotron task={task} />
       <Container className="text-left">
+        {(tagsSorted.isNotEmpty() || storyPoints || completedAt) && (
+          <>
+            <Row>
+              {tagsSorted.isNotEmpty() && (
+                <Col xs={12} className="pb-2">
+                  {tagsSorted.map((tag, index) => (
+                    <TagBadge key={index} tag={tag} />
+                  ))}
+                </Col>
+              )}
+              {storyPoints && (
+                <Widget bg="info" text="dark">
+                  <h1 className="text-nowrap d-inline">{storyPoints}</h1>
+                  <small className="d-block">story points</small>
+                </Widget>
+              )}
+              {completedAt && (
+                <Widget bg="success" text="dark">
+                  <h1 className="text-nowrap d-inline">
+                    <span>{fromBacklogToDoneInDays}</span>
+                    <span> {pluralise(fromBacklogToDoneInDays, "Day")}</span>
+                  </h1>
+                  <small className="d-block">from creation to done</small>
+                </Widget>
+              )}
+            </Row>
+            <hr />
+          </>
+        )}
         <Row>
-          {tagsSorted.isNotEmpty() && (
-            <Col xs={12} className="pb-2">
-              {tagsSorted.map((tag, index) => (
-                <TagBadge key={index} tag={tag} />
-              ))}
+          {parent && (
+            <Col xs={12}>
+              <Card bg="dark" text="light">
+                <Card.Body>
+                  <Card.Subtitle className="text-muted pb-2">
+                    Parent task
+                  </Card.Subtitle>
+                  <Card.Title>
+                    <Link
+                      as={Button}
+                      to={`/task/${parent.uuid}`}
+                      variant="link"
+                    >
+                      {parent.name}
+                    </Link>
+                  </Card.Title>
+                </Card.Body>
+              </Card>
             </Col>
           )}
-          {storyPoints && (
-            <Widget bg="info" text="dark">
-              <h1 className="text-nowrap d-inline">{storyPoints}</h1>
-              <small className="d-block">story points</small>
-            </Widget>
-          )}
-          {completedAt && (
-            <Widget bg="success" text="dark">
-              <h1 className="text-nowrap d-inline">
-                <span>{fromBacklogToDoneInDays}</span>
-                <span> {pluralise(fromBacklogToDoneInDays, "Day")}</span>
-              </h1>
-              <small className="d-block">from creation to done</small>
-            </Widget>
-          )}
-        </Row>
-        <hr />
-        <Row>
           <Col xs={12}>
             <Card bg="dark" text="light">
               <Card.Body>
@@ -99,6 +128,25 @@ const ShowTask = ({ task, sprints }) => {
               </Card.Body>
             </Card>
           </Col>
+          {subtasks.isNotEmpty() && (
+            <Col xs={12}>
+              <Card bg="dark" text="light">
+                <Card.Body>
+                  <Card.Subtitle className="text-muted pb-2">
+                    Subtasks
+                  </Card.Subtitle>
+                  <Card.Text as="div">
+                    <Table
+                      className="mt-1 mb-1"
+                      data={subtasks.sortByDesc("completedAt").toArray()}
+                      row={TaskTableRow}
+                      variant="dark"
+                    />
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            </Col>
+          )}
         </Row>
         <hr />
         <Row>
@@ -130,4 +178,4 @@ const ShowTask = ({ task, sprints }) => {
   );
 };
 
-export default withSprints(withTaskFromURL(ShowTask));
+export default withTaskFromURL(withSprints(ShowTask));
