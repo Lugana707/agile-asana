@@ -1,17 +1,26 @@
 import React from "react";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import {
   Jumbotron,
   Container,
   ToggleButtonGroup,
   ToggleButton,
-  Button
+  Button,
+  Dropdown
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
+import withSprints from "./withSprints";
 
-const SprintJumobtron = ({ sprint, title, children, location, history }) => {
+const SprintJumobtron = ({
+  sprint,
+  sprints,
+  title,
+  children,
+  location,
+  history
+}) => {
   const { pathname } = location;
 
   const { number, uuid } = sprint;
@@ -30,15 +39,27 @@ const SprintJumobtron = ({ sprint, title, children, location, history }) => {
   return (
     <Jumbotron fluid>
       <Container>
+        <Dropdown className="btn-link text-dark float-left pr-2">
+          <Dropdown.Toggle as="h1">Sprint {number}</Dropdown.Toggle>
+          <Dropdown.Menu>
+            {sprints.map(sprint => (
+              <Dropdown.Item
+                key={sprint.uuid}
+                as={Link}
+                to={`/sprint/${sprint.uuid}/${pathname.replace(
+                  /^\/(sprint)\/(\d+)(\/?)/iu,
+                  ""
+                )}`}
+                disabled={sprint.uuid === uuid}
+              >{`Sprint ${sprint.number}`}</Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
         <h1>
-          <span>Sprint {number}</span>
-          {title && (
-            <>
-              <span className="text-muted"> | </span>
-              <span>{title}</span>
-            </>
-          )}
+          <span className="text-muted"> | </span>
+          <span>{title}</span>
         </h1>
+        <div className="clearfix" />
         <hr />
         <ToggleButtonGroup
           as="p"
@@ -79,4 +100,4 @@ const SprintJumobtron = ({ sprint, title, children, location, history }) => {
   );
 };
 
-export default withRouter(SprintJumobtron);
+export default withRouter(withSprints(SprintJumobtron));

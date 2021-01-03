@@ -21,7 +21,7 @@ const Show = ({ sprint }) => {
 
   return (
     <>
-      <SprintJumbotron sprint={sprint} />
+      <SprintJumbotron sprint={sprint} title="Dashboard" />
       <Container>
         <Row>
           <Col xs={{ span: 12, order: 0 }} md={12} className="pb-4">
