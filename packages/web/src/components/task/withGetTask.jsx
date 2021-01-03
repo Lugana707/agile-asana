@@ -21,14 +21,12 @@ export default WrappedComponent =>
               return false;
             }
 
-            const { parent, subtasks, dependencies, dependents } = task;
+            const { parent, subtasks } = task;
 
             return {
               ...task,
               parent: parent && tasksCollection.firstWhere("uuid", parent),
               subtasks: tasksCollection.whereIn("uuid", subtasks),
-              dependencies: tasksCollection.whereIn("uuid", dependencies),
-              dependents: tasksCollection.whereIn("uuid", dependents),
               forecastSprint: forecastSprints
                 .merge(sprints.merge([currentSprint]).toArray())
                 .filter(

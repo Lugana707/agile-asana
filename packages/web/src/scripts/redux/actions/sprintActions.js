@@ -45,9 +45,7 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         created_by,
         permalink_url,
         parent,
-        subtasks,
-        dependencies,
-        dependents
+        subtasks
       }) => ({
         uuid: gid,
         name,
@@ -70,12 +68,6 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         externalLink: permalink_url,
         parent: parent && parent.gid,
         subtasks: collect(subtasks || [])
-          .pluck("gid")
-          .toArray(),
-        dependencies: collect(dependencies || [])
-          .pluck("gid")
-          .toArray(),
-        dependents: collect(dependents || [])
           .pluck("gid")
           .toArray()
       })
