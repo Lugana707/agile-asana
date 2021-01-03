@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Col, Card } from "react-bootstrap";
 import collect from "collect.js";
 import Table from "../../library/table";
-import SprintTaskTableRow from "./sprintTaskTableRow";
+import TaskTableRow from "../../task/tableRow";
 
 const SprintCardAndTable = ({
   title,
@@ -61,7 +61,7 @@ const SprintCardAndTable = ({
         <Table
           className="mt-1 mb-1"
           data={filteredTasks}
-          row={SprintTaskTableRow}
+          row={TaskTableRow}
           variant={variants.table}
         />
       </Col>

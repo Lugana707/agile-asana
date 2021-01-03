@@ -5,10 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import moment from "moment";
-import TagBadge from "../../library/tags/badge";
-import UserBadge from "../../userBadge";
+import TagBadge from "../library/tags/badge";
+import UserBadge from "../userBadge";
 
-const SprintTaskTableRow = ({ data }) => {
+const TaskTableRow = ({ data }) => {
   const { uuid, name, dueOn, storyPoints, tags, assignee } = data;
 
   const sortedTags = collect(tags).sort();
@@ -62,4 +62,4 @@ const SprintTaskTableRow = ({ data }) => {
   );
 };
 
-export default SprintTaskTableRow;
+export default TaskTableRow;
