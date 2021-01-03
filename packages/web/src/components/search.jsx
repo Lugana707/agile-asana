@@ -12,7 +12,6 @@ const Search = ({ tasks, ...props }) => {
     () =>
       tasks
         .filter(({ name }) => name.toLowerCase().includes(value))
-        .dump()
         .take(10)
         .toArray(),
     [value, tasks]
