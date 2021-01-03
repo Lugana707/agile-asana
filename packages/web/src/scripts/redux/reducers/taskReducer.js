@@ -17,8 +17,9 @@ export default () => {
       .toArray();
 
     const data = collect(state.data)
-      .whereNotIn("uuid", taskIdsCollection)
+      .whereIn("uuid", taskIdsCollection)
       .merge(tasks)
+      .unique("uuid")
       .sortBy("uuid")
       .toArray();
 
