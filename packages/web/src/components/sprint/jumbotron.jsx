@@ -26,7 +26,7 @@ const SprintJumobtron = ({
   const { number, uuid, externalLink } = sprint;
 
   const links = collect([
-    { title: "Home", url: "" },
+    { title: "Dashboard", url: "" },
     { title: "Tasks", url: "task" },
     { title: "Report", url: "report" }
   ])
