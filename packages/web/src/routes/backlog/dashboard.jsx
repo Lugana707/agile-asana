@@ -48,6 +48,7 @@ const Forecast = ({ sprints, history, taskWeightKey, tagsFilter }) => {
             />
           </Col>
         </Row>
+
         <Row>
           <Col xs={12} md={{ span: 2, order: 1 }}>
             <TaskWeightKeySelector />

@@ -113,7 +113,11 @@ const SprintStoryPointsTrend = ({ sprints }) => {
     []
   );
 
-  return <Bar data={data} options={options} />;
+  return (
+    <div className="chartjs-min-height w-100 overflow-hidden">
+      <Bar data={data} options={options} />
+    </div>
+  );
 };
 
 export default SprintStoryPointsTrend;

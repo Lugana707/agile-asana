@@ -20,10 +20,9 @@ const SprintFilter = ({ defaultCount, sprints, setSprints, history }) => {
   ]);
 
   const [sprintRange, setSprintRange] = useState([0, 0]);
-  const [minSprint, maxSprint] = useMemo(
-    () => [sprintNumbers.min(), sprintNumbers.max()],
-    [sprintNumbers]
-  );
+  const [minSprint, maxSprint] = useMemo(() => [0, sprintNumbers.count() - 1], [
+    sprintNumbers
+  ]);
 
   const sprintRangeForDisplay = useMemo(() => {
     const [min, max] = sprintRange;
@@ -40,18 +39,25 @@ const SprintFilter = ({ defaultCount, sprints, setSprints, history }) => {
   }, [recentSprints, maxSprint, sprintRange]);
 
   useEffect(() => {
-    setSprints(recentSprints.whereBetween("number", sprintRangeForDisplay));
+    setSprints(
+      recentSprints.slice(
+        sprintRangeForDisplay[0],
+        sprintRangeForDisplay[1] - sprintRangeForDisplay[0] + 1
+      )
+    );
   }, [setSprints, recentSprints, sprintRangeForDisplay]);
 
   const marks = useMemo(
     () =>
-      sprintNumbers.reduce(
-        (accumulator, currentValue) => ({
-          [currentValue]: currentValue,
-          ...accumulator
-        }),
-        {}
-      ),
+      sprintNumbers
+        .map((number, index) => ({ [index]: number }))
+        .reduce(
+          (accumulator, currentValue) => ({
+            ...currentValue,
+            ...accumulator
+          }),
+          {}
+        ),
     [sprintNumbers]
   );
 
@@ -62,7 +68,7 @@ const SprintFilter = ({ defaultCount, sprints, setSprints, history }) => {
   };
 
   return (
-    <div className="pb-4">
+    <div className="pl-4 pr-4 pb-4" style={{ overflowX: "hidden" }}>
       <Range
         defaultValue={sprintRangeForDisplay}
         value={sprintRangeForDisplay}
