@@ -29,7 +29,7 @@ const ShowTask = ({ history, task, sprints, getTask }) => {
       .map(({ tasks, ...sprint }) => ({
         ...sprint,
         tasks: collect(tasks)
-          .whereIn("uuid", taskUUIDs)
+          .whereIn("uuid", taskUUIDs.toArray())
           .toArray()
       }))
       .dump()
