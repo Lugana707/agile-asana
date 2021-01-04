@@ -2,8 +2,10 @@ import Logger from "js-logger";
 import moment from "moment";
 import collect from "collect.js";
 import { getColourFromTag } from "../../helpers/asanaColours";
-
-const MATCH_PROJECT_BACKLOG = /^Product Backlog$/u;
+import {
+  MATCH_PROJECT_BACKLOG,
+  MATCH_PROJECT_KANBAN_WITHOUT_NUMBER
+} from "./asanaActions";
 
 const SUCCESS_LOADING_TAGS = "SUCCESS_LOADING_TAGS";
 
@@ -143,7 +145,10 @@ const processProjectIntoSprint = ({
   const storyPoints = sumStoryPoints(sprintTasksCollection);
   const completedStoryPoints = sumStoryPoints(tasksCompletedCollection);
 
-  const week = parseInt(name.replace(/.+ Kanban Week /u, "").trim(), 10);
+  const week = parseInt(
+    name.replace(MATCH_PROJECT_KANBAN_WITHOUT_NUMBER, "").trim(),
+    10
+  );
 
   const finishedOn = moment(due_on);
   const startOn = moment(start_on || created_at);
