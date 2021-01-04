@@ -13,8 +13,8 @@ const SUCCESS_LOADING_ASANA_PROJECTS = "SUCCESS_LOADING_ASANAPROJECTS";
 const SET_LOADING_ASANA_TASKS = "SET_LOADING_ASANATASKS";
 const SUCCESS_LOADING_ASANA_TASKS = "SUCCESS_LOADING_ASANATASKS";
 
-const MATCH_PROJECT_KANBAN = /^((Dev|Product) )?Kanban (Week )?(\d+)/iu;
-const MATCH_PROJECT_KANBAN_WITHOUT_NUMBER = /^((Dev|Product) )?Kanban (Week )?/iu;
+const MATCH_PROJECT_KANBAN = /^((Sprint|Dev|Product) )?Kanban (Week )?(\d+)/iu;
+const MATCH_PROJECT_KANBAN_WITHOUT_NUMBER = /^((Sprint|Dev|Product) )?Kanban (Week )?/iu;
 const MATCH_PROJECT_BACKLOG = /^Product Backlog$/u;
 
 const getAsanaApiClient = ({ settings }) => {
