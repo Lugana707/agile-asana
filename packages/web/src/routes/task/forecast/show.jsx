@@ -31,6 +31,7 @@ const ShowTask = ({ history, task, sprints, getTask }) => {
           .whereIn("uuid", taskUUIDs)
           .toArray()
       }))
+      .dump()
       .sortBy("number");
   }, [subtasks, getTask]);
 
