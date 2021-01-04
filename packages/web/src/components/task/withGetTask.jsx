@@ -26,9 +26,9 @@ export default WrappedComponent =>
             return {
               ...task,
               parent: parent && tasksCollection.firstWhere("uuid", parent),
-              subtasks: tasksCollection.whereIn("uuid", subtasks),
+              subtasks: tasksCollection.whereIn("uuid", subtasks.toArray()),
               forecastSprint: forecastSprints
-                .merge(sprints.merge([currentSprint]).toArray())
+                .merge(sprints.merge([currentSprint]))
                 .filter(
                   sprint => !!collect(sprint.tasks).firstWhere("uuid", uuid)
                 )
