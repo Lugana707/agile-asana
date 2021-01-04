@@ -47,6 +47,7 @@ const ShowTask = ({ history, task, sprints, getTask }) => {
           .flatten(1)
           .pluck("uuid")
           .sortByDesc("completedAt")
+          .toArray()
       )
       .toArray();
   }, [subtasks, forecastSprints]);
