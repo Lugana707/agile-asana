@@ -36,17 +36,19 @@ const ShowTask = ({ history, task, sprints, getTask }) => {
 
   const unrefinedSubtasks = useMemo(() => {
     if (!subtasks) {
-      return collect([]);
+      return [];
     }
 
-    return subtasks.whereNotIn(
-      "uuid",
-      forecastSprints
-        .pluck("tasks")
-        .flatten(1)
-        .pluck("uuid")
-        .sortByDesc("completedAt")
-    );
+    return subtasks
+      .whereNotIn(
+        "uuid",
+        forecastSprints
+          .pluck("tasks")
+          .flatten(1)
+          .pluck("uuid")
+          .sortByDesc("completedAt")
+      )
+      .toArray();
   }, [subtasks, forecastSprints]);
 
   if (!task) {
@@ -77,7 +79,7 @@ const ShowTask = ({ history, task, sprints, getTask }) => {
                   <Card.Text as="div">
                     <Table
                       className="mt-1 mb-1"
-                      data={unrefinedSubtasks.toArray()}
+                      data={unrefinedSubtasks}
                       row={TaskTableRow}
                       variant="dark"
                     />
