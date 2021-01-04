@@ -25,7 +25,6 @@ const ShowTask = ({ history, task, sprints, getTask }) => {
       .pluck("forecastSprint")
       .where()
       .unique("number")
-      .dump()
       .map(({ tasks, ...sprint }) => ({
         ...sprint,
         tasks: collect(tasks)
