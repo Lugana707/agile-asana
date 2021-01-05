@@ -41,6 +41,7 @@ const SprintCardAndTable = ({
 
   const isCurrentSprint = useMemo(() => state === "ACTIVE", [state]);
   const isCompletedSprint = useMemo(() => state === "COMPLETED", [state]);
+  const isForecastSprint = useMemo(() => state === "FORECAST", [state]);
 
   const stateVariant = useMemo(
     () =>
@@ -58,29 +59,46 @@ const SprintCardAndTable = ({
     return <div className="w-100">{children}</div>;
   };
 
+  const SprintNumber = () => {
+    const sprintNumber = number.toString();
+
+    if (sprintNumber.length < 4) {
+      return <h1>{number}</h1>;
+    }
+
+    const small = sprintNumber.slice(0, sprintNumber.length - 2);
+    const big = sprintNumber.slice(sprintNumber.length - 2);
+
+    return (
+      <>
+        <span>{small}</span>
+        <h1>{big}</h1>
+      </>
+    );
+  };
+
   return (
     <>
       {showSprintCard && (
-        <Col key={number} xs={12} md={3} className="pr-1">
+        <Col key={uuid} xs={12} md={3} className="pr-1">
           <Card bg={variants.card} text="light" className="text-left h-100">
             <Card.Body>
               <Card.Title>
                 <ConditionalSprintLink>
                   <>
-                    <h1 className={`text-${stateVariant} float-right`}>
-                      {number}
-                    </h1>
+                    <span className={`text-${stateVariant} float-right`}>
+                      <SprintNumber />
+                    </span>
                     <span className="text-light">
                       {title ||
                         (finishedOn && finishedOn.format("YYYY-MM-DD")) ||
                         (completedAt && completedAt.format("YYYY-MM-DD"))}
                     </span>
-                    {(isCurrentSprint || isCompletedSprint) && (
-                      <small className={`d-block text-${stateVariant} mt-1`}>
-                        {isCurrentSprint && "(In Progress)"}
-                        {isCompletedSprint && "Completed"}
-                      </small>
-                    )}
+                    <small className={`d-block text-${stateVariant} mt-1`}>
+                      {isCurrentSprint && "(In Progress)"}
+                      {isCompletedSprint && "Completed"}
+                      {isForecastSprint && "Forecast"}
+                    </small>
                     <div className="clearfix" />
                   </>
                 </ConditionalSprintLink>
