@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Col, Card } from "react-bootstrap";
+import { Row, Col, Card } from "react-bootstrap";
 import collect from "collect.js";
 import Table from "../../library/table";
 import TaskTableRow from "../../task/tableRow";
@@ -10,11 +10,19 @@ const SprintCardAndTable = ({
   sprint,
   variant,
   showSprintCard,
-  tags: displayTags
+  tags: displayTags,
+  ...props
 }) => {
   const { uuid, tasks, number, completedAt, finishedOn, state } = sprint;
 
-  const storyPoints = useMemo(() => collect(tasks).sum("storyPoints"), [tasks]);
+  const storyPoints = useMemo(
+    () =>
+      collect(tasks)
+        .pluck("storyPoints")
+        .where()
+        .sum(),
+    [tasks]
+  );
 
   const determineVariants = variant => {
     if (variant === "danger") {
@@ -59,70 +67,82 @@ const SprintCardAndTable = ({
     return <div className="w-100">{children}</div>;
   };
 
-  const SprintNumber = () => {
+  const SprintNumber = props => {
     const sprintNumber = number.toString();
 
-    if (sprintNumber.length < 4) {
-      return <h1>{number}</h1>;
+    if (number.props || sprintNumber.length < 4) {
+      return <h1 {...props}>{number}</h1>;
     }
 
     const small = sprintNumber.slice(0, sprintNumber.length - 2);
     const big = sprintNumber.slice(sprintNumber.length - 2);
 
     return (
-      <>
+      <span {...props}>
         <span>{small}</span>
         <h1>{big}</h1>
-      </>
+      </span>
     );
   };
 
-  return (
-    <>
-      {showSprintCard && (
-        <Col key={uuid} xs={12} md={3} className="pr-1">
-          <Card bg={variants.card} text="light" className="text-left h-100">
-            <Card.Body>
-              <Card.Title>
-                <ConditionalSprintLink>
-                  <>
-                    <span className={`text-${stateVariant} float-right`}>
-                      <SprintNumber />
-                    </span>
-                    <span className="text-light">
-                      {title ||
-                        (finishedOn && finishedOn.format("YYYY-MM-DD")) ||
-                        (completedAt && completedAt.format("YYYY-MM-DD"))}
-                    </span>
-                    <small className={`d-block text-${stateVariant} mt-1`}>
-                      {isCurrentSprint && "(In Progress)"}
-                      {isCompletedSprint && "Completed"}
-                      {isForecastSprint && "Forecast"}
-                    </small>
-                    <div className="clearfix" />
-                  </>
-                </ConditionalSprintLink>
-              </Card.Title>
-              <Card.Subtitle
-                className={`text-${variants.subtitle} text-nowrap`}
-              >
-                {!!storyPoints && <div>{storyPoints} story points</div>}
-                <div>{sprint.tasks.length} tasks</div>
-              </Card.Subtitle>
-            </Card.Body>
-          </Card>
-        </Col>
-      )}
-      <Col className="pl-1">
-        <Table
-          className="mt-1 mb-1"
-          data={filteredTasks}
-          row={TaskTableRow}
-          variant={variants.table}
-        />
-      </Col>
-    </>
+  const TaskTable = () => (
+    <Col className="pl-1">
+      <Table
+        className="mb-0"
+        data={filteredTasks}
+        row={TaskTableRow}
+        variant={variants.table}
+      />
+    </Col>
   );
+
+  if (showSprintCard) {
+    return (
+      <Card
+        bg={variants.card}
+        text="light"
+        className="text-left h-100 w-100 mb-2 border-0 overflow-hidden"
+      >
+        <Row>
+          {showSprintCard && (
+            <Col key={uuid} xs={12} md={3} className="pr-1">
+              <Card.Body>
+                <Card.Title>
+                  <ConditionalSprintLink>
+                    <>
+                      <SprintNumber
+                        className={`text-${stateVariant} float-right`}
+                      />
+                      <span className="text-light">
+                        {title ||
+                          (finishedOn && finishedOn.format("YYYY-MM-DD")) ||
+                          (completedAt && completedAt.format("YYYY-MM-DD"))}
+                      </span>
+                      <small className={`d-block text-${stateVariant} mt-1`}>
+                        {isCurrentSprint && "(In Progress)"}
+                        {isCompletedSprint && "Completed"}
+                        {isForecastSprint && "Forecast"}
+                      </small>
+                      <div className="clearfix" />
+                    </>
+                  </ConditionalSprintLink>
+                </Card.Title>
+                <Card.Subtitle
+                  className={`text-${variants.subtitle} text-nowrap`}
+                >
+                  {!!storyPoints && <div>{storyPoints} story points</div>}
+                  <div>{sprint.tasks.length} tasks</div>
+                </Card.Subtitle>
+              </Card.Body>
+            </Col>
+          )}
+          <TaskTable />
+        </Row>
+      </Card>
+    );
+  }
+
+  return <TaskTable />;
 };
 
 export default SprintCardAndTable;

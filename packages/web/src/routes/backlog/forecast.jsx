@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Jumbotron, Container, Row } from "react-bootstrap";
+import { Jumbotron, Container } from "react-bootstrap";
 import TasksAtRiskCardAndTable from "../../components/backlog/alerts/tasksAtRiskCardAndTable";
 import withCurrentSprint from "../../components/sprint/withCurrentSprint";
 import withForecastSprints from "../../components/backlog/withForecastSprints";
@@ -31,9 +31,12 @@ const Forecast = ({ forecastSprints, currentSprint }) => {
       <TasksAtRiskCardAndTable hideIfNoData />
       <Container fluid>
         {forecastSprints.map((sprint, index) => (
-          <Row key={index} className="pb-1">
-            <SprintCardAndTable sprint={sprint} showSprintCard />
-          </Row>
+          <SprintCardAndTable
+            key={index}
+            className="pb-1"
+            sprint={sprint}
+            showSprintCard
+          />
         ))}
       </Container>
     </>

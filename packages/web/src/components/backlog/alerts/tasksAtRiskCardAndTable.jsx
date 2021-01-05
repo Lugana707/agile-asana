@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Container, Row } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamation } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
@@ -56,14 +56,13 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData, tasks, forecastSprints }) => {
 
   return (
     <Container fluid>
-      <Row className="pb-1">
-        <SprintCardAndTable
-          sprint={sprint}
-          variant="danger"
-          title={<span className="text-light">Deadlines at Risk</span>}
-          showSprintCard
-        />
-      </Row>
+      <SprintCardAndTable
+        className="pb-1"
+        sprint={sprint}
+        variant="danger"
+        title={<span className="text-light">Deadlines at Risk</span>}
+        showSprintCard
+      />
     </Container>
   );
 };
