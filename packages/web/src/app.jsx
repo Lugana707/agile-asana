@@ -17,6 +17,7 @@ import SprintReportShow from "./routes/sprint/report/show";
 import Tasks from "./routes/task/index";
 import TaskShow from "./routes/task/show";
 import TaskForecastShow from "./routes/task/forecast/show";
+import ReportSprintEffortDistributionShow from "./routes/report/sprint/effortDistribution/show";
 import Settings from "./routes/settings";
 
 axios.interceptors.response.use(null, error => {
@@ -57,6 +58,11 @@ function App() {
               exact
               path="/task/:uuid/forecast"
               component={TaskForecastShow}
+            />
+            <Route
+              exact
+              path="/report/sprint/effort-distribution"
+              component={ReportSprintEffortDistributionShow}
             />
             <Route exact path="/settings" component={Settings} />
           </Switch>

@@ -44,11 +44,16 @@ const Header = ({ loading: globalLoading, configured }) => {
           <Nav className="mr-auto">
             <NavLink to="/sprint">Sprints</NavLink>
             <NavLink to="/task">Tasks</NavLink>
-            <NavDropdown title="Backlog" id="nav-dropdown">
+            <NavDropdown title="Backlog" id="nav-dropdown__backlog">
               <NavDropDownItem to="/backlog/dashboard">
                 Dashboard
               </NavDropDownItem>
               <NavDropDownItem to="/backlog/forecast">Forecast</NavDropDownItem>
+            </NavDropdown>
+            <NavDropdown title="Reporting" id="nav-dropdown__reporting">
+              <NavDropDownItem to="/report/sprint/effort-distribution">
+                Effort Distribution
+              </NavDropDownItem>
             </NavDropdown>
           </Nav>
           <Search inline hidden />
