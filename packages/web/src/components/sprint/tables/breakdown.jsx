@@ -90,15 +90,17 @@ const Report = ({ loading, sprints, numberOfTags = 3 }) => {
       <tr key={uuid}>
         <td className="text-left align-middle">
           <LinkContainer to={`/sprint/${uuid}`}>
-            <Button variant="link">{number}</Button>
+            <Button variant="link" className="pl-0">
+              {number}
+            </Button>
           </LinkContainer>
         </td>
         {popularTags.map(tag => (
-          <td key={tag} className="text-center align-middle">
+          <td key={tag} className="text-right align-middle">
             {tags[tag]}
           </td>
         ))}
-        <td className="text-center align-middle">
+        <td className="text-right align-middle">
           <span>{percentageComplete}%</span>
         </td>
       </tr>
@@ -111,7 +113,12 @@ const Report = ({ loading, sprints, numberOfTags = 3 }) => {
       loading={loading}
       data={data.all()}
       row={TableRow}
-      columns={["Sprint", ...popularTags.all(), "Commitments Met"]}
+      className="text-right"
+      columns={[
+        <div className="text-left">Sprint</div>,
+        ...popularTags.all(),
+        "Commitments Met"
+      ]}
     />
   );
 };
