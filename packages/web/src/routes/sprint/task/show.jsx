@@ -11,7 +11,7 @@ const Tasks = ({ sprint }) => {
   return (
     <>
       <SprintJumbotron sprint={sprint} title="Tasks" />
-      <TaskSearchableList sprint={sprint} />
+      <TaskSearchableList tasks={sprint.tasks} />
     </>
   );
 };

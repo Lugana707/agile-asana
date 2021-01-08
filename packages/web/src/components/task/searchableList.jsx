@@ -11,24 +11,37 @@ import {
   Button
 } from "react-bootstrap";
 import collect from "collect.js";
+import Table from "../library/table";
 import TagsFilter, { withTagsFilterFromURL } from "../library/tags/filter";
-import SprintCardAndTable from "../sprint/task/sprintCardAndTable";
+import TaskTableRow from "./tableRow";
 
-const SearchableList = ({ sprint, tagsFilter }) => {
+const SearchableList = ({ tasks, tagsFilter }) => {
   const [search, setSearch] = useState("");
 
   const searchedTasks = useMemo(() => {
     const regex = new RegExp(`${search}`, "mui");
-    return collect(sprint.tasks).when(!!search, collection =>
+    return collect(tasks).when(!!search, collection =>
       collection.filter(({ name, description, tags, assignee }) =>
         regex.test(
           name + description + tags.join("") + (assignee || { name: "" }).name
         )
       )
     );
-  }, [sprint.tasks, search]);
+  }, [tasks, search]);
 
-  if (!sprint) {
+  const filteredTasks = useMemo(
+    () =>
+      tagsFilter
+        ? searchedTasks.when(tagsFilter.isNotEmpty(), collection =>
+            collection.filter(task =>
+              tagsFilter.whereIn(true, task.tags).isNotEmpty()
+            )
+          )
+        : searchedTasks,
+    [searchedTasks, tagsFilter]
+  );
+
+  if (!tasks) {
     return <div />;
   }
 
@@ -58,10 +71,12 @@ const SearchableList = ({ sprint, tagsFilter }) => {
       </Container>
       <Container fluid>
         <Row>
-          <Col xs={12}>
-            <SprintCardAndTable
-              sprint={{ ...sprint, tasks: searchedTasks.toArray() }}
-              tags={tagsFilter}
+          <Col xs={12} className="pl-1">
+            <Table
+              className="mb-0"
+              data={filteredTasks.toArray()}
+              row={TaskTableRow}
+              variant={"dark"}
             />
           </Col>
         </Row>
