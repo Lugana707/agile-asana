@@ -25,14 +25,14 @@ const SprintCardAndTable = ({
   );
 
   const determineVariants = variant => {
-    switch(variant){
-      case "danger": 
+    switch (variant) {
+      case "danger":
         return { card: "danger", table: "dark", subtitle: "warning" };
-      case "warning": 
+      case "warning":
         return { card: "warning", table: "dark", subtitle: "dark" };
       default:
         return { card: "dark", subtitle: "muted" };
-      }
+    }
   };
   const variants = determineVariants(variant);
 
@@ -89,7 +89,7 @@ const SprintCardAndTable = ({
   };
 
   const TaskTable = () => (
-    <Col className="pl-1">
+    <Col className="pl-1 bg-dark">
       <Table
         className="mb-0"
         data={filteredTasks}
