@@ -108,7 +108,7 @@ const SprintCardAndTable = ({
       >
         <Row>
           {showSprintCard && (
-            <Col key={uuid} xs={12} md={3} className="pr-1">
+            <Col key={uuid} xs={12} md={4} lg={2} className="pr-1">
               <Card.Body>
                 <Card.Title>
                   <ConditionalSprintLink>
