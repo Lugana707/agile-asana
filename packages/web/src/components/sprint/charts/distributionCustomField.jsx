@@ -8,20 +8,19 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
 
   const { tasks, state: sprintState } = sprint || {};
 
+  const isForecastSprint = useMemo(() => sprintState === "FORECAST", [
+    sprintState
+  ]);
+
   const sprintStoryPoints = useMemo(
-    () =>
-      sprintState === "FORECAST"
-        ? sprint.storyPoints
-        : sprint.completedStoryPoints,
-    [sprintState, sprint.storyPoints, sprint.completedStoryPoints]
+    () => (isForecastSprint ? sprint.storyPoints : sprint.completedStoryPoints),
+    [isForecastSprint, sprint.storyPoints, sprint.completedStoryPoints]
   );
 
   const tasksCollection = useMemo(
     () =>
       collect(tasks)
-        .when(sprintState !== "FORECAST", collection =>
-          collection.where("completedAt")
-        )
+        .when(!isForecastSprint, collection => collection.where("completedAt"))
         .filter(obj => obj.storyPoints || obj.tags)
         .map(({ storyPoints, customFields }) => ({
           storyPoints: storyPoints || 0,
@@ -31,7 +30,7 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
           )
         }))
         .where("customField"),
-    [tasks, sprint, safeCustomFieldName]
+    [tasks, safeCustomFieldName, isForecastSprint]
   );
 
   const storyPointsByCustomField = useMemo(
