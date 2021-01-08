@@ -136,13 +136,16 @@ const loadTasks = async (dispatch, getState, { asanaProjects }) => {
       .unique("gid")
       .map(({ custom_fields, ...task }) => ({
         ...task,
-        ...custom_fields.reduce(
-          (accumulator, { name, number_value, enum_value }) => ({
-            [camelcase(name)]: number_value || enum_value,
-            ...accumulator
-          }),
-          {}
-        )
+        custom_fields: custom_fields.filter(obj => !!obj.enum_value),
+        ...custom_fields
+          .filter(obj => !!obj.number_value)
+          .reduce(
+            (accumulator, { name, number_value }) => ({
+              [camelcase(name)]: number_value,
+              ...accumulator
+            }),
+            {}
+          )
       }));
 
     const taskKeyMap = tasksCollection

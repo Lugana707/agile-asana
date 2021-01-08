@@ -47,7 +47,8 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         created_by,
         permalink_url,
         parent,
-        subtasks
+        subtasks,
+        custom_fields
       }) => ({
         uuid: gid,
         name,
@@ -71,6 +72,16 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         parent: parent && parent.gid,
         subtasks: collect(subtasks || [])
           .pluck("gid")
+          .toArray(),
+        customFields: collect(custom_fields || [])
+          .where("enum_value")
+          .map(({ name, enum_value }) => ({
+            name: name.toLowerCase(),
+            value: {
+              color: enum_value.color,
+              name: enum_value.name
+            }
+          }))
           .toArray()
       })
     )
