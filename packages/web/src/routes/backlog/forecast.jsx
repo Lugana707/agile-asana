@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { Jumbotron, Container } from "react-bootstrap";
 import TasksAtRiskCardAndTable from "../../components/backlog/alerts/tasksAtRiskCardAndTable";
+import TasksOverdueCardAndTable from "../../components/backlog/alerts/tasksOverdueCardAndTable";
 import withCurrentSprint from "../../components/sprint/withCurrentSprint";
 import withForecastSprints from "../../components/backlog/withForecastSprints";
 import SprintCardAndTable from "../../components/sprint/task/sprintCardAndTable";
@@ -29,6 +30,7 @@ const Forecast = ({ forecastSprints, currentSprint }) => {
         </Container>
       </Jumbotron>
       <TasksAtRiskCardAndTable hideIfNoData />
+      <TasksOverdueCardAndTable hideIfNoData />
       <Container fluid>
         {forecastSprints.map((sprint, index) => (
           <SprintCardAndTable

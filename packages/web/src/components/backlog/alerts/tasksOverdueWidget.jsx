@@ -5,13 +5,12 @@ import Widget from "../../library/widget";
 import withTasks from "../../task/withTasks";
 import withSprints from "../../sprint/withSprints";
 
-const TasksAtRiskCardAndTable = ({ sprints, tasks }) => {
+const TasksOverdueCardAndTable = ({ sprints, tasks }) => {
   const tasksDueSoonCount = useMemo(() => {
     const tasksDueSoon = collect(tasks)
       .where("dueOn")
       .where("completedAt", false)
-      .filter(({ dueOn }) => dueOn.isBefore(moment().add(14, "days")))
-      .filter(({ dueOn }) => dueOn.isAfter(moment()))
+      .filter(({ dueOn }) => dueOn.isBefore(moment()))
       .filter(({ gid, dueOn, projects }) => {
         const sprint = collect(sprints)
           .filter(sprint => collect(sprint.tasks).contains("gid", gid))
@@ -29,9 +28,9 @@ const TasksAtRiskCardAndTable = ({ sprints, tasks }) => {
   return (
     <Widget to="/backlog/forecast" bg="danger" text="dark">
       <h1 className="text-nowrap d-inline">{tasksDueSoonCount}</h1>
-      <small className="d-block">deadlines at risk</small>
+      <small className="d-block">deadlines overdue</small>
     </Widget>
   );
 };
 
-export default withSprints(withTasks(TasksAtRiskCardAndTable));
+export default withSprints(withTasks(TasksOverdueCardAndTable));
