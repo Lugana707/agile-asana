@@ -1,6 +1,6 @@
-![Web CD](https://github.com/Lugana707/agile-asana/workflows/Web%20CD/badge.svg)
-![CloudFormation CD](https://github.com/Lugana707/agile-asana/workflows/CloudFormation%20CD/badge.svg)
-![Master Updated](https://github.com/Lugana707/agile-asana/workflows/Master%20Updated/badge.svg)
+![Web CD](https://github.com/Lugana707/app.agilelytics.ca/workflows/Web%20CD/badge.svg)
+![CloudFormation CD](https://github.com/Lugana707/app.agilelytics.ca/workflows/CloudFormation%20CD/badge.svg)
+![Trunk Updated](https://github.com/Lugana707/app.agilelytics.ca/workflows/Trunk%20Updated/badge.svg)
 
 # Agilelytics (app.agilelytics.ca)
 
