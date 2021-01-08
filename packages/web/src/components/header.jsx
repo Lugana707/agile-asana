@@ -43,6 +43,7 @@ const Header = ({ loading: globalLoading, configured }) => {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
             <NavLink to="/sprint">Sprints</NavLink>
+            <NavLink to="/task">Tasks</NavLink>
             <NavDropdown title="Backlog" id="nav-dropdown">
               <NavDropDownItem to="/backlog/dashboard">
                 Dashboard

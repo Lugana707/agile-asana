@@ -14,6 +14,7 @@ import Sprints from "./routes/sprint/index";
 import SprintShow from "./routes/sprint/show";
 import SprintTaskShow from "./routes/sprint/task/show";
 import SprintReportShow from "./routes/sprint/report/show";
+import Tasks from "./routes/task/index";
 import TaskShow from "./routes/task/show";
 import TaskForecastShow from "./routes/task/forecast/show";
 import Settings from "./routes/settings";
@@ -50,6 +51,7 @@ function App() {
               path="/sprint/:uuid/report"
               component={SprintReportShow}
             />
+            <Route exact path="/task" component={Tasks} />
             <Route exact path="/task/:uuid" component={TaskShow} />
             <Route
               exact
