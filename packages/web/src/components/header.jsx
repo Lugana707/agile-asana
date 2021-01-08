@@ -35,7 +35,7 @@ const Header = ({ loading: globalLoading, configured }) => {
               src={Logo}
               height="30px"
               className="d-inline-block align-top rounded"
-              alt="Sam Albon"
+              alt="agilelytics"
             />
           </Navbar.Brand>
         </LinkContainer>
