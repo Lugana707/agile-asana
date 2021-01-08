@@ -45,7 +45,7 @@ const TasksOverdueCardAndTable = ({ hideIfNoData, tasks, forecastSprints }) => {
   const sprint = {
     uuid: false,
     number: (
-      <span className="text-warning">
+      <span className="text-dark">
         <FontAwesomeIcon icon={faSkull} />
       </span>
     ),

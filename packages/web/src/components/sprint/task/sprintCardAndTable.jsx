@@ -25,11 +25,14 @@ const SprintCardAndTable = ({
   );
 
   const determineVariants = variant => {
-    if (variant === "danger") {
-      return { card: "danger", table: "dark", subtitle: "warning" };
-    }
-
-    return { card: "dark", subtitle: "muted" };
+    switch(variant){
+      case "danger": 
+        return { card: "danger", table: "dark", subtitle: "warning" };
+      case "warning": 
+        return { card: "warning", table: "dark", subtitle: "dark" };
+      default:
+        return { card: "dark", subtitle: "muted" };
+      }
   };
   const variants = determineVariants(variant);
 

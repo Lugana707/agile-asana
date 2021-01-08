@@ -46,7 +46,7 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData, tasks, forecastSprints }) => {
   const sprint = {
     uuid: false,
     number: (
-      <span className="text-warning">
+      <span className="text-dark">
         <FontAwesomeIcon icon={faExclamation} />
       </span>
     ),
@@ -60,8 +60,8 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData, tasks, forecastSprints }) => {
       <SprintCardAndTable
         className="pb-1"
         sprint={sprint}
-        variant="danger"
-        title={<span className="text-light">Deadlines at Risk</span>}
+        variant="warning"
+        title={<span className="text-dark">Deadlines at Risk</span>}
         showSprintCard
       />
     </Container>

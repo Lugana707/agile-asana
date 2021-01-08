@@ -27,7 +27,7 @@ const TasksAtRiskCardAndTable = ({ sprints, tasks }) => {
   }, [tasks, sprints]);
 
   return (
-    <Widget to="/backlog/forecast" bg="danger" text="dark">
+    <Widget to="/backlog/forecast" bg="warning" text="dark">
       <h1 className="text-nowrap d-inline">{tasksDueSoonCount}</h1>
       <small className="d-block">deadlines at risk</small>
     </Widget>
