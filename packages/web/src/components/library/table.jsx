@@ -33,11 +33,13 @@ export default ({
       variant={variant}
       borderless
     >
-      {(columns || TableHeader) && (
+      {TableHeader && <TableHeader />}
+      {columns && (
         <thead>
           <tr>
-            {TableHeader && <TableHeader />}
-            {columns && columns.map((key, index) => <td key={index}>{key}</td>)}
+            {columns.map((key, index) => (
+              <th key={index}>{key}</th>
+            ))}
           </tr>
         </thead>
       )}
