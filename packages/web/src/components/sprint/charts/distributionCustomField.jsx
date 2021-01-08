@@ -1,19 +1,27 @@
 import React, { useMemo } from "react";
+import { Row, Col } from "react-bootstrap";
 import collect from "collect.js";
 import Table from "../../library/table";
 
 const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
-  const safeCustomFieldName = customFieldName || "client";
+  const safeCustomFieldName = customFieldName || "Client";
 
-  const { tasks, completedStoryPoints } = sprint;
+  const { tasks, state: sprintState } = sprint || {};
 
-  collect(sprint).dump();
+  const sprintStoryPoints = useMemo(
+    () =>
+      sprintState === "FORECAST"
+        ? sprint.storyPoints
+        : sprint.completedStoryPoints,
+    [sprintState, sprint.storyPoints, sprint.completedStoryPoints]
+  );
 
   const tasksCollection = useMemo(
     () =>
       collect(tasks)
-        .where("completedAt")
-        .dump()
+        .when(sprintState !== "FORECAST", collection =>
+          collection.where("completedAt")
+        )
         .filter(obj => obj.storyPoints || obj.tags)
         .map(({ storyPoints, customFields }) => ({
           storyPoints: storyPoints || 0,
@@ -23,7 +31,7 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
           )
         }))
         .where("customField"),
-    [tasks, safeCustomFieldName]
+    [tasks, sprint, safeCustomFieldName]
   );
 
   const storyPointsByCustomField = useMemo(
@@ -39,7 +47,7 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
         .map(row => ({
           ...row,
           percentage: Math.round(
-            (row.storyPoints / parseFloat(completedStoryPoints)) * 100
+            (row.storyPoints / parseFloat(sprintStoryPoints)) * 100
           )
         }))
         .pipe(collection =>
@@ -51,19 +59,27 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
                 percentage: collection.sum("percentage")
               })
         ),
-    [tasksCollection, completedStoryPoints]
+    [tasksCollection, sprintStoryPoints]
   );
 
   const TableRow = ({ data }) => {
     const { key, count, storyPoints, percentage } = data;
 
     return (
-      <tr key={key}>
-        <td className="text-left align-middle">{key}</td>
-        <td className="text-right align-middle">{count}</td>
-        <td className="text-right align-middle">{storyPoints}</td>
-        <td className="text-right align-middle">{percentage}%</td>
-      </tr>
+      <Row as="tr" key={key} className="m-0">
+        <Col as="td" xs={3} className="text-left align-middle">
+          {key}
+        </Col>
+        <Col as="td" xs={3} className="text-right align-middle">
+          {count}
+        </Col>
+        <Col as="td" xs={3} className="text-right align-middle">
+          {storyPoints}
+        </Col>
+        <Col as="td" xs={3} className="text-right align-middle">
+          {percentage}%
+        </Col>
+      </Row>
     );
   };
 
@@ -78,12 +94,24 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
       data={storyPointsByCustomField.toArray()}
       row={TableRow}
       className="text-right"
-      columns={[
-        <div className="text-left text-capitalize">{safeCustomFieldName}</div>,
-        "Tasks",
-        "Story Points",
-        "Percentage"
-      ]}
+      tableHeader={() => (
+        <thead>
+          <Row as="tr" className="m-0">
+            <Col as="th" xs={3} className="text-left text-capitalize">
+              {safeCustomFieldName}
+            </Col>
+            <Col as="th" xs={3}>
+              Tasks
+            </Col>
+            <Col as="th" xs={3}>
+              Story Points
+            </Col>
+            <Col as="th" xs={3}>
+              Percentage
+            </Col>
+          </Row>
+        </thead>
+      )}
     />
   );
 };

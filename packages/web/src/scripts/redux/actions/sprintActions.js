@@ -76,7 +76,7 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
         customFields: collect(custom_fields || [])
           .where("enum_value")
           .map(({ name: customFieldName, enum_value }) => ({
-            name: customFieldName.toLowerCase(),
+            name: customFieldName,
             value: {
               color: enum_value.color,
               name: enum_value.name
