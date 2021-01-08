@@ -1,21 +1,20 @@
 import React, { useMemo } from "react";
 import { Container } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamation } from "@fortawesome/free-solid-svg-icons";
+import { faSkull } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import collect from "collect.js";
 import SprintCardAndTable from "../../sprint/task/sprintCardAndTable";
 import withForecastSprints from "../withForecastSprints";
 import withTasks from "../../task/withTasks";
 
-const TasksAtRiskCardAndTable = ({ hideIfNoData, tasks, forecastSprints }) => {
+const TasksOverdueCardAndTable = ({ hideIfNoData, tasks, forecastSprints }) => {
   const tasksDueSoon = useMemo(
     () =>
       collect(tasks)
         .where("dueOn")
         .where("completedAt", false)
-        .filter(({ dueOn }) => dueOn.isBefore(moment().add(14, "days")))
-        .filter(({ dueOn }) => dueOn.isAfter(moment()))
+        .filter(({ dueOn }) => dueOn.isBefore(moment()))
         .filter(({ uuid, dueOn }) => {
           const sprint = forecastSprints
             .filter(({ tasks }) => collect(tasks).contains("uuid", uuid))
@@ -47,7 +46,7 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData, tasks, forecastSprints }) => {
     uuid: false,
     number: (
       <span className="text-warning">
-        <FontAwesomeIcon icon={faExclamation} />
+        <FontAwesomeIcon icon={faSkull} />
       </span>
     ),
     storyPoints,
@@ -61,11 +60,11 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData, tasks, forecastSprints }) => {
         className="pb-1"
         sprint={sprint}
         variant="danger"
-        title={<span className="text-light">Deadlines at Risk</span>}
+        title={<span className="text-light">Deadlines Missed</span>}
         showSprintCard
       />
     </Container>
   );
 };
 
-export default withTasks(withForecastSprints(TasksAtRiskCardAndTable));
+export default withTasks(withForecastSprints(TasksOverdueCardAndTable));

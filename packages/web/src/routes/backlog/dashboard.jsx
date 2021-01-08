@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { withRouter } from "react-router-dom";
 import { Jumbotron, Container, Row, Col } from "react-bootstrap";
 import TasksAtRiskWidget from "../../components/backlog/alerts/tasksAtRiskWidget";
+import TasksOverdueWidget from "../../components/backlog/alerts/tasksOverdueWidget";
 import BacklogProgressPerSprint from "../../components/backlog/charts/progressPerSprint";
 import SprintStoryPointsTrend from "../../components/sprint/charts/sprintStoryPointsTrend";
 import BacklogStoryPointsWidget from "../../components/backlog/widgets/storyPoints";
@@ -37,6 +38,7 @@ const Forecast = ({ sprints, history, taskWeightKey, tagsFilter }) => {
       <Container fluid>
         <Row className="pb-4">
           <TasksAtRiskWidget />
+          <TasksOverdueWidget />
           <BacklogStoryPointsWidget />
         </Row>
         <Row className="pb-4">
