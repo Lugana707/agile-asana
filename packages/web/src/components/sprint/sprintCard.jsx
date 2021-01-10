@@ -72,7 +72,14 @@ const SprintCard = ({ title, sprint, variant, children, ...props }) => {
       className="text-left h-100 w-100 mb-2 border-0 overflow-hidden"
     >
       <Row>
-        <Col key={uuid} xs={12} md={4} lg={2} className="pr-1">
+        <Col
+          key={uuid}
+          xs={12}
+          md={4}
+          lg={3}
+          className="pr-1"
+          style={{ maxWidth: "285px" }}
+        >
           <Card.Body>
             <Card.Title>
               <ConditionalSprintLink>

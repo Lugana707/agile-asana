@@ -62,7 +62,7 @@ const Show = ({ sprints, forecastSprints }) => {
           </div>
         </Container>
       </Jumbotron>
-      <Container fluid>
+      <Container>
         {customField &&
           allSprints.map(sprint => (
             <SprintCard key={sprint.number} sprint={sprint}>
