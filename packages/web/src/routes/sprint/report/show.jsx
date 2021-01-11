@@ -4,7 +4,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import collect from "collect.js";
 import SprintBreakdown from "../../../components/sprint/tables/breakdown";
 import SprintJumbotron from "../../../components/sprint/jumbotron";
-import SprintDistributionCustomField from "../../../components/sprint/tables/sprintDistributionCustomField";
+import SprintDistributionCustomField from "../../../components/sprint/tables/distributionCustomField";
 import withSprints from "../../../components/sprint/withSprints";
 import withSprintFromURL from "../../../components/sprint/withSprintFromURL";
 

@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Badge } from "react-bootstrap";
 import collect from "collect.js";
+import Color from "color";
 import Table from "../../library/table";
 
 const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
@@ -40,7 +41,8 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
         .map((value, key) => ({
           key,
           count: value.count(),
-          storyPoints: value.sum("storyPoints")
+          storyPoints: value.sum("storyPoints"),
+          colour: value.first().customField.value.color
         }))
         .pipe(collection => collect(collection.toArray()))
         .map(row => ({
@@ -62,12 +64,21 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
   );
 
   const TableRow = ({ data }) => {
-    const { key, count, storyPoints, percentage } = data;
+    const { key, count, storyPoints, percentage, colour } = data;
+
+    const backgroundColor = (colour || "white").split("-")[0];
 
     return (
       <Row as="tr" key={key} className="m-0">
         <Col as="td" xs={3} className="text-left align-middle">
-          {key}
+          <Badge
+            className={
+              Color(backgroundColor).isLight() ? "text-dark" : "text-light"
+            }
+            style={{ backgroundColor }}
+          >
+            {key}
+          </Badge>
         </Col>
         <Col as="td" xs={3} className="text-right align-middle">
           {count}

@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { Jumbotron, Container, Dropdown } from "react-bootstrap";
-import SprintChartDistributionCustomField from "../../../../components/sprint/charts/distributionCustomField";
+import SprintTableDistributionCustomField from "../../../../components/sprint/tables/distributionCustomField";
 import SprintCard from "../../../../components/sprint/sprintCard";
 import withSprints from "../../../../components/sprint/withSprints";
 import withForecastSprints from "../../../../components/backlog/withForecastSprints";
@@ -52,26 +52,9 @@ const Show = ({ sprints, forecastSprints }) => {
           <h1>Reporting / Sprint / Effort Distribution</h1>
           <hr />
           <div>
-            <span>Showing reports based on </span>
-            {customField && customFields.isNotEmpty() && (
-              <Dropdown className="btn-link text-dark pr-2 text-capitalize d-inline">
-                <Dropdown.Toggle as="span">{customField.name}</Dropdown.Toggle>
-                <Dropdown.Menu>
-                  {customFields.map(obj => (
-                    <Dropdown.Item
-                      key={obj.name}
-                      onSelect={() => setCustomField(obj)}
-                      disabled={obj.name === customField.name}
-                    >
-                      {obj.name}
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
-            )}
-            <span>from </span>
-            <Dropdown className="btn-link text-dark pr-2 text-capitalize d-inline">
-              <Dropdown.Toggle as="span">
+            <span>Showing reports from </span>
+            <Dropdown className="text-dark pr-2 text-capitalize d-inline">
+              <Dropdown.Toggle>
                 <span>Sprint </span>
                 <span>
                   {minSprint
@@ -86,9 +69,9 @@ const Show = ({ sprints, forecastSprints }) => {
                   )
                   .map(obj => (
                     <Dropdown.Item
-                      key={obj.uuid}
+                      key={obj.number}
                       onSelect={() => setMinSprint(obj)}
-                      disabled={obj.uuid === minSprint.uuid}
+                      disabled={obj.number === minSprint.number}
                     >
                       Sprint {obj.number}
                     </Dropdown.Item>
@@ -96,8 +79,8 @@ const Show = ({ sprints, forecastSprints }) => {
               </Dropdown.Menu>
             </Dropdown>
             <span>to </span>
-            <Dropdown className="btn-link text-dark pr-2 text-capitalize d-inline">
-              <Dropdown.Toggle as="span">
+            <Dropdown className="text-dark pr-2 text-capitalize d-inline">
+              <Dropdown.Toggle>
                 <span>Sprint </span>
                 <span>
                   {maxSprint
@@ -112,13 +95,30 @@ const Show = ({ sprints, forecastSprints }) => {
                   )
                   .map(obj => (
                     <Dropdown.Item
-                      key={obj.uuid}
+                      key={obj.number}
                       onSelect={() => setMaxSprint(obj)}
-                      disabled={obj.uuid === maxSprint.uuid}
+                      disabled={obj.number === maxSprint.number}
                     >
                       Sprint {obj.number}
                     </Dropdown.Item>
                   ))}
+              </Dropdown.Menu>
+            </Dropdown>
+            <span>based on </span>
+            <Dropdown className="text-dark pr-2 text-capitalize d-inline">
+              <Dropdown.Toggle variant="primary">
+                {customField && customField.name}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {customFields.map(obj => (
+                  <Dropdown.Item
+                    key={obj.name}
+                    onSelect={() => setCustomField(obj)}
+                    disabled={customField && obj.name === customField.name}
+                  >
+                    {obj.name}
+                  </Dropdown.Item>
+                ))}
               </Dropdown.Menu>
             </Dropdown>
           </div>
@@ -128,7 +128,7 @@ const Show = ({ sprints, forecastSprints }) => {
         {customField &&
           filteredSprints.sortByDesc("number").map(sprint => (
             <SprintCard key={sprint.number} sprint={sprint}>
-              <SprintChartDistributionCustomField
+              <SprintTableDistributionCustomField
                 sprint={sprint}
                 customFieldName={customField.name}
               />
