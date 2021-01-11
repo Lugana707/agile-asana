@@ -6,13 +6,23 @@ import withSprints from "../../../../components/sprint/withSprints";
 import withForecastSprints from "../../../../components/backlog/withForecastSprints";
 
 const Show = ({ sprints, forecastSprints }) => {
+  const [minSprint, setMinSprint] = useState(false);
+  const [maxSprint, setMaxSprint] = useState(false);
+
   const allSprints = useMemo(
-    () =>
-      sprints
-        .merge(forecastSprints.toArray())
-        .sortByDesc("number")
-        .dump(),
+    () => sprints.merge(forecastSprints.toArray()).sortByDesc("number"),
     [sprints, forecastSprints]
+  );
+  const filteredSprints = useMemo(
+    () =>
+      allSprints
+        .when(minSprint !== false, collection =>
+          collection.where("number", ">=", minSprint.number)
+        )
+        .when(maxSprint !== false, collection =>
+          collection.where("number", "<=", maxSprint.number)
+        ),
+    [allSprints, minSprint, maxSprint]
   );
 
   const customFields = useMemo(
@@ -59,12 +69,64 @@ const Show = ({ sprints, forecastSprints }) => {
                 </Dropdown.Menu>
               </Dropdown>
             )}
+            <span>from </span>
+            <Dropdown className="btn-link text-dark pr-2 text-capitalize d-inline">
+              <Dropdown.Toggle as="span">
+                <span>Sprint </span>
+                <span>
+                  {minSprint
+                    ? minSprint.number
+                    : allSprints.pluck("number").min()}
+                </span>
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {allSprints
+                  .when(maxSprint !== false, collection =>
+                    collection.where("number", "<", maxSprint.number)
+                  )
+                  .map(obj => (
+                    <Dropdown.Item
+                      key={obj.uuid}
+                      onSelect={() => setMinSprint(obj)}
+                      disabled={obj.uuid === minSprint.uuid}
+                    >
+                      Sprint {obj.number}
+                    </Dropdown.Item>
+                  ))}
+              </Dropdown.Menu>
+            </Dropdown>
+            <span>to </span>
+            <Dropdown className="btn-link text-dark pr-2 text-capitalize d-inline">
+              <Dropdown.Toggle as="span">
+                <span>Sprint </span>
+                <span>
+                  {maxSprint
+                    ? maxSprint.number
+                    : allSprints.pluck("number").max()}
+                </span>
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {allSprints
+                  .when(minSprint !== false, collection =>
+                    collection.where("number", ">", minSprint.number)
+                  )
+                  .map(obj => (
+                    <Dropdown.Item
+                      key={obj.uuid}
+                      onSelect={() => setMaxSprint(obj)}
+                      disabled={obj.uuid === maxSprint.uuid}
+                    >
+                      Sprint {obj.number}
+                    </Dropdown.Item>
+                  ))}
+              </Dropdown.Menu>
+            </Dropdown>
           </div>
         </Container>
       </Jumbotron>
       <Container>
         {customField &&
-          allSprints.map(sprint => (
+          filteredSprints.sortByDesc("number").map(sprint => (
             <SprintCard key={sprint.number} sprint={sprint}>
               <SprintChartDistributionCustomField
                 sprint={sprint}
