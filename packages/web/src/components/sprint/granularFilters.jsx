@@ -1,14 +1,44 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useEffect, useCallback } from "react";
+import { withRouter } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 
-const GranularFilters = ({
-  sprints,
-  customField,
-  setCustomField,
-  setFilteredSprints
-}) => {
-  const [minSprint, setMinSprint] = useState(false);
-  const [maxSprint, setMaxSprint] = useState(false);
+const getMinSprintNumberFromURL = location =>
+  new URLSearchParams(location.search).get("minSprint");
+const getMaxSprintNumberFromURL = location =>
+  new URLSearchParams(location.search).get("maxSprint");
+
+const getCustomFieldNameFromURL = location =>
+  new URLSearchParams(location.search).get("customField");
+
+const GranularFilters = ({ history, sprints }) => {
+  const { location } = history;
+
+  const sortedSprints = useMemo(() => sprints.sortByDesc("number"), [sprints]);
+
+  const minSprintNumber = useMemo(
+    () => getMinSprintNumberFromURL(location) || sprints.pluck("number").min(),
+    [location, sprints]
+  );
+  const setMinSprint = ({ number }) => setURLParam("minSprint", number);
+
+  const maxSprintNumber = useMemo(
+    () => getMaxSprintNumberFromURL(location) || sprints.pluck("number").max(),
+    [location, sprints]
+  );
+  const setMaxSprint = ({ number }) => setURLParam("maxSprint", number);
+
+  const setURLParam = useCallback(
+    (key, value) => {
+      const { pathname, search } = location;
+
+      const urlSearchParams = new URLSearchParams(search);
+
+      urlSearchParams.set(key, value);
+
+      history.push(`${pathname}?${urlSearchParams.toString()}`);
+    },
+    [location, history]
+  );
 
   const customFields = useMemo(
     () =>
@@ -22,23 +52,19 @@ const GranularFilters = ({
     [sprints]
   );
 
-  useEffect(() => {
-    if (!customField && customFields.isNotEmpty()) {
-      setCustomField(customFields.first());
-    }
-  }, [customField, customFields, setCustomField]);
+  const customFieldName = useMemo(() => getCustomFieldNameFromURL(location), [
+    location
+  ]);
+  const setCustomField = useCallback(
+    ({ name }) => setURLParam("customField", name),
+    [setURLParam]
+  );
 
   useEffect(() => {
-    setFilteredSprints(
-      sprints
-        .when(minSprint !== false, collection =>
-          collection.where("number", ">=", minSprint.number)
-        )
-        .when(maxSprint !== false, collection =>
-          collection.where("number", "<=", maxSprint.number)
-        )
-    );
-  }, [setFilteredSprints, sprints, minSprint, maxSprint]);
+    if (!customFieldName && customFields.isNotEmpty()) {
+      setCustomField(customFields.first());
+    }
+  }, [customFieldName, customFields, setCustomField]);
 
   return (
     <>
@@ -46,20 +72,18 @@ const GranularFilters = ({
       <Dropdown className="text-dark pr-2 text-capitalize d-inline">
         <Dropdown.Toggle>
           <span>Sprint </span>
-          <span>
-            {minSprint ? minSprint.number : sprints.pluck("number").min()}
-          </span>
+          <span>{minSprintNumber}</span>
         </Dropdown.Toggle>
         <Dropdown.Menu>
-          {sprints
-            .when(maxSprint !== false, collection =>
-              collection.where("number", "<", maxSprint.number)
+          {sortedSprints
+            .when(maxSprintNumber, collection =>
+              collection.where("number", "<", maxSprintNumber)
             )
             .map(obj => (
               <Dropdown.Item
                 key={obj.number}
                 onSelect={() => setMinSprint(obj)}
-                disabled={obj.number === minSprint.number}
+                disabled={obj.number.toString() === minSprintNumber}
               >
                 Sprint {obj.number}
               </Dropdown.Item>
@@ -70,20 +94,18 @@ const GranularFilters = ({
       <Dropdown className="text-dark pr-2 text-capitalize d-inline">
         <Dropdown.Toggle>
           <span>Sprint </span>
-          <span>
-            {maxSprint ? maxSprint.number : sprints.pluck("number").max()}
-          </span>
+          <span>{maxSprintNumber}</span>
         </Dropdown.Toggle>
         <Dropdown.Menu>
-          {sprints
-            .when(minSprint !== false, collection =>
-              collection.where("number", ">", minSprint.number)
+          {sortedSprints
+            .when(minSprintNumber, collection =>
+              collection.where("number", ">", minSprintNumber)
             )
             .map(obj => (
               <Dropdown.Item
                 key={obj.number}
                 onSelect={() => setMaxSprint(obj)}
-                disabled={obj.number === maxSprint.number}
+                disabled={obj.number.toString() === maxSprintNumber}
               >
                 Sprint {obj.number}
               </Dropdown.Item>
@@ -92,15 +114,13 @@ const GranularFilters = ({
       </Dropdown>
       <span>based on </span>
       <Dropdown className="text-dark pr-2 text-capitalize d-inline">
-        <Dropdown.Toggle variant="primary">
-          {customField && customField.name}
-        </Dropdown.Toggle>
+        <Dropdown.Toggle variant="primary">{customFieldName}</Dropdown.Toggle>
         <Dropdown.Menu>
           {customFields.map(obj => (
             <Dropdown.Item
               key={obj.name}
               onSelect={() => setCustomField(obj)}
-              disabled={customField && obj.name === customField.name}
+              disabled={obj.name === customFieldName}
             >
               {obj.name}
             </Dropdown.Item>
@@ -111,4 +131,32 @@ const GranularFilters = ({
   );
 };
 
-export default GranularFilters;
+export const withSprintFiltersFromURL = WrappedComponent =>
+  withRouter(props => {
+    const { location } = props;
+
+    const minSprintNumberFromURL = useMemo(
+      () => getMinSprintNumberFromURL(location),
+      [location]
+    );
+    const maxSprintNumberFromURL = useMemo(
+      () => getMaxSprintNumberFromURL(location),
+      [location]
+    );
+
+    const customFieldNameFromUrl = useMemo(
+      () => getCustomFieldNameFromURL(location),
+      [location]
+    );
+
+    return (
+      <WrappedComponent
+        {...props}
+        minSprintNumber={minSprintNumberFromURL}
+        maxSprintNumber={maxSprintNumberFromURL}
+        customFieldName={customFieldNameFromUrl}
+      />
+    );
+  });
+
+export default withRouter(GranularFilters);

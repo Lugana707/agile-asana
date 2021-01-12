@@ -1,19 +1,36 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Jumbotron, Container } from "react-bootstrap";
 import SprintTableDistributionCustomField from "../../../../components/sprint/tables/distributionCustomField";
 import SprintCard from "../../../../components/sprint/sprintCard";
 import withSprints from "../../../../components/sprint/withSprints";
 import withForecastSprints from "../../../../components/backlog/withForecastSprints";
-import SprintGranularFilters from "../../../../components/sprint/granularFilters";
+import SprintGranularFilters, {
+  withSprintFiltersFromURL
+} from "../../../../components/sprint/granularFilters";
 
-const Show = ({ sprints, forecastSprints }) => {
-  const [customField, setCustomField] = useState(false);
+const Show = ({
+  sprints,
+  forecastSprints,
+  minSprintNumber,
+  maxSprintNumber,
+  customFieldName
+}) => {
+  const allSprints = useMemo(() => sprints.merge(forecastSprints.toArray()), [
+    sprints,
+    forecastSprints
+  ]);
 
-  const [filteredSprints, setFilteredSprints] = useState(false);
-
-  const allSprints = useMemo(
-    () => sprints.merge(forecastSprints.toArray()).sortByDesc("number"),
-    [sprints, forecastSprints]
+  const filteredSprints = useMemo(
+    () =>
+      allSprints
+        .when(minSprintNumber, collection =>
+          collection.where("number", ">=", minSprintNumber)
+        )
+        .when(maxSprintNumber, collection =>
+          collection.where("number", "<=", maxSprintNumber)
+        )
+        .sortByDesc("number"),
+    [allSprints, minSprintNumber, maxSprintNumber]
   );
 
   return (
@@ -23,22 +40,17 @@ const Show = ({ sprints, forecastSprints }) => {
           <h1>Reporting / Sprint / Effort Distribution</h1>
           <hr />
           <div>
-            <SprintGranularFilters
-              sprints={allSprints}
-              customField={customField}
-              setCustomField={setCustomField}
-              setFilteredSprints={setFilteredSprints}
-            />
+            <SprintGranularFilters sprints={allSprints} />
           </div>
         </Container>
       </Jumbotron>
       <Container>
-        {customField &&
+        {customFieldName &&
           filteredSprints.sortByDesc("number").map(sprint => (
             <SprintCard key={sprint.number} sprint={sprint}>
               <SprintTableDistributionCustomField
                 sprint={sprint}
-                customFieldName={customField.name}
+                customFieldName={customFieldName}
               />
             </SprintCard>
           ))}
@@ -47,4 +59,4 @@ const Show = ({ sprints, forecastSprints }) => {
   );
 };
 
-export default withForecastSprints(withSprints(Show));
+export default withForecastSprints(withSprints(withSprintFiltersFromURL(Show)));
