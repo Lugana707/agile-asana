@@ -155,7 +155,7 @@ const BacklogProgressPerSprint = ({
         .merge(
           getBacklogCountPerSprintByTag("runningTotal")
             .map(({ tag, count }) => ({
-              label: tag,
+              label: `Total (${tag})`,
               key: `${tag}-running-total`,
               type: "line",
               data: count.toArray(),
@@ -169,7 +169,7 @@ const BacklogProgressPerSprint = ({
           getBacklogCountPerSprintByTag("createdAt")
             .map(({ tag, count }) => ({
               ...getBarChartConfig(tag),
-              label: tag,
+              label: `Created (${tag})`,
               key: `${tag}-created-at`,
               data: count.toArray(),
               color: getAsanaTagColor(tag)
@@ -183,7 +183,7 @@ const BacklogProgressPerSprint = ({
           getBacklogCountPerSprintByTag("completedAt")
             .map(({ tag, count }) => ({
               ...getBarChartConfig(tag),
-              label: tag,
+              label: `Completed (${tag})`,
               key: `${tag}-completed-at`,
               data: count.toArray(),
               color: getAsanaTagColor(tag)
@@ -237,7 +237,14 @@ const BacklogProgressPerSprint = ({
       maintainAspectRatio: false,
       tooltips: {
         mode: "index",
-        intersect: false
+        intersect: false,
+        callbacks: {
+          title: (tooltipItem, data) => `Sprint ${tooltipItem[0].label}`,
+          label: (tooltipItem, data) =>
+            `${data.datasets[tooltipItem.datasetIndex].label}: ${Math.abs(
+              tooltipItem.yLabel
+            )}`
+        }
       },
       scales: {
         xAxes: [
