@@ -7,11 +7,19 @@ import Table from "../../library/table";
 const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
   const safeCustomFieldName = customFieldName || "Client";
 
-  const { tasks, state: sprintState } = sprint || {};
+  const { state: sprintState } = sprint || {};
 
+  const isCompletedSprint = useMemo(() => sprintState === "COMPLETED", [
+    sprintState
+  ]);
   const isForecastSprint = useMemo(() => sprintState === "FORECAST", [
     sprintState
   ]);
+
+  const tasks = useMemo(
+    () => (isCompletedSprint ? sprint.completedTasks : sprint.tasks),
+    [isCompletedSprint, sprint.tasks, sprint.completedTasks]
+  );
 
   const sprintStoryPoints = useMemo(
     () => (isForecastSprint ? sprint.storyPoints : sprint.completedStoryPoints),
