@@ -17,7 +17,7 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
   ]);
 
   const tasks = useMemo(
-    () => (isCompletedSprint ? sprint.completedTasks : sprint.tasks),
+    () => collect(isCompletedSprint ? sprint.completedTasks : sprint.tasks),
     [isCompletedSprint, sprint.tasks, sprint.completedTasks]
   );
 
@@ -53,32 +53,45 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
           colour: value.first().customField.value.color
         }))
         .pipe(collection => collect(collection.toArray()))
-        .map(row => ({
+        .map(({ count, storyPoints, ...row }) => ({
           ...row,
-          percentage: Math.round(
-            (row.storyPoints / parseFloat(sprintStoryPoints)) * 100
-          )
+          count: {
+            sum: count,
+            percentage: Math.round((count / parseFloat(tasks.count())) * 100)
+          },
+          storyPoints: {
+            sum: storyPoints,
+            percentage: Math.round(
+              (storyPoints / parseFloat(sprintStoryPoints)) * 100
+            )
+          }
         }))
         .pipe(collection =>
           collection.count() < 2
             ? collection
             : collection.push({
                 key: "",
-                storyPoints: collection.sum("storyPoints"),
-                percentage: collection.sum("percentage")
+                count: {
+                  sum: collection.pluck("count.sum").sum(),
+                  percentage: collection.pluck("count.percentage").sum()
+                },
+                storyPoints: {
+                  sum: collection.pluck("storyPoints.sum").sum(),
+                  percentage: collection.pluck("storyPoints.percentage").sum()
+                }
               })
         ),
-    [tasksCollection, sprintStoryPoints]
+    [tasksCollection, sprintStoryPoints, tasks]
   );
 
   const TableRow = ({ data }) => {
-    const { key, count, storyPoints, percentage, colour } = data;
+    const { key, count, storyPoints, colour } = data;
 
     const backgroundColor = (colour || "white").split("-")[0];
 
     return (
       <Row as="tr" key={key} className="m-0">
-        <Col as="td" xs={3} className="text-left align-middle">
+        <Col as="td" xs={4} className="text-left align-middle">
           <Badge
             className={
               Color(backgroundColor).isLight() ? "text-dark" : "text-light"
@@ -88,14 +101,17 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
             {key}
           </Badge>
         </Col>
-        <Col as="td" xs={3} className="text-right align-middle">
-          {count}
+        <Col as="td" xs={2} className="text-right align-middle">
+          {count.sum}
         </Col>
-        <Col as="td" xs={3} className="text-right align-middle">
-          {storyPoints}
+        <Col as="td" xs={2} className="text-right align-middle">
+          {count.percentage}%
         </Col>
-        <Col as="td" xs={3} className="text-right align-middle">
-          {percentage}%
+        <Col as="td" xs={2} className="text-right align-middle">
+          {storyPoints.sum}
+        </Col>
+        <Col as="td" xs={2} className="text-right align-middle">
+          {storyPoints.percentage}%
         </Col>
       </Row>
     );
@@ -115,17 +131,20 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
       tableHeader={() => (
         <thead>
           <Row as="tr" className="m-0">
-            <Col as="th" xs={3} className="text-left text-capitalize">
+            <Col as="th" xs={4} className="text-left text-capitalize">
               {safeCustomFieldName}
             </Col>
-            <Col as="th" xs={3}>
+            <Col as="th" xs={2}>
               Tasks
             </Col>
-            <Col as="th" xs={3}>
+            <Col as="th" xs={2}>
+              %
+            </Col>
+            <Col as="th" xs={2}>
               Story Points
             </Col>
-            <Col as="th" xs={3}>
-              Percentage
+            <Col as="th" xs={2}>
+              %
             </Col>
           </Row>
         </thead>
