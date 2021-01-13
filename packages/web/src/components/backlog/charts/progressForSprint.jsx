@@ -127,8 +127,16 @@ const BacklogProgressPerSprint = ({ sprint, backlogTasks }) => {
 
   const options = useMemo(
     () => ({
-      maintainAspectRatio: false,
       responsive: true,
+      maintainAspectRatio: false,
+      tooltips: {
+        callbacks: {
+          label: (tooltipItem, data) =>
+            `${data.datasets[tooltipItem.datasetIndex].label}: ${Math.abs(
+              tooltipItem.yLabel
+            )}`
+        }
+      },
       scales: {
         xAxes: [
           {
