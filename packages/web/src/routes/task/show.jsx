@@ -21,7 +21,7 @@ const ShowTask = ({ task, sprints }) => {
     tags,
     completedAt,
     mostRecentSprint,
-    sprints: taskSprintUUIDs,
+    sprints: taskSprintUUIDs = [],
     createdBy,
     assignee,
     parent,
