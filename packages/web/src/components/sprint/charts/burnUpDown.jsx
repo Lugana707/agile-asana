@@ -103,8 +103,18 @@ const StoryPointsPerDay = ({ sprint }) => {
 
   const options = useMemo(
     () => ({
-      maintainAspectRatio: false,
       responsive: true,
+      maintainAspectRatio: false,
+      tooltips: {
+        callbacks: {
+          title: (tooltipItem, data) =>
+            `${moment()
+              .weekday(
+                parseInt(tooltipItem[0].label, 10) + sprintStartOn.weekday()
+              )
+              .format("dddd")}`
+        }
+      },
       scales: {
         xAxes: [
           {
