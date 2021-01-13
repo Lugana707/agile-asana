@@ -196,9 +196,14 @@ const processSprints = () => {
 
       const asanaProjectsCollection = collect(asanaProjects);
 
-      const matchBacklog = MATCH_PROJECT_BACKLOG;
-      const asanaProjectBacklog = asanaProjectsCollection
-        .filter(({ name }) => matchBacklog.test(name))
+      const asanaProjectBacklogs = asanaProjectsCollection.filter(({ name }) =>
+        MATCH_PROJECT_BACKLOG.test(name)
+      );
+      const asanaProjectBacklogRefined = asanaProjectBacklogs
+        .filter(({ name }) => /\WRefined/iu.test(name))
+        .first();
+      const asanaProjectBacklogUnrefined = asanaProjectBacklogs
+        .filter(({ name }) => /\WUnrefined/iu.test(name))
         .first();
 
       const tags = processTasksForUniqueTags({ asanaTasks });
@@ -219,7 +224,7 @@ const processSprints = () => {
         tasksCollection
       });
       const sprints = asanaProjectsCollection
-        .filter(({ name }) => !matchBacklog.test(name))
+        .filter(({ name }) => !MATCH_PROJECT_BACKLOG.test(name))
         .map(asanaProject =>
           processProjectIntoSprint({
             asanaProject,
@@ -243,7 +248,9 @@ const processSprints = () => {
         tasksCollection
       });
       const backlogTasks = tasksCollection.filter(task =>
-        collect(task.sprints).contains(asanaProjectBacklog.gid)
+        collect(task.sprints)
+          .whereIn(true, asanaProjectBacklogs.pluck("gid"))
+          .isNotEmpty()
       );
       const refinedBacklogTasks = backlogTasks
         .where("completedAt", false)
@@ -255,18 +262,17 @@ const processSprints = () => {
                 .contains(uuid)
             )
         )
-        .filter(task =>
-          collect(task.sections).contains(
-            value => value.toLowerCase() === "refined"
-          )
+        .filter(
+          task => !!task.sprints.includes(asanaProjectBacklogRefined.gid)
         );
       const unrefinedBacklogTasks = tasksCollection
         .where("completedAt", false)
-        .filter(task =>
-          collect(task.sections).contains(
-            value => value.toLowerCase() === "unrefined"
-          )
+        .filter(
+          task => !!task.sprints.includes(asanaProjectBacklogUnrefined.gid)
         );
+
+      collect(asanaProjectBacklogRefined).dump();
+      collect(asanaProjectBacklogUnrefined).dump();
 
       dispatch({
         type: SUCCESS_LOADING_BACKLOG_TASKS,

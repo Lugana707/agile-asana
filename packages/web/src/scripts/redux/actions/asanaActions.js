@@ -15,7 +15,7 @@ const SUCCESS_LOADING_ASANA_TASKS = "SUCCESS_LOADING_ASANATASKS";
 
 const MATCH_PROJECT_KANBAN = /^(Sprint|Dev|Product) (Kanban )?(Week )?(\d+)/iu;
 const MATCH_PROJECT_KANBAN_WITHOUT_NUMBER = /^(Sprint|Dev|Product) (Kanban )?(Week )?/iu;
-const MATCH_PROJECT_BACKLOG = /^Product Backlog$/u;
+const MATCH_PROJECT_BACKLOG = /^Product Backlog/iu;
 
 const getAsanaApiClient = ({ settings }) => {
   const { asanaApiKey } = settings;
@@ -50,12 +50,12 @@ const getProjects = async archived => {
     validateStatus: status => status === 200
   });
 
-  const matchKanban = MATCH_PROJECT_KANBAN;
-  const matchBacklog = MATCH_PROJECT_BACKLOG;
-
   const projects = data.data
     .map(project => ({ ...project, archived }))
-    .filter(({ name }) => matchKanban.test(name) || matchBacklog.test(name));
+    .filter(
+      ({ name }) =>
+        MATCH_PROJECT_KANBAN.test(name) || MATCH_PROJECT_BACKLOG.test(name)
+    );
   Logger.debug("Gotten project list from API!", { projects });
 
   return projects;
