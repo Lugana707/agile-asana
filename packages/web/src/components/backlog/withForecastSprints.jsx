@@ -20,11 +20,8 @@ export default WrappedComponent =>
       } = currentSprint;
 
       return collect(refinedBacklogTasks)
-        .dump()
         .where("mostRecentSprint", "!==", currentSprint.uuid)
-        .dump()
         .where("storyPoints")
-        .dump()
         .reduce((accumulator, currentValue) => {
           const storyPoints = currentValue.storyPoints || 0;
           let sprint = accumulator.firstWhere(

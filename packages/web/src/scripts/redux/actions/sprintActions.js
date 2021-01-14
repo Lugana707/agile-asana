@@ -249,7 +249,7 @@ const processSprints = () => {
       });
       const backlogTasks = tasksCollection.filter(task =>
         collect(task.sprints)
-          .whereIn(true, asanaProjectBacklogs.pluck("gid"))
+          .whereIn(true, asanaProjectBacklogs.pluck("gid").toArray())
           .isNotEmpty()
       );
       const refinedBacklogTasks = backlogTasks
@@ -274,9 +274,6 @@ const processSprints = () => {
             asanaProjectBacklogUnrefined &&
             !!task.sprints.includes(asanaProjectBacklogUnrefined.gid)
         );
-
-      collect(asanaProjectBacklogRefined).dump();
-      collect(asanaProjectBacklogUnrefined).dump();
 
       dispatch({
         type: SUCCESS_LOADING_BACKLOG_TASKS,
