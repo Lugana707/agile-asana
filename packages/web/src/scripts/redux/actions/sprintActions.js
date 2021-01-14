@@ -263,12 +263,16 @@ const processSprints = () => {
             )
         )
         .filter(
-          task => !!task.sprints.includes(asanaProjectBacklogRefined.gid)
+          task =>
+            asanaProjectBacklogRefined &&
+            !!task.sprints.includes(asanaProjectBacklogRefined.gid)
         );
       const unrefinedBacklogTasks = tasksCollection
         .where("completedAt", false)
         .filter(
-          task => !!task.sprints.includes(asanaProjectBacklogUnrefined.gid)
+          task =>
+            asanaProjectBacklogUnrefined &&
+            !!task.sprints.includes(asanaProjectBacklogUnrefined.gid)
         );
 
       collect(asanaProjectBacklogRefined).dump();
