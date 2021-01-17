@@ -10,7 +10,8 @@ import loggerMiddleware from "./middleware/logger";
 import globalReducer from "./reducers/globalReducer";
 import crudReducer from "./reducers/crudReducer";
 import objectReducer from "./reducers/objectReducer";
-import AsanaTaskReucer from "./reducers/asana/taskReducer";
+import AsanaProjectReducer from "./reducers/asana/projectReducer";
+import AsanaTaskReducer from "./reducers/asana/taskReducer";
 import TaskReducer from "./reducers/taskReducer";
 import SprintReducer from "./reducers/sprintReducer";
 import BacklogReducer from "./reducers/backlogReducer";
@@ -41,8 +42,8 @@ const initialiseReduxStore = preloadedState => {
 
   const rootReducer = combineReducers({
     globalReducer,
-    asanaProjects: crudReducer("asanaProjects", "gid"),
-    asanaTasks: AsanaTaskReucer(),
+    asanaProjects: AsanaProjectReducer(),
+    asanaTasks: AsanaTaskReducer(),
     backlogTasks: crudReducer("backlogTasks", "uuid"),
     refinedBacklogTasks: crudReducer("refinedBacklogTasks", "uuid"),
     unrefinedBacklogTasks: crudReducer("unrefinedBacklogTasks", "uuid"),

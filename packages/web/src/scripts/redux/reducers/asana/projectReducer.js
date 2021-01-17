@@ -13,19 +13,16 @@ export default () => {
 
   const parseTask = task => collect(task).all();
 
-  const onTasksSetHandler = ({ state, tasks }) => {
-    const tasksCollection = collect(tasks).map(({ assignee, ...task }) => ({
-      assignee: assignee && (assignee.gid || assignee),
-      ...task
-    }));
+  const onProjectsSetHandler = ({ state, projects }) => {
+    const projectsCollection = collect(projects);
 
-    const ids = tasksCollection
+    const ids = projectsCollection
       .pluck(uuidKey)
       .unique()
       .sort()
       .toArray();
 
-    const data = tasksCollection
+    const data = projectsCollection
       .unique(uuidKey)
       .map(parseTask)
       .sortBy(uuidKey)
@@ -43,21 +40,21 @@ export default () => {
   return (state = initialState, { type, loading, data, payload } = {}) => {
     switch (type) {
       case REHYDRATE:
-        if (!payload || !payload.asanaTasks) {
+        if (!payload || !payload.asanaProjects) {
           return state;
         }
 
-        const { asanaTasks } = payload;
+        const { asanaProjects } = payload;
 
-        return onTasksSetHandler({
+        return onProjectsSetHandler({
           state,
           loading: false,
-          tasks: asanaTasks.data || asanaTasks.asanaTasks
+          projects: asanaProjects.data || asanaProjects.asanaProjects
         });
-      case "SET_LOADING_ASANATASKS":
+      case "SET_LOADING_ASANAPROJECTS":
         return { ...state, loading };
-      case "SUCCESS_LOADING_ASANATASKS":
-        return onTasksSetHandler({ state, tasks: data });
+      case "SUCCESS_LOADING_ASANAPROJECTS":
+        return onProjectsSetHandler({ state, projects: data });
       case "LOGOUT":
         return initialState;
       default:

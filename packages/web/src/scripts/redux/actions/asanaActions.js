@@ -104,14 +104,11 @@ const loadProjects = async dispatch => {
 
     const asanaProjects = collect(
       await Promise.all([await getProjects(true), await getProjects(false)])
-    ).flatten(1);
+    )
+      .flatten(1)
+      .toArray();
 
-    dispatch({
-      type: SUCCESS_LOADING_ASANA_PROJECTS,
-      loading: false,
-      value: { asanaProjects },
-      timestamp: new Date()
-    });
+    dispatch({ type: SUCCESS_LOADING_ASANA_PROJECTS, data: asanaProjects });
 
     return asanaProjects;
   } catch (error) {
@@ -233,7 +230,7 @@ const reloadProject = ({ projects }) => {
 
 const reloadRecentProjects = () => {
   return (dispatch, getState) => {
-    const { asanaProjects } = getState().asanaProjects;
+    const { data: asanaProjects } = getState().asanaProjects;
 
     dispatch(
       reloadProject({
