@@ -35,7 +35,7 @@ const Show = ({
 
   return (
     <>
-      <Jumbotron fluid>
+      <Jumbotron fluid className="sticky-top">
         <Container>
           <h1>Reporting / Sprint / Effort Distribution</h1>
           <hr />
