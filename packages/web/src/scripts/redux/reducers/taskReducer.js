@@ -7,8 +7,10 @@ export default () => {
     data: []
   };
 
+  const uuidKey = "uuid";
+
   const onTasksAddedHandler = ({ state, tasks }) => {
-    const taskIdsCollection = collect(tasks).pluck("uuid");
+    const taskIdsCollection = collect(tasks).pluck(uuidKey);
 
     const ids = taskIdsCollection
       .merge(state.ids)
@@ -17,10 +19,10 @@ export default () => {
       .toArray();
 
     const data = collect(state.data)
-      .whereNotIn("uuid", taskIdsCollection.toArray())
+      .whereNotIn(uuidKey, taskIdsCollection.toArray())
       .merge(tasks)
-      .unique("uuid")
-      .sortBy("uuid")
+      .unique(uuidKey)
+      .sortBy(uuidKey)
       .toArray();
 
     return { ...state, ids, data };
