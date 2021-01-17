@@ -11,6 +11,18 @@ $body-bg: #282c34;
   }
 }
 
+.sticky-top {
+  background-color: $body-bg;
+}
+
+.header {
+  z-index: $zindex-sticky + 1;
+
+  .dropdown-menu{
+    z-index: $zindex-sticky + 1;
+  }
+}
+
 .jumbotron {
   @extend .text-left, .pt-4, .pb-4, .bg-secondary, .text-dark;
 }
