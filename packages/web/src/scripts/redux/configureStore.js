@@ -10,6 +10,7 @@ import loggerMiddleware from "./middleware/logger";
 import globalReducer from "./reducers/globalReducer";
 import crudReducer from "./reducers/crudReducer";
 import objectReducer from "./reducers/objectReducer";
+import AsanaTaskReucer from "./reducers/asana/taskReducer";
 import TaskReducer from "./reducers/taskReducer";
 import SprintReducer from "./reducers/sprintReducer";
 import BacklogReducer from "./reducers/backlogReducer";
@@ -21,7 +22,7 @@ const persistConfig = {
   transforms: [
     createTransform(
       ({ loading, ...inboundState }) => inboundState,
-      ({ loading, ...outboundState }) => outboundState
+      ({ loading, ids, ...outboundState }) => outboundState
     )
   ]
 };
@@ -40,7 +41,7 @@ const initialiseReduxStore = preloadedState => {
   const rootReducer = combineReducers({
     globalReducer,
     asanaProjects: crudReducer("asanaProjects", "gid"),
-    asanaTasks: crudReducer("asanaTasks", "gid"),
+    asanaTasks: AsanaTaskReucer(),
     backlogTasks: crudReducer("backlogTasks", "uuid"),
     refinedBacklogTasks: crudReducer("refinedBacklogTasks", "uuid"),
     unrefinedBacklogTasks: crudReducer("unrefinedBacklogTasks", "uuid"),
