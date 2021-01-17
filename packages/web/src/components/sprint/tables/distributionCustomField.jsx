@@ -21,8 +21,6 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
     [isCompletedSprint, sprint.tasks, sprint.tasksCompleted]
   );
 
-  tasks.when(sprint.number === 51, collection => collection.dump());
-
   const sprintStoryPoints = useMemo(
     () => (isForecastSprint ? sprint.storyPoints : sprint.completedStoryPoints),
     [isForecastSprint, sprint.storyPoints, sprint.completedStoryPoints]
