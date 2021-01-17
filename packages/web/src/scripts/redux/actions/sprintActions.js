@@ -188,7 +188,7 @@ const processSprints = () => {
       const state = getState();
 
       const { asanaProjects } = state.asanaProjects;
-      const { asanaTasks } = state.asanaTasks;
+      const { data: asanaTasks } = state.asanaTasks;
 
       if (!asanaProjects || !asanaTasks) {
         return false;

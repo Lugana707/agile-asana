@@ -12,7 +12,7 @@ import withConfigured from "./withConfigured";
 const DataIntegrity = ({ history, configured, loading }) => {
   const { user, asanaApiKey } = useSelector(state => state.settings);
   const { asanaProjects } = useSelector(state => state.asanaProjects);
-  const { asanaTasks } = useSelector(state => state.asanaTasks);
+  const { data: asanaTasks } = useSelector(state => state.asanaTasks);
 
   const dispatch = useDispatch();
 

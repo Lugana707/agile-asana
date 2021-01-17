@@ -6,7 +6,6 @@ export default () => {
     loading: false,
     ids: [],
     data: [],
-    asanaTasks: [],
     timestamp: false
   };
 
@@ -19,8 +18,6 @@ export default () => {
       assignee: assignee && (assignee.gid || assignee),
       ...task
     }));
-
-    tasksCollection.where("assignee").dump();
 
     const ids = tasksCollection
       .pluck(uuidKey)
@@ -39,27 +36,28 @@ export default () => {
       loading: false,
       ids,
       data,
-      asanaTasks: data,
       timestamp: new Date()
     };
   };
 
-  return (state = initialState, { type, loading, value, payload } = {}) => {
+  return (state = initialState, { type, loading, data, payload } = {}) => {
     switch (type) {
       case REHYDRATE:
         if (!payload || !payload.asanaTasks) {
           return state;
         }
 
+        const { asanaTasks } = payload;
+
         return onTasksSetHandler({
           state,
           loading,
-          tasks: payload.asanaTasks.asanaTasks || payload.asanaTasks.data
+          tasks: asanaTasks.data || asanaTasks.asanaTasks
         });
       case "SET_LOADING_ASANATASKS":
         return { ...state, loading };
       case "SUCCESS_LOADING_ASANATASKS":
-        return onTasksSetHandler({ state, loading, tasks: value.asanaTasks });
+        return onTasksSetHandler({ state, tasks: data });
       case "LOGOUT":
         return initialState;
       default:

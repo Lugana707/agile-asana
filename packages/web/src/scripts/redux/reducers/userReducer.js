@@ -32,7 +32,7 @@ export default () => {
     return { ...state, ids, data };
   };
 
-  return (state = initialState, { type, tasks, value, payload } = {}) => {
+  return (state = initialState, { type, data, payload } = {}) => {
     switch (type) {
       case REHYDRATE:
         if (!payload || !payload.users) {
@@ -47,7 +47,7 @@ export default () => {
             .toArray()
         };
       case "SUCCESS_LOADING_ASANATASKS":
-        return onTasksSetHandler({ state, tasks: value.asanaTasks });
+        return onTasksSetHandler({ state, tasks: data });
       case "LOGOUT":
         return initialState;
       default:

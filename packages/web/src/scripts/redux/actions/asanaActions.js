@@ -127,7 +127,7 @@ const loadTasks = async (dispatch, getState, { asanaProjects }) => {
 
     const { client } = getAsanaApiClient(getState());
 
-    const { asanaTasks } = getState().asanaTasks;
+    const { data: asanaTasks } = getState().asanaTasks;
 
     const tasksCollection = collect(
       await Promise.all(asanaProjects.map(project => getTasks(client, project)))
@@ -160,8 +160,7 @@ const loadTasks = async (dispatch, getState, { asanaProjects }) => {
     dispatch({
       type: SUCCESS_LOADING_ASANA_TASKS,
       loading: false,
-      value: { asanaTasks: merged.toArray() },
-      timestamp: new Date()
+      data: merged.toArray()
     });
 
     return asanaTasks;
