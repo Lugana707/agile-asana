@@ -87,20 +87,22 @@ const SearchableList = ({ tasks, tagsFilter }) => {
             </InputGroup>
           </Form>
           {filteredTasksChunks.count() > 1 && (
-            <Col xs={12} className="pt-2">
-              <ButtonGroup>
-                {filteredTasksChunks.map((chunk, index) => (
-                  <Button
-                    key={index}
-                    variant="primary"
-                    onClick={() => setPage(index)}
-                    disabled={index === currentPageNumber}
-                  >
-                    {index + 1}
-                  </Button>
-                ))}
-              </ButtonGroup>
-            </Col>
+            <Row className="pt-2">
+              <Col xs={12}>
+                <ButtonGroup size="sm">
+                  {filteredTasksChunks.map((chunk, index) => (
+                    <Button
+                      key={index}
+                      variant="primary"
+                      onClick={() => setPage(index)}
+                      disabled={index === currentPageNumber}
+                    >
+                      {index + 1}
+                    </Button>
+                  ))}
+                </ButtonGroup>
+              </Col>
+            </Row>
           )}
           <div className="clearfix clear-fix" />
         </Container>
