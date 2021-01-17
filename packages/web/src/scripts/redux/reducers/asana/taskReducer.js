@@ -1,3 +1,5 @@
+/* jshint maxcomplexity:8 */
+
 import { REHYDRATE } from "redux-persist";
 import collect from "collect.js";
 
