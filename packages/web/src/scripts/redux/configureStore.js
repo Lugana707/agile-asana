@@ -14,11 +14,12 @@ import AsanaTaskReucer from "./reducers/asana/taskReducer";
 import TaskReducer from "./reducers/taskReducer";
 import SprintReducer from "./reducers/sprintReducer";
 import BacklogReducer from "./reducers/backlogReducer";
+import UserReducer from "./reducers/userReducer";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["asanaProjects", "asanaTasks", "settings"],
+  whitelist: ["asanaProjects", "asanaTasks", "users", "settings"],
   transforms: [
     createTransform(
       ({ loading, ...inboundState }) => inboundState,
@@ -49,6 +50,7 @@ const initialiseReduxStore = preloadedState => {
     tasks: TaskReducer(),
     sprints: SprintReducer(),
     backlogs: BacklogReducer(),
+    users: UserReducer(),
     settings: objectReducer("settings")
   });
 

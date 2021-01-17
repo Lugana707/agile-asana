@@ -15,7 +15,12 @@ export default () => {
   const parseTask = task => collect(task).all();
 
   const onTasksSetHandler = ({ state, tasks }) => {
-    const tasksCollection = collect(tasks);
+    const tasksCollection = collect(tasks).map(({ assignee, ...task }) => ({
+      assignee: assignee && (assignee.gid || assignee),
+      ...task
+    }));
+
+    tasksCollection.where("assignee").dump();
 
     const ids = tasksCollection
       .pluck(uuidKey)

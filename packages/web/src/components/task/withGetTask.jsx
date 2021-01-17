@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback } from "react";
-import { useSelector } from "react-redux";
 import collect from "collect.js";
+import withTasks from "./withTasks";
 import withSprints from "../sprint/withSprints";
 import withCurrentSprint from "../sprint/withCurrentSprint";
 import withForecastSprints from "../backlog/withForecastSprints";
@@ -8,37 +8,39 @@ import withForecastSprints from "../backlog/withForecastSprints";
 export default WrappedComponent =>
   withForecastSprints(
     withCurrentSprint(
-      withSprints(({ sprints, forecastSprints, currentSprint, ...props }) => {
-        const { data: tasks } = useSelector(state => state.tasks);
+      withSprints(
+        withTasks(
+          ({ sprints, forecastSprints, currentSprint, tasks, ...props }) => {
+            const tasksCollection = useMemo(() => collect(tasks), [tasks]);
 
-        const tasksCollection = useMemo(() => collect(tasks), [tasks]);
+            const getTask = useCallback(
+              uuid => {
+                const task = tasksCollection.firstWhere("uuid", uuid);
 
-        const getTask = useCallback(
-          uuid => {
-            const task = tasksCollection.firstWhere("uuid", uuid);
+                if (!task) {
+                  return false;
+                }
 
-            if (!task) {
-              return false;
-            }
+                const { parent, subtasks } = task;
 
-            const { parent, subtasks } = task;
+                return {
+                  ...task,
+                  parent: parent && tasksCollection.firstWhere("uuid", parent),
+                  subtasks: tasksCollection.whereIn("uuid", subtasks),
+                  forecastSprint: forecastSprints
+                    .merge(sprints.merge([currentSprint]).toArray())
+                    .filter(
+                      sprint => !!collect(sprint.tasks).firstWhere("uuid", uuid)
+                    )
+                    .first()
+                };
+              },
+              [tasksCollection, forecastSprints, sprints, currentSprint]
+            );
 
-            return {
-              ...task,
-              parent: parent && tasksCollection.firstWhere("uuid", parent),
-              subtasks: tasksCollection.whereIn("uuid", subtasks),
-              forecastSprint: forecastSprints
-                .merge(sprints.merge([currentSprint]).toArray())
-                .filter(
-                  sprint => !!collect(sprint.tasks).firstWhere("uuid", uuid)
-                )
-                .first()
-            };
-          },
-          [tasksCollection, forecastSprints, sprints, currentSprint]
-        );
-
-        return <WrappedComponent {...props} getTask={getTask} />;
-      })
+            return <WrappedComponent {...props} getTask={getTask} />;
+          }
+        )
+      )
     )
   );
