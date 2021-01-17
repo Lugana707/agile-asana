@@ -228,7 +228,7 @@ const reloadProject = ({ projects }) => {
   };
 };
 
-const reloadRecentProjects = () => {
+const reloadRecentProjects = ({ numberOfProjects = 2 } = {}) => {
   return (dispatch, getState) => {
     const { data: asanaProjects } = getState().asanaProjects;
 
@@ -236,12 +236,14 @@ const reloadRecentProjects = () => {
       reloadProject({
         projects: collect(asanaProjects)
           .sortByDesc(({ created_at }) => moment(created_at).unix())
-          .take(2)
+          .filter(({ name }) => !MATCH_PROJECT_BACKLOG.test(name))
+          .take(numberOfProjects)
           .merge(
             collect(asanaProjects)
               .filter(({ name }) => MATCH_PROJECT_BACKLOG.test(name))
-              .all()
+              .toArray()
           )
+          .unique("gid")
           .where()
       })
     );
