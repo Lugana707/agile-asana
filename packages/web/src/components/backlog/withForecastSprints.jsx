@@ -43,6 +43,7 @@ export default WrappedComponent =>
         .map(({ tasks, storyPoints }, index) => ({
           uuid: false,
           number: index + 1 + currentSprint.number,
+          isForecastSprint: true,
           state: "FORECAST",
           storyPoints,
           startOn: moment(currentSprint.startOn).add(index + 1, "weeks"),

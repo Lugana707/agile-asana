@@ -15,18 +15,6 @@ const GranularFilters = ({ history, sprints }) => {
 
   const sortedSprints = useMemo(() => sprints.sortByDesc("number"), [sprints]);
 
-  const minSprintNumber = useMemo(
-    () => getMinSprintNumberFromURL(location) || sprints.pluck("number").min(),
-    [location, sprints]
-  );
-  const setMinSprint = ({ number }) => setURLParam("minSprint", number);
-
-  const maxSprintNumber = useMemo(
-    () => getMaxSprintNumberFromURL(location) || sprints.pluck("number").max(),
-    [location, sprints]
-  );
-  const setMaxSprint = ({ number }) => setURLParam("maxSprint", number);
-
   const setURLParam = useCallback(
     (key, value) => {
       const { pathname, search } = location;
@@ -38,6 +26,38 @@ const GranularFilters = ({ history, sprints }) => {
       history.push(`${pathname}?${urlSearchParams.toString()}`);
     },
     [location, history]
+  );
+
+  const minSprintNumber = useMemo(
+    () =>
+      getMinSprintNumberFromURL(location) ||
+      sprints
+        .where("isCompletedSprint")
+        .pluck("number")
+        .sortDesc()
+        .take(2)
+        .last(),
+    [location, sprints]
+  );
+  const setMinSprint = useCallback(
+    ({ number }) => setURLParam("minSprint", number),
+    [setURLParam]
+  );
+
+  const maxSprintNumber = useMemo(
+    () =>
+      getMaxSprintNumberFromURL(location) ||
+      sprints
+        .where("isForecastSprint")
+        .pluck("number")
+        .sort()
+        .take(2)
+        .last(),
+    [location, sprints]
+  );
+  const setMaxSprint = useCallback(
+    ({ number }) => setURLParam("maxSprint", number),
+    [setURLParam]
   );
 
   const customFields = useMemo(
@@ -65,6 +85,24 @@ const GranularFilters = ({ history, sprints }) => {
       setCustomField(customFields.first());
     }
   }, [customFieldName, customFields, setCustomField]);
+
+  useEffect(() => {
+    if (
+      minSprintNumber &&
+      getMinSprintNumberFromURL(location) !== minSprintNumber
+    ) {
+      setMinSprint({ number: minSprintNumber });
+    }
+  }, [location, setMinSprint, minSprintNumber]);
+
+  useEffect(() => {
+    if (
+      maxSprintNumber &&
+      getMaxSprintNumberFromURL(location) !== maxSprintNumber
+    ) {
+      setMaxSprint({ number: maxSprintNumber });
+    }
+  }, [location, setMaxSprint, maxSprintNumber]);
 
   return (
     <>

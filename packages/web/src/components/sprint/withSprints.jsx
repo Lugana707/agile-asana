@@ -14,6 +14,8 @@ export default WrappedComponent => props => {
         .sortByDesc("number")
         .map((sprint, index, array) => ({
           ...sprint,
+          isCurrentSprint: sprint.state === "ACTIVE",
+          isCompletedSprint: sprint.state === "COMPLETED",
           averageCompletedStoryPoints: Math.round(
             collect(array)
               .where("number", "<=", sprint.number)
