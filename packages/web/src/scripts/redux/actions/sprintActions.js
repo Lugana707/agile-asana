@@ -4,6 +4,7 @@ import collect from "collect.js";
 import { getColourFromTag } from "../../helpers/asanaColours";
 import {
   MATCH_PROJECT_BACKLOG,
+  MATCH_PROJECT_KANBAN,
   MATCH_PROJECT_KANBAN_WITHOUT_NUMBER
 } from "./asanaActions";
 
@@ -90,6 +91,7 @@ const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
       const mostRecentSprint = collect(task.sprints)
         .map(uuid => asanaProjectsCollection.firstWhere("gid", uuid))
         .filter()
+        .filter(({ name }) => MATCH_PROJECT_KANBAN.test(name))
         .sortBy(({ created_at }) => moment(created_at).unix())
         .pluck("gid")
         .last();
