@@ -10,8 +10,6 @@ import {
 
 const SUCCESS_LOADING_TAGS = "SUCCESS_LOADING_TAGS";
 
-const SUCCESS_LOADING_BACKLOG_TASKS = "SUCCESS_LOADING_BACKLOGTASKS";
-
 const processTasksForUniqueTags = ({ asanaTasks }) => {
   return collect(asanaTasks)
     .pluck("tags")
@@ -181,7 +179,7 @@ const processProjectIntoSprint = ({
 const processSprints = () => {
   return async (dispatch, getState) => {
     try {
-      dispatch({ type: "BEGIN_LOADING_SPRINTS" });
+      dispatch({ type: "BEGIN_LOADING_SPRINTS", loading: true });
 
       const state = getState();
 
@@ -193,10 +191,6 @@ const processSprints = () => {
       }
 
       const asanaProjectsCollection = collect(asanaProjects);
-
-      const asanaProjectBacklogs = asanaProjectsCollection.filter(({ name }) =>
-        MATCH_PROJECT_BACKLOG.test(name)
-      );
 
       const tags = processTasksForUniqueTags({ asanaTasks });
       dispatch({
@@ -211,7 +205,7 @@ const processSprints = () => {
         asanaProjectsCollection
       });
 
-      Logger.info("Processing projects into historic sprints...", {
+      Logger.info("Processing projects into sprints...", {
         asanaProjectsCollection,
         tasksCollection
       });
@@ -233,30 +227,12 @@ const processSprints = () => {
             loading: true
           });
           return sprint;
-        })
-        .toArray();
-
-      Logger.info("Processing tasks into backlog...", { tasksCollection });
-      const backlogTasks = tasksCollection.filter(task =>
-        collect(task.sprints)
-          .whereIn(true, asanaProjectBacklogs.pluck("gid").toArray())
-          .isNotEmpty()
-      );
-
-      dispatch({
-        type: SUCCESS_LOADING_BACKLOG_TASKS,
-        value: {
-          backlogTasks: backlogTasks.toArray()
-        },
-        backlog: undefined,
-        tasks: backlogTasks.toArray(),
-        loading: false
-      });
+        });
     } catch (error) {
       Logger.error(error);
+    } finally {
+      dispatch({ type: "FINISH_LOADING_SPRINTS", loading: false });
     }
-
-    dispatch({ type: "FINISH_LOADING_SPRINTS" });
   };
 };
 

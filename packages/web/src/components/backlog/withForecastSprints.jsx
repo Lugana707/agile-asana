@@ -36,6 +36,7 @@ export default WrappedComponent =>
 
         return refinedBacklogTasks
           .map(uuid => taskCollection.firstWhere("uuid", uuid))
+          .where()
           .where("completedAt", false)
           .where("mostRecentSprint", "!==", currentSprint.uuid)
           .where("storyPoints")
