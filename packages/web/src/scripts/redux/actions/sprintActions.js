@@ -11,8 +11,6 @@ import {
 const SUCCESS_LOADING_TAGS = "SUCCESS_LOADING_TAGS";
 
 const SUCCESS_LOADING_BACKLOG_TASKS = "SUCCESS_LOADING_BACKLOGTASKS";
-const SUCCESS_LOADING_UNREFINED_BACKLOG_TASKS =
-  "SUCCESS_LOADING_UNREFINEDBACKLOGTASKS";
 
 const processTasksForUniqueTags = ({ asanaTasks }) => {
   return collect(asanaTasks)
@@ -199,9 +197,6 @@ const processSprints = () => {
       const asanaProjectBacklogs = asanaProjectsCollection.filter(({ name }) =>
         MATCH_PROJECT_BACKLOG.test(name)
       );
-      const asanaProjectBacklogUnrefined = asanaProjectBacklogs
-        .filter(({ name }) => /\WUnrefined/iu.test(name))
-        .first();
 
       const tags = processTasksForUniqueTags({ asanaTasks });
       dispatch({
@@ -241,17 +236,12 @@ const processSprints = () => {
         })
         .toArray();
 
-      Logger.info("Processing tasks into refined and unrefined...", {
-        tasksCollection
-      });
+      Logger.info("Processing tasks into backlog...", { tasksCollection });
       const backlogTasks = tasksCollection.filter(task =>
         collect(task.sprints)
           .whereIn(true, asanaProjectBacklogs.pluck("gid").toArray())
           .isNotEmpty()
       );
-      const unrefinedBacklogTasks = collect(
-        asanaProjectBacklogUnrefined || []
-      ).where("completedAt", false);
 
       dispatch({
         type: SUCCESS_LOADING_BACKLOG_TASKS,
@@ -260,11 +250,6 @@ const processSprints = () => {
         },
         backlog: undefined,
         tasks: backlogTasks.toArray(),
-        loading: false
-      });
-      dispatch({
-        type: SUCCESS_LOADING_UNREFINED_BACKLOG_TASKS,
-        value: { unrefinedBacklogTasks: unrefinedBacklogTasks.toArray() },
         loading: false
       });
     } catch (error) {

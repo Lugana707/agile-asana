@@ -45,7 +45,6 @@ const initialiseReduxStore = preloadedState => {
     asanaProjects: AsanaProjectReducer(),
     asanaTasks: AsanaTaskReducer(),
     backlogTasks: crudReducer("backlogTasks", "uuid"),
-    unrefinedBacklogTasks: crudReducer("unrefinedBacklogTasks", "uuid"),
     tags: crudReducer("tags", "uuid"),
     tasks: TaskReducer(),
     sprints: SprintReducer(),
