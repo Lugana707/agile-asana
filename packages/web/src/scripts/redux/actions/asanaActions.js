@@ -108,6 +108,17 @@ const getProjects = async dispatch => {
       ])
     )
       .flatten(1)
+      .pipe(collection =>
+        collection
+          .filter(({ name }) => MATCH_PROJECT_KANBAN.test(name))
+          .sortDesc(({ created_at }) => moment(created_at).unix())
+          .take(20)
+          .merge(
+            collection
+              .filter(({ name }) => !MATCH_PROJECT_KANBAN.test(name))
+              .toArray()
+          )
+      )
       .toArray();
 
     return asanaProjects;
@@ -165,6 +176,14 @@ const loadProjectTasks = async (dispatch, getState, { asanaProjects }) => {
     dispatch({
       type: SUCCESS_LOADING_ASANA_PROJECTS,
       data: asanaProjectTasksCollection
+        .map((projectTasks, index) => {
+          if (!asanaProjects[index]) {
+            collect(projectTasks).dump();
+            collect({ index }).dump();
+          }
+
+          return projectTasks;
+        })
         .map((projectTasks, index) => ({
           tasks: collect(projectTasks)
             .pluck("gid")
