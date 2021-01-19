@@ -4,7 +4,7 @@ import withTasks from "../../components/task/withTasks";
 
 const Sprints = ({ tasks }) => {
   const sortedTasks = useMemo(
-    () => tasks.sortByDesc(({ createdAt }) => createdAt.unix()),
+    () => tasks.sortByDesc(({ createdAt }) => createdAt && createdAt.unix()),
     [tasks]
   );
 
