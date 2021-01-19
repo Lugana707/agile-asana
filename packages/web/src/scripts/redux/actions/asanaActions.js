@@ -170,7 +170,7 @@ const loadProjectTasks = async (dispatch, getState, { asanaProjects }) => {
           tasks: collect(projectTasks)
             .pluck("gid")
             .toArray(),
-          ...asanaProjects.get(index)
+          ...asanaProjects[index]
         }))
         .toArray()
     });
