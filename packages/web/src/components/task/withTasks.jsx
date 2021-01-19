@@ -38,7 +38,9 @@ export default WrappedComponent => props => {
 
       const completedAt = completed_at ? moment(completed_at) : false;
 
-      const mostRecentSprint = collect(task.sprints)
+      const sprints = collect(memberships || []).pluck("project.gid");
+
+      const mostRecentSprint = sprints
         .map(uuid => asanaProjectsCollection.firstWhere("gid", uuid))
         .filter()
         .filter(({ name }) => MATCH_PROJECT_KANBAN.test(name))
@@ -75,9 +77,7 @@ export default WrappedComponent => props => {
         sections: collect(memberships || [])
           .pluck("section.name")
           .toArray(),
-        sprints: collect(memberships || [])
-          .pluck("project.gid")
-          .toArray(),
+        sprints: sprints.toArray(),
         description: html_notes || notes,
         assignee,
         createdBy: created_by,
