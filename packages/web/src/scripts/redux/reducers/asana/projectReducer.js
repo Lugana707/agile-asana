@@ -14,7 +14,8 @@ export default () => {
   const uuidKey = "gid";
 
   const onProjectsAddedHandler = ({ state, projects }) => {
-    const projectIdsCollection = collect(projects).pluck(uuidKey);
+    const projectCollection = collect(projects).where("name", true);
+    const projectIdsCollection = projectCollection.pluck(uuidKey);
 
     const ids = projectIdsCollection
       .merge(state.ids)
@@ -24,7 +25,7 @@ export default () => {
 
     const data = collect(state.data)
       .whereNotIn(uuidKey, projectIdsCollection.toArray())
-      .merge(projects)
+      .merge(projectCollection.toArray())
       .unique(uuidKey)
       .sortBy(uuidKey)
       .toArray();
