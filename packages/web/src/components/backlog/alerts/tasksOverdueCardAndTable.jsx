@@ -67,4 +67,4 @@ const TasksOverdueCardAndTable = ({ hideIfNoData, tasks, forecastSprints }) => {
   );
 };
 
-export default withTasks(withForecastSprints(TasksOverdueCardAndTable));
+export default withForecastSprints(withTasks(TasksOverdueCardAndTable));

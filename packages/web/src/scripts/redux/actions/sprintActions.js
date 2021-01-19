@@ -11,8 +11,6 @@ import {
 const SUCCESS_LOADING_TAGS = "SUCCESS_LOADING_TAGS";
 
 const SUCCESS_LOADING_BACKLOG_TASKS = "SUCCESS_LOADING_BACKLOGTASKS";
-const SUCCESS_LOADING_REFINED_BACKLOG_TASKS =
-  "SUCCESS_LOADING_REFINEDBACKLOGTASKS";
 const SUCCESS_LOADING_UNREFINED_BACKLOG_TASKS =
   "SUCCESS_LOADING_UNREFINEDBACKLOGTASKS";
 
@@ -201,9 +199,6 @@ const processSprints = () => {
       const asanaProjectBacklogs = asanaProjectsCollection.filter(({ name }) =>
         MATCH_PROJECT_BACKLOG.test(name)
       );
-      const asanaProjectBacklogRefined = asanaProjectBacklogs
-        .filter(({ name }) => /\WRefined/iu.test(name))
-        .first();
       const asanaProjectBacklogUnrefined = asanaProjectBacklogs
         .filter(({ name }) => /\WUnrefined/iu.test(name))
         .first();
@@ -225,7 +220,7 @@ const processSprints = () => {
         asanaProjectsCollection,
         tasksCollection
       });
-      const sprints = asanaProjectsCollection
+      asanaProjectsCollection
         .filter(({ name }) => !MATCH_PROJECT_BACKLOG.test(name))
         .map(asanaProject =>
           processProjectIntoSprint({
@@ -254,19 +249,6 @@ const processSprints = () => {
           .whereIn(true, asanaProjectBacklogs.pluck("gid").toArray())
           .isNotEmpty()
       );
-      const refinedBacklogTasks = collect(
-        asanaProjectBacklogRefined.tasks || []
-      )
-        .map(gid => tasksCollection.firstWhere("uuid", gid))
-        .where("completedAt", false)
-        .filter(
-          task =>
-            !collect(task.sprints).contains(uuid =>
-              collect(sprints)
-                .pluck("uuid")
-                .contains(uuid)
-            )
-        );
       const unrefinedBacklogTasks = collect(
         asanaProjectBacklogUnrefined || []
       ).where("completedAt", false);
@@ -278,11 +260,6 @@ const processSprints = () => {
         },
         backlog: undefined,
         tasks: backlogTasks.toArray(),
-        loading: false
-      });
-      dispatch({
-        type: SUCCESS_LOADING_REFINED_BACKLOG_TASKS,
-        value: { refinedBacklogTasks: refinedBacklogTasks.toArray() },
         loading: false
       });
       dispatch({

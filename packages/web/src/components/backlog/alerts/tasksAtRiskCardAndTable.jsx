@@ -68,4 +68,4 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData, tasks, forecastSprints }) => {
   );
 };
 
-export default withTasks(withForecastSprints(TasksAtRiskCardAndTable));
+export default withForecastSprints(withTasks(TasksAtRiskCardAndTable));
