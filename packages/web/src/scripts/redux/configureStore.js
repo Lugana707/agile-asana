@@ -11,7 +11,6 @@ import globalReducer from "./reducers/globalReducer";
 import objectReducer from "./reducers/objectReducer";
 import AsanaProjectReducer from "./reducers/asana/projectReducer";
 import AsanaTaskReducer from "./reducers/asana/taskReducer";
-import TaskReducer from "./reducers/taskReducer";
 import SprintReducer from "./reducers/sprintReducer";
 import BacklogReducer from "./reducers/backlogReducer";
 import UserReducer from "./reducers/userReducer";
@@ -45,7 +44,6 @@ const initialiseReduxStore = preloadedState => {
     asanaProjects: AsanaProjectReducer(),
     asanaTasks: AsanaTaskReducer(),
     tags: TagReducer(),
-    tasks: TaskReducer(),
     sprints: SprintReducer(),
     backlogs: BacklogReducer(),
     users: UserReducer(),
