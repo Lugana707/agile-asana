@@ -29,38 +29,6 @@ const getAsanaApiClient = ({ settings }) => {
   };
 };
 
-const getProjects = async archived => {
-  const url = `${ASANA_API_URL}/projects`;
-  Logger.debug("Getting project list from API...", { url, archived });
-
-  const { data } = await axios.get(url, {
-    params: {
-      opt_fields: [
-        "sections",
-        "name",
-        "created_at",
-        "due_on",
-        "start_on",
-        "permalink_url"
-        //"followers.(name|email|photo)",
-        //"created_by.(name|email|photo)"
-      ].join(","),
-      archived
-    },
-    validateStatus: status => status === 200
-  });
-
-  const projects = data.data
-    .map(project => ({ ...project, archived }))
-    .filter(
-      ({ name }) =>
-        MATCH_PROJECT_KANBAN.test(name) || MATCH_PROJECT_BACKLOG.test(name)
-    );
-  Logger.debug("Gotten project list from API!", { projects });
-
-  return projects;
-};
-
 const getTasks = async (asanaClient, { gid: projectGid, name }) => {
   Logger.trace("Getting project tasks from API...", { projectGid });
 
@@ -98,17 +66,50 @@ const getTasks = async (asanaClient, { gid: projectGid, name }) => {
   return tasks;
 };
 
-const loadProjects = async dispatch => {
+const getProjects = async dispatch => {
   try {
     dispatch({ type: SET_LOADING_ASANA_PROJECTS, loading: true });
 
+    const getProjectsFromAsana = async archived => {
+      const url = `${ASANA_API_URL}/projects`;
+      Logger.debug("Getting project list from API...", { url, archived });
+
+      const { data } = await axios.get(url, {
+        params: {
+          opt_fields: [
+            "sections",
+            "name",
+            "created_at",
+            "due_on",
+            "start_on",
+            "permalink_url"
+            //"followers.(name|email|photo)",
+            //"created_by.(name|email|photo)"
+          ].join(","),
+          archived
+        },
+        validateStatus: status => status === 200
+      });
+
+      const projects = data.data
+        .map(project => ({ ...project, archived }))
+        .filter(
+          ({ name }) =>
+            MATCH_PROJECT_KANBAN.test(name) || MATCH_PROJECT_BACKLOG.test(name)
+        );
+      Logger.debug("Gotten project list from API!", { projects });
+
+      return projects;
+    };
+
     const asanaProjects = collect(
-      await Promise.all([await getProjects(true), await getProjects(false)])
+      await Promise.all([
+        await getProjectsFromAsana(true),
+        await getProjectsFromAsana(false)
+      ])
     )
       .flatten(1)
       .toArray();
-
-    dispatch({ type: SUCCESS_LOADING_ASANA_PROJECTS, data: asanaProjects });
 
     return asanaProjects;
   } catch (error) {
@@ -118,7 +119,7 @@ const loadProjects = async dispatch => {
   }
 };
 
-const loadTasks = async (dispatch, getState, { asanaProjects }) => {
+const loadProjectTasks = async (dispatch, getState, { asanaProjects }) => {
   try {
     dispatch({ type: SET_LOADING_ASANA_TASKS, loading: true });
 
@@ -126,9 +127,11 @@ const loadTasks = async (dispatch, getState, { asanaProjects }) => {
 
     const { data: asanaTasks } = getState().asanaTasks;
 
-    const tasksCollection = collect(
+    const asanaProjectTasksCollection = collect(
       await Promise.all(asanaProjects.map(project => getTasks(client, project)))
-    )
+    );
+
+    const tasksCollection = asanaProjectTasksCollection
       .flatten(1)
       .unique("gid")
       .map(({ custom_fields, ...task }) => ({
@@ -160,7 +163,17 @@ const loadTasks = async (dispatch, getState, { asanaProjects }) => {
       data: merged.toArray()
     });
 
-    return asanaTasks;
+    dispatch({
+      type: SUCCESS_LOADING_ASANA_PROJECTS,
+      data: asanaProjectTasksCollection
+        .map((projectTasks, index) => ({
+          tasks: collect(projectTasks)
+            .pluck("gid")
+            .toArray(),
+          ...asanaProjects.get(index)
+        }))
+        .toArray()
+    });
   } catch (error) {
     dispatch({ type: SET_LOADING_ASANA_TASKS, loading: false });
     Logger.error(error.callStack || error);
@@ -184,7 +197,7 @@ const lookForNewProjects = ({ forceReload = false } = {}) => {
 
     const currentAsanaProjects = collect(state.asanaProjects.asanaProjects);
 
-    const asanaProjects = await loadProjects(dispatch);
+    const asanaProjects = await getProjects(dispatch);
 
     const newAsanaProjects = collect(asanaProjects).filter(
       ({ gid }) => !currentAsanaProjects.contains("gid", gid)
@@ -195,7 +208,7 @@ const lookForNewProjects = ({ forceReload = false } = {}) => {
       return false;
     }
 
-    await loadTasks(dispatch, getState, {
+    await loadProjectTasks(dispatch, getState, {
       asanaProjects
     });
   };
@@ -222,7 +235,7 @@ const reloadProject = ({ projects }) => {
       return false;
     }
 
-    await loadTasks(dispatch, getState, {
+    await loadProjectTasks(dispatch, getState, {
       asanaProjects: projects
     });
   };

@@ -254,7 +254,10 @@ const processSprints = () => {
           .whereIn(true, asanaProjectBacklogs.pluck("gid").toArray())
           .isNotEmpty()
       );
-      const refinedBacklogTasks = backlogTasks
+      const refinedBacklogTasks = collect(
+        asanaProjectBacklogRefined.tasks || []
+      )
+        .map(gid => tasksCollection.firstWhere("uuid", gid))
         .where("completedAt", false)
         .filter(
           task =>
@@ -263,24 +266,15 @@ const processSprints = () => {
                 .pluck("uuid")
                 .contains(uuid)
             )
-        )
-        .filter(
-          task =>
-            asanaProjectBacklogRefined &&
-            !!task.sprints.includes(asanaProjectBacklogRefined.gid)
         );
-      const unrefinedBacklogTasks = tasksCollection
-        .where("completedAt", false)
-        .filter(
-          task =>
-            asanaProjectBacklogUnrefined &&
-            !!task.sprints.includes(asanaProjectBacklogUnrefined.gid)
-        );
+      const unrefinedBacklogTasks = collect(
+        asanaProjectBacklogUnrefined || []
+      ).where("completedAt", false);
 
       dispatch({
         type: SUCCESS_LOADING_BACKLOG_TASKS,
         value: {
-          backlogTasks: backlogTasks.all()
+          backlogTasks: backlogTasks.toArray()
         },
         backlog: undefined,
         tasks: backlogTasks.toArray(),
