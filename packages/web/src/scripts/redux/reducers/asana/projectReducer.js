@@ -13,20 +13,19 @@ export default () => {
 
   const uuidKey = "gid";
 
-  const parseTask = task => collect(task).all();
+  const onProjectsAddedHandler = ({ state, projects }) => {
+    const projectIdsCollection = collect(projects).pluck(uuidKey);
 
-  const onProjectsSetHandler = ({ state, projects }) => {
-    const projectsCollection = collect(projects);
-
-    const ids = projectsCollection
-      .pluck(uuidKey)
+    const ids = projectIdsCollection
+      .merge(state.ids)
       .unique()
       .sort()
       .toArray();
 
-    const data = projectsCollection
+    const data = collect(state.data)
+      .whereNotIn(uuidKey, projectIdsCollection.toArray())
+      .merge(projects)
       .unique(uuidKey)
-      .map(parseTask)
       .sortBy(uuidKey)
       .toArray();
 
@@ -48,7 +47,7 @@ export default () => {
 
         const { asanaProjects } = payload;
 
-        return onProjectsSetHandler({
+        return onProjectsAddedHandler({
           state,
           loading: false,
           projects: asanaProjects.data || asanaProjects.asanaProjects
@@ -56,7 +55,7 @@ export default () => {
       case "SET_LOADING_ASANAPROJECTS":
         return { ...state, loading };
       case "SUCCESS_LOADING_ASANAPROJECTS":
-        return onProjectsSetHandler({ state, projects: data });
+        return onProjectsAddedHandler({ state, projects: data });
       case "LOGOUT":
         return initialState;
       default:

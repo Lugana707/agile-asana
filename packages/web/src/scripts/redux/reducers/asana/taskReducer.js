@@ -13,23 +13,24 @@ export default () => {
 
   const uuidKey = "gid";
 
-  const parseTask = task => collect(task).all();
-
-  const onTasksSetHandler = ({ state, tasks }) => {
+  const onTasksAddedHandler = ({ state, tasks }) => {
     const tasksCollection = collect(tasks).map(({ assignee, ...task }) => ({
       assignee: assignee && (assignee.gid || assignee),
       ...task
     }));
 
-    const ids = tasksCollection
-      .pluck(uuidKey)
+    const taskIdsCollection = tasksCollection.pluck(uuidKey);
+
+    const ids = taskIdsCollection
+      .merge(state.ids)
       .unique()
       .sort()
       .toArray();
 
-    const data = tasksCollection
+    const data = collect(state.data)
+      .whereNotIn(uuidKey, taskIdsCollection.toArray())
+      .merge(tasks)
       .unique(uuidKey)
-      .map(parseTask)
       .sortBy(uuidKey)
       .toArray();
 
@@ -51,7 +52,7 @@ export default () => {
 
         const { asanaTasks } = payload;
 
-        return onTasksSetHandler({
+        return onTasksAddedHandler({
           state,
           loading: false,
           tasks: asanaTasks.data || asanaTasks.asanaTasks
@@ -59,7 +60,7 @@ export default () => {
       case "SET_LOADING_ASANATASKS":
         return { ...state, loading };
       case "SUCCESS_LOADING_ASANATASKS":
-        return onTasksSetHandler({ state, tasks: data });
+        return onTasksAddedHandler({ state, tasks: data });
       case "LOGOUT":
         return initialState;
       default:
