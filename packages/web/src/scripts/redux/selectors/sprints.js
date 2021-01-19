@@ -21,7 +21,7 @@ const parseProjectIntoSprint = (project, tasksCollection) => {
     tasks
   } = project;
 
-  const sprintTasksCollection = tasksCollection.whereIn("uuid", tasks);
+  const sprintTasksCollection = tasksCollection.whereIn("uuid", tasks || []);
 
   const tasksCompletedCollection = sprintTasksCollection
     .filter(task => !!task.completedAt)
