@@ -85,3 +85,8 @@ export const selectSprints = createSelector(
         )
       }))
 );
+
+export const selectCurrentSprint = createSelector(
+  selectSprints,
+  sprintsCollection => sprintsCollection.firstWhere("isCurrentSprint", true)
+);
