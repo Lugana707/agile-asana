@@ -3,6 +3,7 @@ import collect from "collect.js";
 import moment from "moment";
 import { MATCH_PROJECT_KANBAN } from "../actions/asanaActions";
 
+/* jshint maxcomplexity:10 */
 const parseTask = (task, asanaProjects, users) => {
   const asanaProjectsCollection = collect(asanaProjects);
   const usersCollection = collect(users);
@@ -33,8 +34,8 @@ const parseTask = (task, asanaProjects, users) => {
   const mostRecentSprint = sprints
     .map(uuid => asanaProjectsCollection.firstWhere("gid", uuid))
     .filter()
-    .filter(({ name }) => MATCH_PROJECT_KANBAN.test(name))
-    .sortBy(({ created_at }) => moment(created_at).unix())
+    .filter(project => MATCH_PROJECT_KANBAN.test(project.name))
+    .sortBy(project => moment(project.created_at).unix())
     .pluck("gid")
     .last();
 
