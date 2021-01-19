@@ -1,27 +1,11 @@
 import Logger from "js-logger";
 import moment from "moment";
 import collect from "collect.js";
-import { getColourFromTag } from "../../helpers/asanaColours";
 import {
   MATCH_PROJECT_BACKLOG,
   MATCH_PROJECT_KANBAN,
   MATCH_PROJECT_KANBAN_WITHOUT_NUMBER
 } from "./asanaActions";
-
-const SUCCESS_LOADING_TAGS = "SUCCESS_LOADING_TAGS";
-
-const processTasksForUniqueTags = ({ asanaTasks }) => {
-  return collect(asanaTasks)
-    .pluck("tags")
-    .flatten(1)
-    .where("name")
-    .unique("name")
-    .map(({ gid, color, ...tag }) => ({
-      ...tag,
-      uuid: gid,
-      color: getColourFromTag({ color })
-    }));
-};
 
 const processTasks = ({ asanaTasks, asanaProjectsCollection }) =>
   collect(asanaTasks)
@@ -191,14 +175,6 @@ const processSprints = () => {
       }
 
       const asanaProjectsCollection = collect(asanaProjects);
-
-      const tags = processTasksForUniqueTags({ asanaTasks });
-      dispatch({
-        type: SUCCESS_LOADING_TAGS,
-        loading: false,
-        value: { tags: tags.toArray() },
-        timestamp: new Date()
-      });
 
       const tasksCollection = processTasks({
         asanaTasks,

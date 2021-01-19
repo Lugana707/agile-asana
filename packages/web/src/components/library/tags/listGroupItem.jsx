@@ -6,7 +6,7 @@ import collect from "collect.js";
 import { pluraliseText } from "../../../scripts/helpers";
 
 export default ({ className, tag, count, children }) => {
-  const { tags: fullListOfTags } = useSelector(state => state.tags);
+  const { data: fullListOfTags } = useSelector(state => state.tags);
 
   const colour = useMemo(
     () => collect(fullListOfTags).firstWhere("name", tag).color,

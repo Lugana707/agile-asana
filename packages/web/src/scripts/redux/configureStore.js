@@ -8,7 +8,6 @@ import storage from "redux-persist/lib/storage";
 //import monitorReducersEnhancer from "./enhancers/monitorReducers";
 import loggerMiddleware from "./middleware/logger";
 import globalReducer from "./reducers/globalReducer";
-import crudReducer from "./reducers/crudReducer";
 import objectReducer from "./reducers/objectReducer";
 import AsanaProjectReducer from "./reducers/asana/projectReducer";
 import AsanaTaskReducer from "./reducers/asana/taskReducer";
@@ -16,6 +15,7 @@ import TaskReducer from "./reducers/taskReducer";
 import SprintReducer from "./reducers/sprintReducer";
 import BacklogReducer from "./reducers/backlogReducer";
 import UserReducer from "./reducers/userReducer";
+import TagReducer from "./reducers/tagReducer";
 
 const persistConfig = {
   key: "root",
@@ -44,7 +44,7 @@ const initialiseReduxStore = preloadedState => {
     globalReducer,
     asanaProjects: AsanaProjectReducer(),
     asanaTasks: AsanaTaskReducer(),
-    tags: crudReducer("tags", "uuid"),
+    tags: TagReducer(),
     tasks: TaskReducer(),
     sprints: SprintReducer(),
     backlogs: BacklogReducer(),

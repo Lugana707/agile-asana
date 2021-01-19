@@ -14,7 +14,7 @@ const BacklogProgressPerSprint = ({
   tags: displayTags,
   weight = false
 }) => {
-  const { tags: fullListOfTags } = useSelector(state => state.tags);
+  const { data: fullListOfTags } = useSelector(state => state.tags);
 
   const getAsanaTagColor = useCallback(
     tag =>

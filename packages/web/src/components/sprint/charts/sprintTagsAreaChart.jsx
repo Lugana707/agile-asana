@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import collect from "collect.js";
 
 const GraphStoryPointsTrend = ({ sprints }) => {
-  const { tags: fullListOfTags } = useSelector(state => state.tags);
+  const { data: fullListOfTags } = useSelector(state => state.tags);
 
   const sprintCollection = useMemo(() => collect(sprints), [sprints]);
   const tagsCollection = useMemo(() => collect(fullListOfTags), [

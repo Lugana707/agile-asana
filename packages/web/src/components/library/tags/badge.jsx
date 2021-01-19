@@ -4,12 +4,12 @@ import { useSelector } from "react-redux";
 import collect from "collect.js";
 
 export default ({ className, tag, children }) => {
-  const { tags: fullListOfTags } = useSelector(state => state.tags);
+  const { data: tags } = useSelector(state => state.tags);
 
-  const colour = useMemo(
-    () => collect(fullListOfTags).firstWhere("name", tag).color,
-    [fullListOfTags, tag]
-  );
+  const colour = useMemo(() => collect(tags).firstWhere("name", tag).color, [
+    tags,
+    tag
+  ]);
 
   return (
     <Badge

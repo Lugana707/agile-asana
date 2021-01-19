@@ -14,7 +14,7 @@ const getTagsFilterFromURL = ({ search }) =>
   );
 
 const TagsFilter = ({ history }) => {
-  const { tags: fullListOfTags } = useSelector(state => state.tags);
+  const { data: fullListOfTags } = useSelector(state => state.tags);
 
   const { location } = history;
 

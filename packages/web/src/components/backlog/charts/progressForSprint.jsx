@@ -6,7 +6,7 @@ import Color from "color";
 import withBacklogTasks from "../withBacklogTasks";
 
 const BacklogProgressPerSprint = ({ sprint, backlogTasks }) => {
-  const { tags: fullListOfTags } = useSelector(state => state.tags);
+  const { data: fullListOfTags } = useSelector(state => state.tags);
 
   const getAsanaTag = useCallback(
     tag => collect(fullListOfTags).firstWhere("name", tag),
