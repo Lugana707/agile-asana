@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import Logger from "js-logger";
 import { loadAll } from "../scripts/redux/actions/asanaActions";
-import { processSprints } from "../scripts/redux/actions/sprintActions";
 import { loadUser } from "../scripts/redux/actions/settingsActions";
 import withLoading from "./withLoading";
 import withConfigured from "./withConfigured";
@@ -47,8 +46,6 @@ const DataIntegrity = ({ history, configured, loading }) => {
       return;
     } else if (!asanaProjects || !asanaTasks) {
       dispatch(loadAll());
-    } else {
-      dispatch(processSprints());
     }
   }, [loading, configured, dispatch, asanaProjects, asanaTasks]);
 
