@@ -11,7 +11,6 @@ const SET_LOADING_ASANA_PROJECTS = "SET_LOADING_ASANAPROJECTS";
 const SUCCESS_LOADING_ASANA_PROJECTS = "SUCCESS_LOADING_ASANAPROJECTS";
 
 const SET_LOADING_ASANA_TASKS = "SET_LOADING_ASANATASKS";
-const SUCCESS_LOADING_ASANA_TASKS = "SUCCESS_LOADING_ASANATASKS";
 
 const MATCH_PROJECT_KANBAN = /^(Sprint|Dev|Product) (Kanban )?(Week )?(\d+)/iu;
 const MATCH_PROJECT_KANBAN_WITHOUT_NUMBER = /^(Sprint|Dev|Product) (Kanban )?(Week )?/iu;
@@ -158,7 +157,7 @@ const loadProjectTasks = async (dispatch, getState, { asanaProjects }) => {
     );
 
     dispatch({
-      type: SUCCESS_LOADING_ASANA_TASKS,
+      type: "SUCCESS_LOADING_ASANATASKS",
       loading: false,
       data: merged.toArray()
     });
@@ -195,7 +194,7 @@ const lookForNewProjects = ({ forceReload = false } = {}) => {
       return false;
     }
 
-    const currentAsanaProjects = collect(state.asanaProjects.asanaProjects);
+    const currentAsanaProjects = collect(state.asanaProjects.data);
 
     const asanaProjects = await getProjects(dispatch);
 
