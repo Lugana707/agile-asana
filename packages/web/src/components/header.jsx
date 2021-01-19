@@ -5,7 +5,6 @@ import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 import Logo from "../logo.png";
 import CurrentUserBadge from "./currentUserBadge";
-import Search from "./search";
 import withLoading from "./withLoading";
 import withConfigured from "./withConfigured";
 
@@ -56,7 +55,6 @@ const Header = ({ loading: globalLoading, configured }) => {
               </NavDropDownItem>
             </NavDropdown>
           </Nav>
-          <Search inline hidden />
           <Nav className="navbar-right">
             <NavLink to="/settings">
               <span className="pr-2" hidden={!globalLoading}>
