@@ -25,7 +25,8 @@ const ShowTask = ({ task, sprints }) => {
     createdBy,
     assignee,
     parent,
-    subtasks
+    subtasks,
+    percentComplete
   } = task || {};
 
   const tagsSorted = useMemo(() => collect(tags).sort(), [tags]);
@@ -60,7 +61,10 @@ const ShowTask = ({ task, sprints }) => {
     <>
       <TaskJumbotron task={task} />
       <Container className="text-left">
-        {(tagsSorted.isNotEmpty() || storyPoints || completedAt) && (
+        {(tagsSorted.isNotEmpty() ||
+          storyPoints ||
+          completedAt ||
+          percentComplete !== false) && (
           <>
             <Row>
               {tagsSorted.isNotEmpty() && (
@@ -83,6 +87,23 @@ const ShowTask = ({ task, sprints }) => {
                     <span> {pluralise(fromBacklogToDoneInDays, "Day")}</span>
                   </h1>
                   <small className="d-block">from creation to done</small>
+                </Widget>
+              )}
+              {percentComplete !== false && (
+                <Widget
+                  bg={
+                    percentComplete < 50
+                      ? "danger"
+                      : percentComplete < 100
+                      ? "warning"
+                      : "success"
+                  }
+                  text="dark"
+                >
+                  <h1 className="text-nowrap d-inline">
+                    <span>{percentComplete}%</span>
+                  </h1>
+                  <small className="d-block">Complete</small>
                 </Widget>
               )}
             </Row>

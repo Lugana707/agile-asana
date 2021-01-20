@@ -4,7 +4,7 @@ import moment from "moment";
 import { MATCH_PROJECT_KANBAN } from "../actions/asanaActions";
 
 /* jshint maxcomplexity:10 */
-const parseTask = (task, asanaProjects, users) => {
+const parseTask = (task, asanaTasks, asanaProjects, users) => {
   const asanaProjectsCollection = collect(asanaProjects);
   const usersCollection = collect(users);
 
@@ -23,7 +23,7 @@ const parseTask = (task, asanaProjects, users) => {
     created_by,
     permalink_url,
     parent,
-    subtasks,
+    subtasks = [],
     custom_fields
   } = task;
 
@@ -55,6 +55,17 @@ const parseTask = (task, asanaProjects, users) => {
     return false;
   };
 
+  const subtaskCollection = collect(subtasks)
+    .map(subtask => collect(asanaTasks).firstWhere("gid", subtask))
+    .where();
+  const percentComplete =
+    subtaskCollection.isNotEmpty() &&
+    Math.round(
+      (subtaskCollection.where("completed_at").count() /
+        subtaskCollection.count()) *
+        100
+    );
+
   return {
     uuid: gid,
     name,
@@ -74,7 +85,7 @@ const parseTask = (task, asanaProjects, users) => {
     createdBy: created_by,
     externalLink: permalink_url,
     parent: parent && parent.gid,
-    subtasks: subtasks || [],
+    subtasks: subtasks,
     customFields: collect(custom_fields || [])
       .where("enum_value")
       .map(({ name: customFieldName, enum_value }) => ({
@@ -86,7 +97,8 @@ const parseTask = (task, asanaProjects, users) => {
       }))
       .toArray(),
     mostRecentSprint,
-    completedAtDayOfSprint: getCompletedDayOfSprint()
+    completedAtDayOfSprint: getCompletedDayOfSprint(),
+    percentComplete
   };
 };
 
@@ -95,5 +107,7 @@ export const selectTasks = createSelector(
   state => state.asanaProjects.data,
   state => state.users.data,
   (asanaTasks, asanaProjects, users) =>
-    collect(asanaTasks).map(task => parseTask(task, asanaProjects, users))
+    collect(asanaTasks).map(task =>
+      parseTask(task, asanaTasks, asanaProjects, users)
+    )
 );
