@@ -74,9 +74,7 @@ const parseTask = (task, asanaProjects, users) => {
     createdBy: created_by,
     externalLink: permalink_url,
     parent: parent && parent.gid,
-    subtasks: collect(subtasks || [])
-      .pluck("gid")
-      .toArray(),
+    subtasks: subtasks || [],
     customFields: collect(custom_fields || [])
       .where("enum_value")
       .map(({ name: customFieldName, enum_value }) => ({

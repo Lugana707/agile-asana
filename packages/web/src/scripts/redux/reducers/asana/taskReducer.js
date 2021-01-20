@@ -14,10 +14,15 @@ export default () => {
   const uuidKey = "gid";
 
   const onTasksAddedHandler = ({ state, tasks }) => {
-    const tasksCollection = collect(tasks).map(({ assignee, ...task }) => ({
-      assignee: assignee && (assignee.gid || assignee),
-      ...task
-    }));
+    const tasksCollection = collect(tasks).map(
+      ({ assignee, subtasks, ...task }) => ({
+        assignee: assignee && (assignee.gid || assignee),
+        subtasks: collect(subtasks)
+          .map(subtask => subtask.gid || subtask)
+          .toArray(),
+        ...task
+      })
+    );
 
     const taskIdsCollection = tasksCollection.pluck(uuidKey);
 
