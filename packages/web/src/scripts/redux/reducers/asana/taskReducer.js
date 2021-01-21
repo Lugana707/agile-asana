@@ -13,16 +13,23 @@ export default () => {
 
   const uuidKey = "gid";
 
+  const parseTask = ({ assignee, subtasks, custom_fields, ...task }) => ({
+    ...task,
+    custom_fields: custom_fields.map(({ name, enum_value }) => ({
+      name,
+      enum_value: collect(enum_value)
+        .only(["name", "color"])
+        .all()
+    })),
+    assignee: assignee && (assignee.gid || assignee),
+    subtasks: collect(subtasks)
+      .map(subtask => subtask.gid || subtask)
+      .toArray(),
+    ...task
+  });
+
   const onTasksAddedHandler = ({ state, tasks }) => {
-    const tasksCollection = collect(tasks).map(
-      ({ assignee, subtasks, ...task }) => ({
-        assignee: assignee && (assignee.gid || assignee),
-        subtasks: collect(subtasks)
-          .map(subtask => subtask.gid || subtask)
-          .toArray(),
-        ...task
-      })
-    );
+    const tasksCollection = collect(tasks).map(parseTask);
 
     const taskIdsCollection = tasksCollection.pluck(uuidKey);
 
