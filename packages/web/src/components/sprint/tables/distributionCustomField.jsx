@@ -47,10 +47,10 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
       tasksCollection
         .groupBy("customField.value.name")
         .map((value, key) => ({
+          ...value.first().customField.value,
           key,
           count: value.count(),
-          storyPoints: value.sum("storyPoints"),
-          colour: value.first().customField.value.color
+          storyPoints: value.sum("storyPoints")
         }))
         .pipe(collection => collect(collection.toArray()))
         .map(({ count, storyPoints, ...row }) => ({
