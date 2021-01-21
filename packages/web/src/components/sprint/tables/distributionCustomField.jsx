@@ -1,5 +1,7 @@
 import React, { useMemo } from "react";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import Table from "../../library/table";
 import CustomFieldBadge from "../../task/badges/customField";
@@ -7,14 +9,7 @@ import CustomFieldBadge from "../../task/badges/customField";
 const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
   const safeCustomFieldName = customFieldName || "Client";
 
-  const { state: sprintState } = sprint || {};
-
-  const isCompletedSprint = useMemo(() => sprintState === "COMPLETED", [
-    sprintState
-  ]);
-  const isForecastSprint = useMemo(() => sprintState === "FORECAST", [
-    sprintState
-  ]);
+  const { isCompletedSprint, isCurrentSprint } = sprint || {};
 
   const tasks = useMemo(
     () => collect(isCompletedSprint ? sprint.tasksCompleted : sprint.tasks),
@@ -22,14 +17,15 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
   );
 
   const sprintStoryPoints = useMemo(
-    () => (isForecastSprint ? sprint.storyPoints : sprint.completedStoryPoints),
-    [isForecastSprint, sprint.storyPoints, sprint.completedStoryPoints]
+    () =>
+      isCompletedSprint ? sprint.completedStoryPoints : sprint.storyPoints,
+    [isCompletedSprint, sprint.storyPoints, sprint.completedStoryPoints]
   );
 
   const tasksCollection = useMemo(
     () =>
       collect(tasks)
-        .when(!isForecastSprint, collection => collection.where("completedAt"))
+        .when(isCompletedSprint, collection => collection.where("completedAt"))
         .filter(obj => obj.storyPoints || obj.tags)
         .map(({ storyPoints, customFields }) => ({
           storyPoints: storyPoints || 0,
@@ -39,8 +35,33 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
           )
         }))
         .where("customField"),
-    [tasks, safeCustomFieldName, isForecastSprint]
+    [tasks, safeCustomFieldName, isCompletedSprint]
   );
+
+  const InProgressSprintTooltipWrapper = ({ children }) => {
+    if (!isCurrentSprint) {
+      return children;
+    }
+
+    const InProgressSprintTooltip = props => (
+      <Tooltip {...props}>
+        calculated using this sprint's commitments, not what has been completed
+      </Tooltip>
+    );
+
+    return (
+      <OverlayTrigger
+        placement="right"
+        delay={{ show: 250, hide: 400 }}
+        overlay={InProgressSprintTooltip}
+      >
+        <span>
+          <span className="mr-1">{children}</span>
+          <FontAwesomeIcon icon={faInfoCircle} />
+        </span>
+      </OverlayTrigger>
+    );
+  };
 
   const storyPointsByCustomField = useMemo(
     () =>
@@ -85,21 +106,25 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
   const TableRow = ({ data }) => {
     const { key, count, storyPoints } = data;
 
+    const className = `${
+      isCurrentSprint ? "font-italic" : ""
+    } text-right align-middle`;
+
     return (
       <Row as="tr" key={key} className="m-0">
         <Col as="td" xs={4} className="text-left align-middle">
           <CustomFieldBadge customField={data} />
         </Col>
-        <Col as="td" xs={2} className="text-right align-middle">
+        <Col as="td" xs={2} className={className}>
           {count.sum}
         </Col>
-        <Col as="td" xs={2} className="text-right align-middle">
+        <Col as="td" xs={2} className={className}>
           {Math.round(count.percentage * 100)}%
         </Col>
-        <Col as="td" xs={2} className="text-right align-middle">
+        <Col as="td" xs={2} className={className}>
           {storyPoints.sum}
         </Col>
-        <Col as="td" xs={2} className="text-right align-middle">
+        <Col as="td" xs={2} className={className}>
           {Math.round(storyPoints.percentage * 100)}%
         </Col>
       </Row>
@@ -121,7 +146,9 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
         <thead>
           <Row as="tr" className="m-0">
             <Col as="th" xs={4} className="text-left text-capitalize">
-              {safeCustomFieldName}
+              <InProgressSprintTooltipWrapper>
+                {safeCustomFieldName}
+              </InProgressSprintTooltipWrapper>
             </Col>
             <Col as="th" xs={2}>
               Tasks
