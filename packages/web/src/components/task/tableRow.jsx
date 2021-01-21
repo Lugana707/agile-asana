@@ -6,12 +6,30 @@ import { faQuestion, faCheck } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import moment from "moment";
 import TagBadge from "./badges/tag";
+import CustomFieldBadge from "./badges/customField";
 import UserBadge from "../userBadge";
 
 const TaskTableRow = ({ data: task }) => {
-  const { uuid, name, dueOn, storyPoints, tags, assignee, completedAt } = task;
+  const {
+    uuid,
+    name,
+    dueOn,
+    storyPoints,
+    tags,
+    customFields,
+    assignee,
+    completedAt
+  } = task;
 
   const sortedTags = useMemo(() => collect(tags).sort(), [tags]);
+
+  const sortedCustomFields = useMemo(
+    () =>
+      collect(customFields)
+        .sortBy("name")
+        .pluck("value"),
+    [customFields]
+  );
 
   const variant = useMemo(() => {
     if (dueOn) {
@@ -47,13 +65,12 @@ const TaskTableRow = ({ data: task }) => {
         >
           {name}
         </Link>
-        {sortedTags.isNotEmpty() && (
-          <span className="ml-1">
-            {sortedTags.map((tag, index) => (
-              <TagBadge key={index} tag={tag} />
-            ))}
-          </span>
-        )}
+        {sortedCustomFields.dump().map(obj => (
+          <CustomFieldBadge key={obj.name} customField={obj} />
+        ))}
+        {sortedTags.map((tag, index) => (
+          <TagBadge key={index} tag={tag} />
+        ))}
       </td>
       {assignee && (
         <td className="align-middle col-3 d-none d-md-block">

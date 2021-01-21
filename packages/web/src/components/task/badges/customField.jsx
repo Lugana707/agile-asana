@@ -2,18 +2,20 @@ import React from "react";
 import Color from "color";
 import { Badge } from "react-bootstrap";
 
-export default ({ customField }) => {
-  const { key, colour } = customField;
+export default ({ className, customField }) => {
+  const { name, color } = customField;
 
-  const backgroundColor = (colour || "white").split("-")[0];
+  const colour = (color || "white").split("-")[0];
+
+  const textColour = Color(colour).isLight() ? "text-dark" : "text-light";
 
   return (
     <Badge
-      className={Color(backgroundColor).isLight() ? "text-dark" : "text-light"}
-      style={{ backgroundColor }}
+      className={`${className || ""} ${textColour} mr-1`}
+      style={{ backgroundColor: colour, borderColor: colour }}
       pill
     >
-      {key}
+      {name}
     </Badge>
   );
 };
