@@ -65,7 +65,7 @@ const TaskTableRow = ({ data: task }) => {
         >
           {name}
         </Link>
-        {sortedCustomFields.dump().map(obj => (
+        {sortedCustomFields.map(obj => (
           <CustomFieldBadge key={obj.name} customField={obj} />
         ))}
         {sortedTags.map((tag, index) => (

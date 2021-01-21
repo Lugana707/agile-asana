@@ -8,6 +8,7 @@ import withTaskFromURL from "../../components/task/withTaskFromURL";
 import TaskJumbotron from "../../components/task/jumbotron";
 import SprintInfoCard from "../../components/sprint/infoCard";
 import TagBadge from "../../components/task/badges/tag";
+import CustomFieldBadge from "../../components/task/badges/customField";
 import Widget from "../../components/library/widget";
 import UserBadge from "../../components/userBadge";
 import Table from "../../components/library/table";
@@ -16,11 +17,14 @@ import TaskTableRow from "../../components/task/tableRow";
 const ShowTask = ({ task, sprints }) => {
   const {
     description,
+    dueOn,
     createdAt,
     storyPoints,
     tags,
+    customFields,
     completedAt,
     mostRecentSprint,
+    forecastSprint,
     sprints: taskSprintUUIDs = [],
     createdBy,
     assignee,
@@ -29,7 +33,14 @@ const ShowTask = ({ task, sprints }) => {
     percentComplete
   } = task || {};
 
+  collect(task || {}).dump();
+
   const tagsSorted = useMemo(() => collect(tags).sort(), [tags]);
+
+  const sortedCustomFields = useMemo(
+    () => collect(customFields).sortBy("name"),
+    [customFields]
+  );
 
   const taskSprints = useMemo(
     () => sprints.filter(({ uuid }) => taskSprintUUIDs.includes(uuid)),
@@ -51,6 +62,11 @@ const ShowTask = ({ task, sprints }) => {
   const fromBacklogToDoneInDays = useMemo(
     () => completedAt && completedAt.diff(createdAt, "days"),
     [completedAt, createdAt]
+  );
+
+  const completeAtOrForecastAt = useMemo(
+    () => completedAt || forecastSprint.completedAt,
+    [completedAt, forecastSprint]
   );
 
   if (!task) {
@@ -131,8 +147,8 @@ const ShowTask = ({ task, sprints }) => {
               </Card>
             </Col>
           )}
-          <Col xs={12}>
-            <Card bg="dark" text="light">
+          <Col xs={12} md={3}>
+            <Card bg="dark" text="light" className="h-100">
               <Card.Body>
                 <Card.Subtitle className="text-muted pb-2">
                   {assignee ? "Assigned to" : "Created by"}
@@ -141,6 +157,106 @@ const ShowTask = ({ task, sprints }) => {
                   <UserBadge user={assignee || createdBy} />
                 </Card.Title>
                 <hr />
+                <Card.Text as="table" className="w-100">
+                  <tbody>
+                    <tr>
+                      <td className="text-muted">Story Points</td>
+                      <td className="text-center">{storyPoints}</td>
+                    </tr>
+                    {!completedAtSprint && forecastSprint && (
+                      <tr>
+                        <td className="text-muted">Forecast Sprint</td>
+                        <td className="text-center">{forecastSprint.number}</td>
+                      </tr>
+                    )}
+                    {completedAtSprint && (
+                      <tr>
+                        <td className="text-muted">Completed Sprint</td>
+                        <td className="text-center">
+                          {completedAtSprint.number}
+                        </td>
+                      </tr>
+                    )}
+                    {sortedCustomFields.isNotEmpty() && (
+                      <>
+                        <tr>
+                          <td colSpan="2">
+                            <hr />
+                          </td>
+                        </tr>
+                        {sortedCustomFields.map(obj => (
+                          <tr key={obj.value.name}>
+                            <td className="text-muted">{obj.name}</td>
+                            <td className="text-center">
+                              <CustomFieldBadge customField={obj.value} />
+                            </td>
+                          </tr>
+                        ))}
+                      </>
+                    )}
+                    <tr>
+                      <td colSpan="2">
+                        <hr />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="text-muted">Created</td>
+                      <td className="text-center">
+                        {createdAt.format("YYYY-MM-DD")}
+                      </td>
+                    </tr>
+                    {dueOn && (
+                      <tr
+                        style={{
+                          textDecoration: completedAt && "line-through"
+                        }}
+                      >
+                        <td className="text-muted">Due</td>
+                        <td className="text-center">
+                          {dueOn.format("YYYY-MM-DD")}
+                        </td>
+                      </tr>
+                    )}
+                    {completedAt && (
+                      <tr>
+                        <td className="text-muted">Completed</td>
+                        <td className="text-center">
+                          {completedAt.format("YYYY-MM-DD")}
+                        </td>
+                      </tr>
+                    )}
+                    {!completedAt && forecastSprint && (
+                      <tr>
+                        <td className="text-muted">Forecast</td>
+                        <td className="text-center">
+                          {forecastSprint.completedAt.format("YYYY-MM-DD")}
+                        </td>
+                      </tr>
+                    )}
+                    <tr
+                      className={
+                        dueOn.isBefore(completeAtOrForecastAt)
+                          ? "text-danger"
+                          : "text-success"
+                      }
+                    >
+                      <td className="text-muted">
+                        {dueOn.isBefore(completeAtOrForecastAt)
+                          ? "Late"
+                          : "Early"}
+                      </td>
+                      <td className="text-center">
+                        {dueOn.from(completeAtOrForecastAt, true)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col xs={12} md={9} className="mt-3 mt-md-0">
+            <Card bg="dark" text="light" className="h-100">
+              <Card.Body>
                 <Card.Text
                   dangerouslySetInnerHTML={{
                     __html: description.replace(/\n/gimu, "<br />")
@@ -150,7 +266,7 @@ const ShowTask = ({ task, sprints }) => {
             </Card>
           </Col>
           {subtasks.isNotEmpty() && (
-            <Col xs={12}>
+            <Col xs={12} className="pt-3">
               <Card bg="dark" text="light">
                 <Card.Body>
                   <Card.Subtitle className="text-muted pb-2">
