@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { Badge } from "react-bootstrap";
 import { useSelector } from "react-redux";
+import Color from "color";
 import collect from "collect.js";
 
 export default ({ className, tag, children }) => {
@@ -11,10 +12,12 @@ export default ({ className, tag, children }) => {
     tag
   ]);
 
+  const textColour = Color(colour).isLight() ? "text-dark" : "text-light";
+
   return (
     <Badge
       key={tag}
-      className={`mr-1 text-light ${className}`}
+      className={`${className || ""} ${textColour} mr-1`}
       style={{ backgroundColor: colour, borderColor: colour }}
     >
       {children || tag}
