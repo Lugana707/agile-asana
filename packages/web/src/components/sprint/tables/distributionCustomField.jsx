@@ -57,13 +57,11 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
           ...row,
           count: {
             sum: count,
-            percentage: Math.round((count / parseFloat(tasks.count())) * 100)
+            percentage: count / parseFloat(tasks.count()) || 0
           },
           storyPoints: {
             sum: storyPoints,
-            percentage: Math.round(
-              (storyPoints / parseFloat(sprintStoryPoints)) * 100
-            )
+            percentage: storyPoints / parseFloat(sprintStoryPoints) || 0
           }
         }))
         .pipe(collection =>
@@ -105,13 +103,13 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
           {count.sum}
         </Col>
         <Col as="td" xs={2} className="text-right align-middle">
-          {count.percentage}%
+          {Math.round(count.percentage * 100)}%
         </Col>
         <Col as="td" xs={2} className="text-right align-middle">
           {storyPoints.sum}
         </Col>
         <Col as="td" xs={2} className="text-right align-middle">
-          {storyPoints.percentage}%
+          {Math.round(storyPoints.percentage * 100)}%
         </Col>
       </Row>
     );
