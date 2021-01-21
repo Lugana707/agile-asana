@@ -7,7 +7,7 @@ import withSprints from "../../components/sprint/withSprints";
 import withTaskFromURL from "../../components/task/withTaskFromURL";
 import TaskJumbotron from "../../components/task/jumbotron";
 import SprintInfoCard from "../../components/sprint/infoCard";
-import TagBadge from "../../components/library/tags/badge";
+import TagBadge from "../../components/task/badges/tag";
 import Widget from "../../components/library/widget";
 import UserBadge from "../../components/userBadge";
 import Table from "../../components/library/table";

@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion, faCheck } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import moment from "moment";
-import TagBadge from "../library/tags/badge";
+import TagBadge from "./badges/tag";
 import UserBadge from "../userBadge";
 
 const TaskTableRow = ({ data: task }) => {

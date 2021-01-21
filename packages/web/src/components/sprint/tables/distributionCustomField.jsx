@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Row, Col } from "react-bootstrap";
 import collect from "collect.js";
 import Table from "../../library/table";
-import CustomFieldBadge from "../../task/customFieldBadge";
+import CustomFieldBadge from "../../task/badges/customField";
 
 const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
   const safeCustomFieldName = customFieldName || "Client";
