@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
-import { Row, Col, Badge } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import collect from "collect.js";
-import Color from "color";
 import Table from "../../library/table";
+import CustomFieldBadge from "../../task/customFieldBadge";
 
 const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
   const safeCustomFieldName = customFieldName || "Client";
@@ -83,21 +83,12 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
   );
 
   const TableRow = ({ data }) => {
-    const { key, count, storyPoints, colour } = data;
-
-    const backgroundColor = (colour || "white").split("-")[0];
+    const { key, count, storyPoints } = data;
 
     return (
       <Row as="tr" key={key} className="m-0">
         <Col as="td" xs={4} className="text-left align-middle">
-          <Badge
-            className={
-              Color(backgroundColor).isLight() ? "text-dark" : "text-light"
-            }
-            style={{ backgroundColor }}
-          >
-            {key}
-          </Badge>
+          <CustomFieldBadge customField={data} />
         </Col>
         <Col as="td" xs={2} className="text-right align-middle">
           {count.sum}
