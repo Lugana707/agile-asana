@@ -311,7 +311,10 @@ const ShowTask = ({ task, sprints }) => {
         <hr />
         <Row>
           <Col xs={12}>
-            <h4 className="bg-primary p-2 rounded text-dark">Similar Tasks</h4>
+            <h4 className="bg-primary p-2 rounded text-dark">
+              <span>Similar Tasks</span>
+              <small className="pl-2">(that have been refined)</small>
+            </h4>
             <SimilarTaskList task={task} count={3} />
           </Col>
         </Row>
