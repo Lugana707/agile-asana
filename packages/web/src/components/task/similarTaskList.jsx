@@ -68,7 +68,7 @@ const SimilarTaskList = ({ task, count = 6 }) => {
   return (
     <div className="rounded overflow-hidden">
       {sortedTasks.map(obj => (
-        <Card key={obj.uuid} bg="dark" text="light">
+        <Card key={obj.task.uuid} bg="dark" text="light">
           <Row>
             <Col xs={12} md={3} lg={2} className="pr-md-0">
               <Card.Body className="h-100">
