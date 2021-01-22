@@ -52,9 +52,10 @@ const ShowTask = ({ task, sprints }) => {
   );
   const currentSprint = useMemo(
     () =>
+      !completedAtSprint &&
       mostRecentSprint &&
       sprints.where("isCurrentSprint").firstWhere("uuid", mostRecentSprint),
-    [sprints, mostRecentSprint]
+    [sprints, completedAtSprint, mostRecentSprint]
   );
   const previousSprints = useMemo(
     () =>
