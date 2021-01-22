@@ -31,12 +31,8 @@ const SprintFilter = ({ defaultCount, sprints, setSprints, history }) => {
       return sprintRange;
     }
 
-    const lastSprint = recentSprints.last() || {};
-    const lastCompletedSprint =
-      maxSprint - (lastSprint.state === "COMPLETED" ? 0 : 1);
-
-    return [lastCompletedSprint - 6, lastCompletedSprint];
-  }, [recentSprints, maxSprint, sprintRange]);
+    return [maxSprint - 6, maxSprint];
+  }, [maxSprint, sprintRange]);
 
   useEffect(() => {
     setSprints(
