@@ -51,12 +51,22 @@ const ShowTask = ({ task, sprints }) => {
     () => completedAt && sprints.firstWhere("uuid", mostRecentSprint),
     [completedAt, sprints, mostRecentSprint]
   );
+  const currentSprint = useMemo(
+    () =>
+      mostRecentSprint &&
+      sprints.where("isCurrentSprint").firstWhere("uuid", mostRecentSprint),
+    [sprints, mostRecentSprint]
+  );
   const previousSprints = useMemo(
     () =>
-      taskSprints.when(!!completedAtSprint, collection =>
-        collection.where("uuid", "!==", completedAtSprint.uuid)
-      ),
-    [taskSprints, completedAtSprint]
+      taskSprints
+        .when(!!completedAtSprint, collection =>
+          collection.where("uuid", "!==", completedAtSprint.uuid)
+        )
+        .when(currentSprint, collection =>
+          collection.where("uuid", "!==", currentSprint.uuid)
+        ),
+    [taskSprints, completedAtSprint, currentSprint]
   );
 
   const fromBacklogToDoneInDays = useMemo(
@@ -299,14 +309,16 @@ const ShowTask = ({ task, sprints }) => {
         <hr />
         <Row>
           {completedAtSprint && (
-            <>
-              <Col xs={12}>
-                <h4>Completed in</h4>
-              </Col>
-              <Col xs={12} md={6} className="pb-4">
-                <SprintInfoCard sprint={completedAtSprint} showSummary />
-              </Col>
-            </>
+            <Col xs={12} md={6} className="pb-4">
+              <h4>Completed in</h4>
+              <SprintInfoCard sprint={completedAtSprint} showSummary />
+            </Col>
+          )}
+          {currentSprint && (
+            <Col xs={12} md={6} className="pb-4">
+              <h4>Currently in</h4>
+              <SprintInfoCard sprint={currentSprint} showSummary />
+            </Col>
           )}
           {previousSprints.isNotEmpty() && (
             <>
