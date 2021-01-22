@@ -150,13 +150,17 @@ const ShowTask = ({ task, sprints }) => {
           <Col xs={12} md={3}>
             <Card bg="dark" text="light" className="h-100">
               <Card.Body>
-                <Card.Subtitle className="text-muted pb-2">
-                  {assignee ? "Assigned to" : "Created by"}
-                </Card.Subtitle>
-                <Card.Title>
-                  <UserBadge user={assignee || createdBy} />
-                </Card.Title>
-                <hr />
+                {assignee && (
+                  <>
+                    <Card.Subtitle className="text-muted pb-2">
+                      Assigned to
+                    </Card.Subtitle>
+                    <Card.Title>
+                      <UserBadge user={assignee} />
+                    </Card.Title>
+                    <hr />
+                  </>
+                )}
                 <Card.Text as="table" className="w-100">
                   <tbody>
                     <tr>
@@ -257,6 +261,13 @@ const ShowTask = ({ task, sprints }) => {
           <Col xs={12} md={9} className="mt-3 mt-md-0">
             <Card bg="dark" text="light" className="h-100">
               <Card.Body>
+                <Card.Subtitle className="text-muted pb-2">
+                  Created by
+                </Card.Subtitle>
+                <Card.Title>
+                  <UserBadge user={createdBy} />
+                </Card.Title>
+                <hr />
                 <Card.Text
                   dangerouslySetInnerHTML={{
                     __html: description.replace(/\n/gimu, "<br />")
