@@ -40,15 +40,23 @@ export const selectForecastSprints = createSelector(
 
         return accumulator;
       }, collect([]))
-      .map(({ tasks, storyPoints }, index) => ({
-        uuid: false,
-        number: index + 1 + currentSprint.number,
-        isForecastSprint: true,
-        state: "FORECAST",
-        storyPoints,
-        startOn: moment(currentSprint.startOn).add(index + 1, "weeks"),
-        completedAt: moment(currentSprint.completedAt).add(index + 1, "weeks"),
-        averageCompletedStoryPoints: false,
-        tasks
-      }))
+      .map(({ tasks, storyPoints }, index) => {
+        const completedAt = moment(currentSprint.completedAt).add(
+          index + 1,
+          "weeks"
+        );
+
+        return {
+          uuid: false,
+          number: index + 1 + currentSprint.number,
+          isForecastSprint: true,
+          state: "FORECAST",
+          storyPoints,
+          startOn: moment(currentSprint.startOn).add(index + 1, "weeks"),
+          finishedOn: completedAt,
+          completedAt,
+          averageCompletedStoryPoints: false,
+          tasks
+        };
+      })
 );

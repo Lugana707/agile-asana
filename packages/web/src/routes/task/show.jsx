@@ -229,7 +229,7 @@ const ShowTask = ({ task, sprints }) => {
                       <tr>
                         <td className="text-muted">Forecast</td>
                         <td className="text-center">
-                          {forecastSprint.completedAt.format("YYYY-MM-DD")}
+                          {forecastSprint.finishedOn.format("YYYY-MM-DD")}
                         </td>
                       </tr>
                     )}
