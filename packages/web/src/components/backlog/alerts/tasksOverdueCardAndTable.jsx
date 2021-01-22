@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSkull } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import collect from "collect.js";
-import SprintCardAndTable from "../../sprint/task/sprintCardAndTable";
+import SprintCard from "../../sprint/sprintCard";
 import withForecastSprints from "../withForecastSprints";
 import withTasks from "../../task/withTasks";
 
@@ -56,12 +56,11 @@ const TasksOverdueCardAndTable = ({ hideIfNoData, tasks, forecastSprints }) => {
 
   return (
     <Container fluid>
-      <SprintCardAndTable
+      <SprintCard
         className="pb-1"
         sprint={sprint}
         variant="danger"
         title={<span className="text-light">Deadlines Missed</span>}
-        showSprintCard
       />
     </Container>
   );

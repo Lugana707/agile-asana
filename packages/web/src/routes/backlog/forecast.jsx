@@ -4,7 +4,7 @@ import TasksAtRiskCardAndTable from "../../components/backlog/alerts/tasksAtRisk
 import TasksOverdueCardAndTable from "../../components/backlog/alerts/tasksOverdueCardAndTable";
 import withCurrentSprint from "../../components/sprint/withCurrentSprint";
 import withForecastSprints from "../../components/backlog/withForecastSprints";
-import SprintCardAndTable from "../../components/sprint/task/sprintCardAndTable";
+import SprintCard from "../../components/sprint/sprintCard";
 
 const Forecast = ({ forecastSprints, currentSprint }) => {
   const averageCompletedStoryPoints = useMemo(() => {
@@ -33,12 +33,7 @@ const Forecast = ({ forecastSprints, currentSprint }) => {
       <TasksOverdueCardAndTable hideIfNoData />
       <Container fluid>
         {forecastSprints.map((sprint, index) => (
-          <SprintCardAndTable
-            key={index}
-            className="pb-1"
-            sprint={sprint}
-            showSprintCard
-          />
+          <SprintCard key={index} className="pb-1" sprint={sprint} />
         ))}
       </Container>
     </>

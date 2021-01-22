@@ -1,10 +1,32 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Row, Col, Card } from "react-bootstrap";
+import { Row, Col, Card, Dropdown } from "react-bootstrap";
 import collect from "collect.js";
+import Table from "../library/table";
+import TaskTableRow from "../task/tableRow";
+import SprintDistributionCustomField from "./tables/distributionCustomField";
 
-const SprintCard = ({ title, sprint, variant, children, ...props }) => {
-  const { uuid, tasks, number, completedAt, finishedOn, state } = sprint;
+const SprintCard = ({
+  title,
+  sprint,
+  variant,
+  children,
+  defaultView,
+  tags: displayTags,
+  ...props
+}) => {
+  const {
+    uuid,
+    tasks,
+    number,
+    completedAt,
+    finishedOn,
+    isForecastSprint,
+    isCurrentSprint,
+    isCompletedSprint
+  } = sprint;
+
+  const [view, setView] = useState(defaultView || "tasks");
 
   const storyPoints = useMemo(
     () =>
@@ -26,10 +48,6 @@ const SprintCard = ({ title, sprint, variant, children, ...props }) => {
     }
   };
   const variants = determineVariants(variant);
-
-  const isCurrentSprint = useMemo(() => state === "ACTIVE", [state]);
-  const isCompletedSprint = useMemo(() => state === "COMPLETED", [state]);
-  const isForecastSprint = useMemo(() => state === "FORECAST", [state]);
 
   const stateVariant = useMemo(
     () =>
@@ -65,6 +83,48 @@ const SprintCard = ({ title, sprint, variant, children, ...props }) => {
     );
   };
 
+  const filteredTasks = useMemo(
+    () =>
+      collect(tasks).when(displayTags && displayTags.isNotEmpty(), collection =>
+        collection.filter(task =>
+          displayTags.whereIn(true, task.tags).isNotEmpty()
+        )
+      ),
+    [tasks, displayTags]
+  );
+
+  const CurrentViewDropdown = () => {
+    switch (view) {
+      case "tasks":
+        return (
+          <>
+            {!!storyPoints && <div>{storyPoints} story points</div>}
+            <span>{sprint.tasks.length} tasks</span>
+          </>
+        );
+      default:
+        return <span className="text-capitalize">{view}</span>;
+    }
+  };
+
+  const CurrentView = () => {
+    switch (view) {
+      case "tasks":
+        return (
+          <Table
+            className="mb-0"
+            data={filteredTasks.toArray()}
+            row={TaskTableRow}
+            variant={variants.table}
+          />
+        );
+      case "distribution":
+        return <SprintDistributionCustomField sprint={sprint} />;
+      default:
+        return <div />;
+    }
+  };
+
   return (
     <Card
       bg={variants.card}
@@ -97,17 +157,36 @@ const SprintCard = ({ title, sprint, variant, children, ...props }) => {
                     {isCompletedSprint && "Completed"}
                     {isForecastSprint && "Forecast"}
                   </small>
-                  <div className="clearfix" />
                 </>
               </ConditionalSprintLink>
+              <div className="clearfix" />
             </Card.Title>
-            <Card.Subtitle className={`text-${variants.subtitle} text-nowrap`}>
-              {!!storyPoints && <div>{storyPoints} story points</div>}
-              <div>{sprint.tasks.length} tasks</div>
+            <Card.Subtitle
+              as={Dropdown}
+              className={`btn-link text-${variants.subtitle} text-nowrap`}
+            >
+              <Dropdown.Toggle as="span">
+                <CurrentViewDropdown />
+              </Dropdown.Toggle>
+              <Dropdown.Menu className="text-capitalize">
+                {collect(["tasks", "distribution"])
+                  .sort()
+                  .map(obj => (
+                    <Dropdown.Item
+                      key={obj}
+                      onClick={() => setView(obj)}
+                      disabled={obj === view}
+                    >
+                      {obj}
+                    </Dropdown.Item>
+                  ))}
+              </Dropdown.Menu>
             </Card.Subtitle>
           </Card.Body>
         </Col>
-        {children && <Col className="pl-1 bg-dark">{children}</Col>}
+        <Col className="pl-1 bg-dark">
+          <CurrentView />
+        </Col>
       </Row>
     </Card>
   );

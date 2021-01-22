@@ -8,7 +8,7 @@ import withGetTask from "../../../components/task/withGetTask";
 import TaskJumbotron from "../../../components/task/jumbotron";
 import Table from "../../../components/library/table";
 import TaskTableRow from "../../../components/task/tableRow";
-import SprintCardAndTable from "../../../components/sprint/task/sprintCardAndTable";
+import SprintCard from "../../../components/sprint/sprintCard";
 
 const ShowTask = ({ history, task, sprints, getTask }) => {
   const { uuid, subtasks } = task || {};
@@ -65,7 +65,7 @@ const ShowTask = ({ history, task, sprints, getTask }) => {
       <TaskJumbotron task={task} title="Forecast" />
       <Container className="text-left">
         {forecastSprints.map((sprint, index) => (
-          <SprintCardAndTable key={index} sprint={sprint} showSprintCard />
+          <SprintCard key={index} sprint={sprint} />
         ))}
         <Row>
           {subtasks.isNotEmpty() && (

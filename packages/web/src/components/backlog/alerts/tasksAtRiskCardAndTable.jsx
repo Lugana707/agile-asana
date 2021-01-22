@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamation } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import collect from "collect.js";
-import SprintCardAndTable from "../../sprint/task/sprintCardAndTable";
+import SprintCard from "../../sprint/sprintCard";
 import withForecastSprints from "../withForecastSprints";
 import withTasks from "../../task/withTasks";
 
@@ -57,12 +57,11 @@ const TasksAtRiskCardAndTable = ({ hideIfNoData, tasks, forecastSprints }) => {
 
   return (
     <Container fluid>
-      <SprintCardAndTable
+      <SprintCard
         className="pb-1"
         sprint={sprint}
         variant="warning"
         title={<span className="text-dark">Deadlines at Risk</span>}
-        showSprintCard
       />
     </Container>
   );
