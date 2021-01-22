@@ -33,8 +33,6 @@ const ShowTask = ({ task, sprints }) => {
     percentComplete
   } = task || {};
 
-  collect(task || {}).dump();
-
   const tagsSorted = useMemo(() => collect(tags).sort(), [tags]);
 
   const sortedCustomFields = useMemo(
