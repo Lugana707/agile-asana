@@ -72,6 +72,7 @@ const parseTask = (task, asanaTasks, asanaProjects, users) => {
     dueOn: due_on ? moment(due_on) : false,
     createdAt: created_at ? moment(created_at) : false,
     completedAt,
+    weight: storyPoints,
     storyPoints,
     tags: collect(tags || [])
       .pluck("name")

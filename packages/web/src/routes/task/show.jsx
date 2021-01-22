@@ -13,6 +13,7 @@ import Widget from "../../components/library/widget";
 import UserBadge from "../../components/userBadge";
 import Table from "../../components/library/table";
 import TaskTableRow from "../../components/task/tableRow";
+import SimilarTaskList from "../../components/task/similarTaskList";
 
 const ShowTask = ({ task, sprints }) => {
   const {
@@ -305,6 +306,13 @@ const ShowTask = ({ task, sprints }) => {
               </Card>
             </Col>
           )}
+        </Row>
+        <hr />
+        <Row>
+          <Col xs={12}>
+            <h4 className="bg-primary p-2 rounded text-dark">Similar Tasks</h4>
+            <SimilarTaskList task={task} count={3} />
+          </Col>
         </Row>
         <hr />
         <Row>
