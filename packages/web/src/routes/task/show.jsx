@@ -247,22 +247,24 @@ const ShowTask = ({ task, sprints }) => {
                         </td>
                       </tr>
                     )}
-                    <tr
-                      className={
-                        dueOn.isBefore(completeAtOrForecastAt)
-                          ? "text-danger"
-                          : "text-success"
-                      }
-                    >
-                      <td className="text-muted">
-                        {dueOn.isBefore(completeAtOrForecastAt)
-                          ? "Late"
-                          : "Early"}
-                      </td>
-                      <td className="text-center">
-                        {dueOn.from(completeAtOrForecastAt, true)}
-                      </td>
-                    </tr>
+                    {dueOn && (
+                      <tr
+                        className={
+                          dueOn.isBefore(completeAtOrForecastAt)
+                            ? "text-danger"
+                            : "text-success"
+                        }
+                      >
+                        <td className="text-muted">
+                          {dueOn.isBefore(completeAtOrForecastAt)
+                            ? "Late"
+                            : "Early"}
+                        </td>
+                        <td className="text-center">
+                          {dueOn.from(completeAtOrForecastAt, true)}
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </Card.Text>
               </Card.Body>
