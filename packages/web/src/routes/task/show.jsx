@@ -70,12 +70,12 @@ const ShowTask = ({ task, sprints }) => {
   );
 
   const fromBacklogToDoneInDays = useMemo(
-    () => completedAt && completedAt.diff(createdAt, "days"),
+    () => (completedAt ? completedAt.diff(createdAt, "days") : false),
     [completedAt, createdAt]
   );
 
   const completeAtOrForecastAt = useMemo(
-    () => completedAt || forecastSprint.completedAt,
+    () => completedAt || (forecastSprint && forecastSprint.completedAt),
     [completedAt, forecastSprint]
   );
 
