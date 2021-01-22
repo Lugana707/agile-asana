@@ -138,7 +138,7 @@ const ShowTask = ({ task, sprints }) => {
         )}
         <Row>
           {parent && (
-            <Col xs={12}>
+            <Col xs={12} className="mb-3">
               <Card bg="dark" text="light">
                 <Card.Body>
                   <Card.Subtitle className="text-muted pb-2">
@@ -157,7 +157,7 @@ const ShowTask = ({ task, sprints }) => {
               </Card>
             </Col>
           )}
-          <Col xs={12} md={3}>
+          <Col xs={12} md={6} lg={3}>
             <Card bg="dark" text="light" className="h-100">
               <Card.Body>
                 {assignee && (
@@ -215,7 +215,7 @@ const ShowTask = ({ task, sprints }) => {
                     </tr>
                     <tr>
                       <td className="text-muted">Created</td>
-                      <td className="text-center">
+                      <td className="text-center text-nowrap">
                         {createdAt.format("YYYY-MM-DD")}
                       </td>
                     </tr>
@@ -226,7 +226,7 @@ const ShowTask = ({ task, sprints }) => {
                         }}
                       >
                         <td className="text-muted">Due</td>
-                        <td className="text-center">
+                        <td className="text-center text-nowrap">
                           {dueOn.format("YYYY-MM-DD")}
                         </td>
                       </tr>
@@ -234,7 +234,7 @@ const ShowTask = ({ task, sprints }) => {
                     {completedAt && (
                       <tr>
                         <td className="text-muted">Completed</td>
-                        <td className="text-center">
+                        <td className="text-center text-nowrap">
                           {completedAt.format("YYYY-MM-DD")}
                         </td>
                       </tr>
@@ -242,7 +242,7 @@ const ShowTask = ({ task, sprints }) => {
                     {!completedAt && forecastSprint && (
                       <tr>
                         <td className="text-muted">Forecast</td>
-                        <td className="text-center">
+                        <td className="text-center text-nowrap">
                           {forecastSprint.finishedOn.format("YYYY-MM-DD")}
                         </td>
                       </tr>
@@ -260,7 +260,7 @@ const ShowTask = ({ task, sprints }) => {
                             ? "Late"
                             : "Early"}
                         </td>
-                        <td className="text-center">
+                        <td className="text-center text-nowrap">
                           {dueOn.from(completeAtOrForecastAt, true)}
                         </td>
                       </tr>
@@ -270,7 +270,7 @@ const ShowTask = ({ task, sprints }) => {
               </Card.Body>
             </Card>
           </Col>
-          <Col xs={12} md={9} className="mt-3 mt-md-0">
+          <Col xs={12} md={6} lg={9} className="mt-3 mt-md-0">
             <Card bg="dark" text="light" className="h-100">
               <Card.Body>
                 <Card.Subtitle className="text-muted pb-2">
