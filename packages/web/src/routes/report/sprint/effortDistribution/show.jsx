@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { Jumbotron, Container } from "react-bootstrap";
-import SprintTableDistributionCustomField from "../../../../components/sprint/tables/distributionCustomField";
 import SprintCard from "../../../../components/sprint/sprintCard";
 import withSprints from "../../../../components/sprint/withSprints";
 import withForecastSprints from "../../../../components/backlog/withForecastSprints";
@@ -46,14 +45,17 @@ const Show = ({
       </Jumbotron>
       <Container>
         {customFieldName &&
-          filteredSprints.sortByDesc("number").map(sprint => (
-            <SprintCard key={sprint.number} sprint={sprint}>
-              <SprintTableDistributionCustomField
+          filteredSprints
+            .sortByDesc("number")
+            .map(sprint => (
+              <SprintCard
+                key={sprint.number}
                 sprint={sprint}
                 customFieldName={customFieldName}
+                defaultView="distribution"
+                noChangeView
               />
-            </SprintCard>
-          ))}
+            ))}
       </Container>
     </>
   );

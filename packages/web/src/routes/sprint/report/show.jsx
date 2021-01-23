@@ -79,7 +79,7 @@ const Report = ({ sprint, sprints }) => {
         </Row>
         <SummaryRow title="Commitments Met" tasks={commitmentsMet} />
         <SummaryRow title="Unplanned Work" tasks={unplannedWork} />
-        <SummaryRow title="Commitments Missed" tasks={commitmentsMissed} />{" "}
+        <SummaryRow title="Commitments Missed" tasks={commitmentsMissed} />
         <Row>
           <Col xs={12}>
             <h1>Effort Distribution</h1>

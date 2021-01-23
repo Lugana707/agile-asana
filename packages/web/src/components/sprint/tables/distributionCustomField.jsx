@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { Row, Col, OverlayTrigger, Tooltip } from "react-bootstrap";
+import React, { useState, useMemo } from "react";
+import { Row, Col, OverlayTrigger, Tooltip, Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
@@ -7,8 +7,6 @@ import Table from "../../library/table";
 import CustomFieldBadge from "../../task/badges/customField";
 
 const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
-  const safeCustomFieldName = customFieldName || "Client";
-
   const { isCompletedSprint, isCurrentSprint } = sprint || {};
 
   const tasks = useMemo(
@@ -22,20 +20,37 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
     [isCompletedSprint, sprint.storyPoints, sprint.completedStoryPoints]
   );
 
+  const customFieldNames = useMemo(
+    () =>
+      tasks
+        .pluck("customFields")
+        .flatten(1)
+        .pluck("name")
+        .unique()
+        .sort(),
+    [tasks]
+  );
+
+  const [currentCustomFieldName, setCurrentCustomFieldName] = useState(
+    customFieldName || customFieldNames.first()
+  );
+
+  collect({ customFieldName, currentCustomFieldName }).dump();
+
   const tasksCollection = useMemo(
     () =>
-      collect(tasks)
+      tasks
         .when(isCompletedSprint, collection => collection.where("completedAt"))
         .filter(obj => obj.storyPoints || obj.tags)
         .map(({ storyPoints, customFields }) => ({
           storyPoints: storyPoints || 0,
           customField: collect(customFields).firstWhere(
             "name",
-            safeCustomFieldName
+            currentCustomFieldName
           )
         }))
         .where("customField"),
-    [tasks, safeCustomFieldName, isCompletedSprint]
+    [tasks, currentCustomFieldName, isCompletedSprint]
   );
 
   const InProgressSprintTooltipWrapper = ({ children }) => {
@@ -60,6 +75,29 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
           <FontAwesomeIcon icon={faInfoCircle} />
         </span>
       </OverlayTrigger>
+    );
+  };
+
+  const CustomFieldTitle = ({ children }) => {
+    if (!!customFieldName) {
+      return children;
+    }
+
+    return (
+      <Dropdown className={`btn-link text-light text-nowrap`}>
+        <Dropdown.Toggle as="span">{children}</Dropdown.Toggle>
+        <Dropdown.Menu className="text-capitalize">
+          {customFieldNames.map(obj => (
+            <Dropdown.Item
+              key={obj}
+              onClick={() => setCurrentCustomFieldName(obj)}
+              disabled={obj === currentCustomFieldName}
+            >
+              {obj}
+            </Dropdown.Item>
+          ))}
+        </Dropdown.Menu>
+      </Dropdown>
     );
   };
 
@@ -146,9 +184,11 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
         <thead>
           <Row as="tr" className="m-0">
             <Col as="th" xs={4} className="text-left text-capitalize">
-              <InProgressSprintTooltipWrapper>
-                {safeCustomFieldName}
-              </InProgressSprintTooltipWrapper>
+              <CustomFieldTitle>
+                <InProgressSprintTooltipWrapper>
+                  {currentCustomFieldName}
+                </InProgressSprintTooltipWrapper>
+              </CustomFieldTitle>
             </Col>
             <Col as="th" xs={2}>
               Tasks

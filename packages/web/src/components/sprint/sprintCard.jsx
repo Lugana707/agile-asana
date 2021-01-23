@@ -12,6 +12,8 @@ const SprintCard = ({
   variant,
   children,
   defaultView,
+  noChangeView,
+  customFieldName,
   tags: displayTags,
   ...props
 }) => {
@@ -103,7 +105,7 @@ const SprintCard = ({
           </>
         );
       default:
-        return <span className="text-capitalize">{view}</span>;
+        return <span className="text-capitalize">{!noChangeView && view}</span>;
     }
   };
 
@@ -119,7 +121,12 @@ const SprintCard = ({
           />
         );
       case "distribution":
-        return <SprintDistributionCustomField sprint={sprint} />;
+        return (
+          <SprintDistributionCustomField
+            sprint={sprint}
+            customFieldName={customFieldName}
+          />
+        );
       default:
         return <div />;
     }
@@ -161,26 +168,31 @@ const SprintCard = ({
               </ConditionalSprintLink>
               <div className="clearfix" />
             </Card.Title>
-            <Card.Subtitle
-              as={Dropdown}
-              className={`btn-link text-${variants.subtitle} text-nowrap`}
-            >
-              <Dropdown.Toggle as="span">
-                <CurrentViewDropdown />
-              </Dropdown.Toggle>
-              <Dropdown.Menu className="text-capitalize">
-                {collect(["tasks", "distribution"])
-                  .sort()
-                  .map(obj => (
-                    <Dropdown.Item
-                      key={obj}
-                      onClick={() => setView(obj)}
-                      disabled={obj === view}
-                    >
-                      {obj}
-                    </Dropdown.Item>
-                  ))}
-              </Dropdown.Menu>
+            <Card.Subtitle className="text-nowrap">
+              {noChangeView ? (
+                <div className={`text-${variants.subtitle}`}>
+                  <CurrentViewDropdown />
+                </div>
+              ) : (
+                <Dropdown className={`btn-link text-${variants.subtitle}`}>
+                  <Dropdown.Toggle as="span">
+                    <CurrentViewDropdown />
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu className="text-capitalize">
+                    {collect(["tasks", "distribution"])
+                      .sort()
+                      .map(obj => (
+                        <Dropdown.Item
+                          key={obj}
+                          onClick={() => setView(obj)}
+                          disabled={obj === view}
+                        >
+                          {obj}
+                        </Dropdown.Item>
+                      ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+              )}
             </Card.Subtitle>
           </Card.Body>
         </Col>
