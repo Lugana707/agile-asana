@@ -65,7 +65,12 @@ const ShowTask = ({ history, task, sprints, getTask }) => {
       <TaskJumbotron task={task} title="Forecast" />
       <Container className="text-left">
         {forecastSprints.map((sprint, index) => (
-          <SprintCard key={index} sprint={sprint} />
+          <SprintCard
+            key={index}
+            sprint={sprint}
+            defaultView="tasks"
+            noChangeView
+          />
         ))}
         <Row>
           {subtasks.isNotEmpty() && (
