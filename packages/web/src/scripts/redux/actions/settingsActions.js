@@ -50,19 +50,53 @@ const updateGithubPAT = async ({ github }) => {
 
   const { data: user } = await octokit.request("/user");
 
-  const { data: organisations } = await octokit.orgs.listForAuthenticatedUser();
+  const getOrganisations = async () => {
+    if (github.organisations) {
+      return github.organisations;
+    }
+
+    const {
+      data: organisations
+    } = await octokit.orgs.listForAuthenticatedUser();
+
+    return collect(organisations)
+      .map(org =>
+        collect(org)
+          .only(["login", "id", "avatar_url"])
+          .all()
+      )
+      .toArray();
+  };
+
+  const getRepositories = async () => {
+    if (!github.defaultOrganisation) {
+      return false;
+    }
+
+    if (github.repositories) {
+      return github.repositories;
+    }
+
+    const { data: repositories } = await octokit.repos.listForOrg({
+      org: github.defaultOrganisation.login
+    });
+
+    return collect(repositories)
+      .dump()
+      .map(repo =>
+        collect(repo)
+          .only(["name", "id", "url"])
+          .all()
+      )
+      .toArray();
+  };
 
   return {
     github: {
       ...github,
       user,
-      organisations: collect(organisations)
-        .map(org =>
-          collect(org)
-            .only(["login", "id", "avatar_url"])
-            .all()
-        )
-        .toArray()
+      organisations: await getOrganisations(),
+      repositories: await getRepositories()
     }
   };
 };
