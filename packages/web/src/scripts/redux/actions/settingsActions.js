@@ -1,27 +1,75 @@
 import Asana from "asana";
 import Logger from "js-logger";
+import { Octokit } from "@octokit/rest";
+import collect from "collect.js";
 
 const SET_LOADING_SETTINGS = "SET_LOADING_SETTINGS";
 const ADD_SETTINGS = "ADD_SETTINGS";
 const DELETE_SETTINGS = "DELETE_SETTINGS";
 
-const logout = () => {
-  return dispatch => {
-    ["user", "asanaApiKey", "asanaDefaultWorkspace"].map(value =>
-      dispatch({
-        type: DELETE_SETTINGS,
-        loading: false,
-        value
-      })
-    );
+const logout = key => {
+  switch (key) {
+    case "github":
+      return dispatch =>
+        dispatch({
+          type: DELETE_SETTINGS,
+          loading: false,
+          value: "github"
+        });
 
-    dispatch({ type: "LOGOUT" });
+    default:
+      return dispatch => {
+        ["user", "asanaApiKey", "asanaDefaultWorkspace"].map(value =>
+          dispatch({
+            type: DELETE_SETTINGS,
+            loading: false,
+            value
+          })
+        );
+
+        dispatch({ type: "LOGOUT" });
+      };
+  }
+};
+
+const updateAsanaApiKey = async ({ asanaApiKey }) => {
+  const client = Asana.Client.create().useAccessToken(asanaApiKey);
+
+  const user = await client.users.me();
+
+  return { user };
+};
+
+const updateGithubPAT = async ({ github }) => {
+  if (!github || !github.pat) {
+    Logger.warn("No githubPersonalAccessToken! Skipping...");
+    return {};
+  }
+
+  const octokit = new Octokit({ auth: github.pat });
+
+  const { data: user } = await octokit.request("/user");
+
+  const { data: organisations } = await octokit.orgs.listForAuthenticatedUser();
+
+  return {
+    github: {
+      ...github,
+      user,
+      organisations: collect(organisations)
+        .map(org =>
+          collect(org)
+            .only(["login", "id", "avatar_url"])
+            .all()
+        )
+        .toArray()
+    }
   };
 };
 
 const loadUser = ({ settings }) => {
   return async (dispatch, getState) => {
-    const { asanaApiKey } = settings || getState().settings;
+    const { asanaApiKey, github } = settings || getState().settings;
 
     if (!asanaApiKey) {
       Logger.warn("No asanaApiKey! Logging out...");
@@ -32,14 +80,15 @@ const loadUser = ({ settings }) => {
     try {
       dispatch({ type: SET_LOADING_SETTINGS, loading: true });
 
-      const client = Asana.Client.create().useAccessToken(asanaApiKey);
-
-      const user = await client.users.me();
+      const value = {
+        ...(await updateAsanaApiKey({ asanaApiKey })),
+        ...(await updateGithubPAT({ github }))
+      };
 
       dispatch({
         type: ADD_SETTINGS,
         loading: false,
-        value: { user }
+        value: value
       });
     } catch (error) {
       Logger.error(error);
