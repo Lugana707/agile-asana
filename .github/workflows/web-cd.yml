@@ -11,6 +11,7 @@ jobs:
   build-test-deploy:
     name: Build, Test, & Deploy
     runs-on: ubuntu-latest
+    environment: production
     strategy:
       matrix:
         website: [asana.albon.me, app.agilelytics.ca]
