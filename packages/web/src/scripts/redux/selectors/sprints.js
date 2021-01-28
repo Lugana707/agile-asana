@@ -54,12 +54,18 @@ const parseProjectIntoSprint = (project, tasksCollection) => {
     startOn,
     finishedOn,
     sprintLength,
-    tasks: sprintTasksCollection.all(),
-    tasksCompleted: tasksCompletedCollection.all(),
+    tasks: sprintTasksCollection.toArray(),
+    tasksCompleted: tasksCompletedCollection.toArray(),
     externalLink: permalink_url,
     state: archived ? "COMPLETED" : "ACTIVE",
     isCurrentSprint: !archived,
-    isCompletedSprint: archived
+    isCompletedSprint: archived,
+    customFieldNames: sprintTasksCollection
+      .pluck("customFields")
+      .flatten(1)
+      .pluck("name")
+      .unique()
+      .sort()
   };
 };
 

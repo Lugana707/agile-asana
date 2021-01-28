@@ -21,19 +21,19 @@ const Report = ({ sprint, sprints }) => {
     [sprints, sprint]
   );
 
-  const { tasks, tasksCompleted } = sprint || {};
+  const { tasks, tasksCompleted, customFieldNames } = sprint || {};
 
   const releases = useMemo(
     () =>
       sprint.releases.map(({ uuid, name, publishedAt }) => ({
         uuid,
         name: (
-          <span>
+          <>
             <AnchorLink href="#releases">{name}</AnchorLink>
-            <span className="text-muted pl-1">
-              {publishedAt.format("dddd, MMM Do @ LT")}
+            <span className="pl-1">
+              ({publishedAt.format("dddd, MMM Do @ LT")})
             </span>
-          </span>
+          </>
         )
       })),
     [sprint.releases]
@@ -116,9 +116,23 @@ const Report = ({ sprint, sprints }) => {
                   <li>Unplanned Work</li>
                 </ol>
               </AnchorLink>
-              <AnchorLink href="#effortDistribution">
-                <li>Effort Distribution</li>
-              </AnchorLink>
+              {customFieldNames.isNotEmpty() && (
+                <>
+                  <AnchorLink href="#effortDistribution">
+                    <li>Effort Distribution</li>
+                  </AnchorLink>
+                  <ol>
+                    {customFieldNames.map(name => (
+                      <AnchorLink
+                        key={name}
+                        href={`#effortDistribution${name}`}
+                      >
+                        <li className="text-capitalize">{name}</li>
+                      </AnchorLink>
+                    ))}
+                  </ol>
+                </>
+              )}
               <AnchorLink href="#releases">
                 <li>Releases</li>
               </AnchorLink>
@@ -155,9 +169,17 @@ const Report = ({ sprint, sprints }) => {
             <h1 id="effortDistribution">Effort Distribution</h1>
             <hr className="my-4" />
           </Col>
-          <Col xs={12}>
-            <SprintDistributionCustomField sprint={sprint} />
-          </Col>
+          {customFieldNames.map(name => (
+            <Col key={name} xs={12}>
+              <h2 id={`effortDistribution${name}`} className="text-capitalize">
+                {name}
+              </h2>
+              <SprintDistributionCustomField
+                sprint={sprint}
+                customFieldName={name}
+              />
+            </Col>
+          ))}
         </Row>
         <Row>
           <Col xs={12}>

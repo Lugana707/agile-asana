@@ -7,7 +7,7 @@ import Table from "../../library/table";
 import CustomFieldBadge from "../../task/badges/customField";
 
 const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
-  const { isCompletedSprint, isCurrentSprint } = sprint || {};
+  const { isCompletedSprint, isCurrentSprint, customFieldNames } = sprint || {};
 
   const tasks = useMemo(
     () => collect(isCompletedSprint ? sprint.tasksCompleted : sprint.tasks),
@@ -18,17 +18,6 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
     () =>
       isCompletedSprint ? sprint.completedStoryPoints : sprint.storyPoints,
     [isCompletedSprint, sprint.storyPoints, sprint.completedStoryPoints]
-  );
-
-  const customFieldNames = useMemo(
-    () =>
-      tasks
-        .pluck("customFields")
-        .flatten(1)
-        .pluck("name")
-        .unique()
-        .sort(),
-    [tasks]
   );
 
   const [currentCustomFieldName, setCurrentCustomFieldName] = useState(
