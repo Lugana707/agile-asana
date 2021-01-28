@@ -2,11 +2,11 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useTimeoutCallback } from "@react-hook/timeout";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
-import { reloadRecentProjects } from "../scripts/redux/actions/asanaActions";
-import withLoading from "./withLoading";
-import withConfigured from "./withConfigured";
+import { reloadRecentProjects } from "../../scripts/redux/actions/asanaActions";
+import withLoading from "../withLoading";
+import withConfigured from "../withConfigured";
 
-const UpdateProjects = ({
+const AsanaTimer = ({
   loading,
   configured,
   seconds: reloadDataTimeoutSeconds
@@ -65,4 +65,4 @@ const UpdateProjects = ({
   return <div />;
 };
 
-export default withConfigured(withLoading(UpdateProjects));
+export default withConfigured(withLoading(AsanaTimer));

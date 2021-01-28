@@ -15,6 +15,10 @@ import SprintReducer from "./reducers/sprintReducer";
 import BacklogReducer from "./reducers/backlogReducer";
 import UserReducer from "./reducers/userReducer";
 import TagReducer from "./reducers/tagReducer";
+import GithubOrganisationsReducer from "./reducers/github/organisations";
+import GithubRepositories from "./reducers/github/repositories";
+import GithubPullRequestsReducer from "./reducers/github/pullRequests";
+import GithubReleases from "./reducers/github/releases";
 
 const persistConfig = {
   key: "root",
@@ -47,7 +51,11 @@ const initialiseReduxStore = preloadedState => {
     sprints: SprintReducer(),
     backlogs: BacklogReducer(),
     users: UserReducer(),
-    settings: objectReducer("settings")
+    settings: objectReducer("settings"),
+    githubOrganisations: GithubOrganisationsReducer(),
+    githubRepositories: GithubRepositories(),
+    githubPullRequests: GithubPullRequestsReducer(),
+    githubReleases: GithubReleases()
   });
 
   const persistedReducer = persistReducer(persistConfig, rootReducer);

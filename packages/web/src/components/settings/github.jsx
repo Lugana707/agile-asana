@@ -15,11 +15,21 @@ import {
   logout
 } from "../../scripts/redux/actions/settingsActions";
 import withConfigured from "../withConfigured";
+import {
+  loadOrganisations,
+  loadRepositories
+} from "../../scripts/redux/actions/githubActions";
 
 const GithubSettings = ({ configured }) => {
   const dispatch = useDispatch();
 
   const settings = useSelector(state => state.settings);
+  const { data: githubOrganisations } = useSelector(
+    state => state.githubOrganisations
+  );
+  const { data: githubRepositories } = useSelector(
+    state => state.githubRepositories
+  );
 
   const { loading } = settings;
 
@@ -29,28 +39,66 @@ const GithubSettings = ({ configured }) => {
   );
 
   useEffect(() => {
-    if (!settings.github || !settings.github.organisations) {
+    if (!settings.github || !githubOrganisations.length) {
       return;
     }
 
-    const { organisations } = settings.github;
     const { pat, defaultOrganisation } = github;
 
-    if (organisations.length !== 1 || !!defaultOrganisation || !pat) {
+    if (githubOrganisations.length !== 1 || !!defaultOrganisation || !pat) {
       return;
     }
 
-    const [organisation] = organisations;
-    setGithub({ defaultOrganisation: organisation });
+    const [organisation] = githubOrganisations;
+    setGithub({ defaultOrganisation: organisation.login });
     dispatch(
       updateSettings({
         settings: {
           ...settings,
-          github: { ...github, defaultOrganisation: organisation }
+          github: { ...github, defaultOrganisation: organisation.login }
         }
       })
     );
-  }, [settings, dispatch, github]);
+  }, [settings, dispatch, github, githubOrganisations]);
+
+  useEffect(() => {
+    const { pat } = settings.github || {};
+
+    if (!!pat && !githubOrganisations.length) {
+      dispatch(loadOrganisations());
+    }
+  }, [dispatch, settings.github, githubOrganisations]);
+
+  useEffect(() => {
+    if (!settings.github || !githubRepositories.length) {
+      return;
+    }
+
+    const { pat, defaultRepository } = github;
+
+    if (githubRepositories.length !== 1 || !!defaultRepository || !pat) {
+      return;
+    }
+
+    const [repository] = githubRepositories;
+    setGithub({ defaultRepository: repository.name });
+    dispatch(
+      updateSettings({
+        settings: {
+          ...settings,
+          github: { ...github, defaultRepository: repository.name }
+        }
+      })
+    );
+  }, [settings, dispatch, github, githubRepositories]);
+
+  useEffect(() => {
+    const { pat } = settings.github || {};
+
+    if (!!pat && !githubRepositories.length) {
+      dispatch(loadRepositories());
+    }
+  }, [dispatch, settings.github, githubRepositories]);
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -59,12 +107,11 @@ const GithubSettings = ({ configured }) => {
     dispatch(updateSettings({ settings: { ...settings, github } }));
   };
 
-  const { defaultOrganisation } = github;
-  const { organisations } = settings.github || {};
-
   if (!configured) {
     return <div />;
   }
+
+  const { defaultOrganisation, defaultRepository } = github;
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -97,33 +144,56 @@ const GithubSettings = ({ configured }) => {
               onChange={({ target }) => setGithub({ pat: target.value })}
             />
           </Form.Group>
-          {organisations && (
+          {githubOrganisations.length > 0 && (
             <Form.Group as={Col} xs="12" controlId="formGithubOrganisations">
               <Form.Label>Github Organisation</Form.Label>
-              {organisations.length === 1 && defaultOrganisation ? (
-                <span className="d-block">{defaultOrganisation.login}</span>
+              {githubOrganisations.length === 1 && defaultOrganisation ? (
+                <span className="d-block">{defaultOrganisation}</span>
               ) : (
                 <Form.Control
                   as="select"
-                  name="asanaWorkspace"
-                  placeholder="asana workspace"
-                  value={(defaultOrganisation || {}).login || ""}
-                  onChange={({ target }) => {
-                    const { value } = target;
-                    const organisation = collect(organisations)
-                      .where("login", value)
-                      .dump()
-                      .first();
-                    setGithub({ defaultOrganisation: organisation });
-                  }}
+                  name="defaultGithubOrganisation"
+                  placeholder="github organisation"
+                  value={defaultOrganisation || ""}
+                  onChange={({ target }) =>
+                    setGithub({ defaultOrganisation: target.value })
+                  }
                   required
                 >
                   <option value={false}>-- please select --</option>
-                  {organisations.map(({ login }, index) => (
+                  {githubOrganisations.map(({ login }, index) => (
                     <option key={index} value={login}>
                       {login}
                     </option>
                   ))}
+                </Form.Control>
+              )}
+            </Form.Group>
+          )}
+          {githubRepositories.length > 0 && (
+            <Form.Group as={Col} xs="12" controlId="formGithubRepositories">
+              <Form.Label>Github Repositories</Form.Label>
+              {githubRepositories.length === 1 && defaultOrganisation ? (
+                <span className="d-block">{defaultOrganisation}</span>
+              ) : (
+                <Form.Control
+                  as="select"
+                  name="defaultGithubRepository"
+                  placeholder="github repository"
+                  value={defaultRepository || ""}
+                  onChange={({ target }) =>
+                    setGithub({ defaultRepository: target.value })
+                  }
+                  required
+                >
+                  <option value={false}>-- please select --</option>
+                  {collect(githubRepositories)
+                    .sortBy("name")
+                    .map(({ name }, index) => (
+                      <option key={index} value={name}>
+                        {name}
+                      </option>
+                    ))}
                 </Form.Control>
               )}
             </Form.Group>
@@ -155,6 +225,7 @@ const GithubSettings = ({ configured }) => {
                 className="float-right"
                 onClick={() => {
                   dispatch(logout("github"));
+                  dispatch({ type: "LOGOUT_FROM_GITHUB" });
                   setGithub({ pat: undefined });
                 }}
               >

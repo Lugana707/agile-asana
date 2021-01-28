@@ -3,12 +3,12 @@ import { withRouter } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import Logger from "js-logger";
-import { loadAll } from "../scripts/redux/actions/asanaActions";
-import { loadUser } from "../scripts/redux/actions/settingsActions";
-import withLoading from "./withLoading";
-import withConfigured from "./withConfigured";
+import { loadAll } from "../../scripts/redux/actions/asanaActions";
+import { loadUser } from "../../scripts/redux/actions/settingsActions";
+import withLoading from "../withLoading";
+import withConfigured from "../withConfigured";
 
-const DataIntegrity = ({ history, configured, loading }) => {
+const Asana = ({ history, configured, loading }) => {
   const { user, asanaApiKey } = useSelector(state => state.settings);
   const { data: asanaProjects } = useSelector(state => state.asanaProjects);
   const { data: asanaTasks } = useSelector(state => state.asanaTasks);
@@ -52,4 +52,4 @@ const DataIntegrity = ({ history, configured, loading }) => {
   return <div />;
 };
 
-export default withRouter(withConfigured(withLoading(DataIntegrity)));
+export default withRouter(withConfigured(withLoading(Asana)));

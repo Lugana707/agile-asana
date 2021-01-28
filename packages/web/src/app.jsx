@@ -3,8 +3,9 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import axios from "axios";
 import Logger from "js-logger";
 import DataProvider from "./dataProvider";
-import DataIntegrity from "./components/dataIntegrity";
-import UpdateProjects from "./components/updateProjects";
+import DataAsana from "./components/data/asana";
+import DataAsanaTimer from "./components/data/asanaTimer";
+import DataGithub from "./components/data/github";
 import Header from "./components/header";
 import Footer from "./components/footer";
 import Home from "./routes/home";
@@ -33,8 +34,9 @@ function App() {
     <div className="App">
       <DataProvider>
         <BrowserRouter>
-          <DataIntegrity />
-          <UpdateProjects seconds={60 * 3} />
+          <DataAsana />
+          <DataAsanaTimer seconds={60 * 3} />
+          <DataGithub />
           <Header />
           <Switch>
             <Route exact path="/" component={Home} />
