@@ -9,10 +9,11 @@ import SprintJumbotron from "../../../components/sprint/jumbotron";
 import SprintDistributionCustomField from "../../../components/sprint/tables/distributionCustomField";
 import withSprints from "../../../components/sprint/withSprints";
 import withSprintFromURL from "../../../components/sprint/withSprintFromURL";
+import withConfigured from "../../../components/withConfigured";
 
 const SPRINT_BREAKDOWN_COUNT = 5;
 
-const Report = ({ sprint, sprints }) => {
+const Report = ({ sprint, sprints, githubConfigured }) => {
   const recentSprints = useMemo(
     () =>
       sprints
@@ -110,7 +111,7 @@ const Report = ({ sprint, sprints }) => {
               <AnchorLink href="#summary">
                 <li>Summary</li>
                 <ol>
-                  <li>Releases</li>
+                  {githubConfigured && <li>Releases</li>}
                   <li>Commitments Met</li>
                   <li>Commitments Missed</li>
                   <li>Unplanned Work</li>
@@ -133,9 +134,11 @@ const Report = ({ sprint, sprints }) => {
                   </ol>
                 </>
               )}
-              <AnchorLink href="#releases">
-                <li>Releases</li>
-              </AnchorLink>
+              {githubConfigured && (
+                <AnchorLink href="#releases">
+                  <li>Releases</li>
+                </AnchorLink>
+              )}
             </ol>
           </Col>
         </Row>
@@ -156,10 +159,12 @@ const Report = ({ sprint, sprints }) => {
             <h1 id="summary">Summary</h1>
             <hr className="my-4" />
           </Col>
-          <SummaryColumn
-            title={<AnchorLink href="#releases">Releases</AnchorLink>}
-            data={releases}
-          />
+          {githubConfigured && (
+            <SummaryColumn
+              title={<AnchorLink href="#releases">Releases</AnchorLink>}
+              data={releases}
+            />
+          )}
           <SummaryColumn title="Commitments Met" data={commitmentsMet} />
           <SummaryColumn title="Commitments Missed" data={commitmentsMissed} />
           <SummaryColumn title="Unplanned Work" data={unplannedWork} />
@@ -181,18 +186,20 @@ const Report = ({ sprint, sprints }) => {
             </Col>
           ))}
         </Row>
-        <Row>
-          <Col xs={12}>
-            <h1 id="releases">Releases ({sprint.releases.count()})</h1>
-            <hr className="my-4" />
-          </Col>
-          <Col xs={12}>
-            <SprintReleases sprint={sprint} />
-          </Col>
-        </Row>
+        {githubConfigured && (
+          <Row>
+            <Col xs={12}>
+              <h1 id="releases">Releases ({sprint.releases.count()})</h1>
+              <hr className="my-4" />
+            </Col>
+            <Col xs={12}>
+              <SprintReleases sprint={sprint} />
+            </Col>
+          </Row>
+        )}
       </Container>
     </>
   );
 };
 
-export default withSprintFromURL(withSprints(Report));
+export default withConfigured(withSprintFromURL(withSprints(Report)));
