@@ -93,6 +93,7 @@ export const selectSprints = createSelector(
         ),
         releases: releases
           .where("draft", false)
+          .where("prerelease", false)
           .filter(({ publishedAt }) =>
             publishedAt.isBetween(sprint.startOn, sprint.finishedOn)
           )

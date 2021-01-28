@@ -57,6 +57,7 @@ export const selectForecastSprints = createSelector(
           completedAt,
           averageCompletedStoryPoints: false,
           tasks,
+          releases: collect([]),
           customFieldNames: collect(tasks)
             .pluck("customFields")
             .flatten(1)
