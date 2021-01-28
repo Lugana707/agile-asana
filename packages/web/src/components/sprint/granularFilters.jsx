@@ -63,22 +63,19 @@ const GranularFilters = ({ history, sprints }) => {
   const customFields = useMemo(
     () =>
       sprints
-        .pluck("tasks")
+        .pluck("customFieldNames")
         .flatten(1)
-        .pluck("customFields")
-        .flatten(1)
-        .unique("name")
-        .sortBy("name"),
+        .unique()
+        .sortBy(),
     [sprints]
   );
 
   const customFieldName = useMemo(() => getCustomFieldNameFromURL(location), [
     location
   ]);
-  const setCustomField = useCallback(
-    ({ name }) => setURLParam("customField", name),
-    [setURLParam]
-  );
+  const setCustomField = useCallback(name => setURLParam("customField", name), [
+    setURLParam
+  ]);
 
   useEffect(() => {
     if (!customFieldName && customFields.isNotEmpty()) {
@@ -156,11 +153,11 @@ const GranularFilters = ({ history, sprints }) => {
         <Dropdown.Menu>
           {customFields.map(obj => (
             <Dropdown.Item
-              key={obj.name}
+              key={obj}
               onSelect={() => setCustomField(obj)}
-              disabled={obj.name === customFieldName}
+              disabled={obj === customFieldName}
             >
-              {obj.name}
+              {obj}
             </Dropdown.Item>
           ))}
         </Dropdown.Menu>

@@ -56,7 +56,13 @@ export const selectForecastSprints = createSelector(
           finishedOn: completedAt,
           completedAt,
           averageCompletedStoryPoints: false,
-          tasks
+          tasks,
+          customFieldNames: collect(tasks)
+            .pluck("customFields")
+            .flatten(1)
+            .pluck("name")
+            .unique()
+            .sort()
         };
       })
 );
