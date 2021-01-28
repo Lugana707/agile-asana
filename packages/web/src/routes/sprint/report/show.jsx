@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import collect from "collect.js";
 import SprintBreakdown from "../../../components/sprint/tables/breakdown";
+import SprintReleases from "../../../components/sprint/tables/releases";
 import SprintJumbotron from "../../../components/sprint/jumbotron";
 import SprintDistributionCustomField from "../../../components/sprint/tables/distributionCustomField";
 import withSprints from "../../../components/sprint/withSprints";
@@ -19,40 +20,73 @@ const Report = ({ sprint, sprints }) => {
     [sprints, sprint]
   );
 
+  const { tasks, tasksCompleted } = sprint || {};
+
+  const releases = useMemo(
+    () =>
+      sprint.releases.map(({ uuid, name, publishedAt }) => ({
+        uuid,
+        name: (
+          <span>
+            {name}
+            <span className="text-muted pl-1">
+              {publishedAt.format("dddd, MMM Do @ LT")}
+            </span>
+          </span>
+        )
+      })),
+    [sprint.releases]
+  );
+
+  const commitmentsMet = useMemo(
+    () =>
+      collect(tasksCompleted)
+        .where("tags.length")
+        .map(task => ({ ...task, to: `/task/${task.uuid}` })),
+    [tasksCompleted]
+  );
+  const unplannedWork = useMemo(
+    () =>
+      collect(tasks)
+        .filter(({ tags }) => collect(tags).some("Unplanned"))
+        .map(task => ({ ...task, to: `/task/${task.uuid}` })),
+    [tasks]
+  );
+  const commitmentsMissed = useMemo(
+    () =>
+      collect(tasks)
+        .where("tags.length")
+        .filter(({ uuid }) => !commitmentsMet.pluck("uuid").some(uuid))
+        .map(task => ({ ...task, to: `/task/${task.uuid}` })),
+    [tasks, commitmentsMet]
+  );
+
   if (!sprint) {
     return <div className="loading-spinner centre" />;
   }
 
-  const { tasks, tasksCompleted } = sprint;
-
-  const commitmentsMet = collect(tasksCompleted).where("tags.length");
-  const unplannedWork = collect(tasks).filter(({ tags }) =>
-    collect(tags).some("Unplanned")
-  );
-  const commitmentsMissed = collect(tasks)
-    .where("tags.length")
-    .filter(({ uuid }) => !commitmentsMet.pluck("uuid").some(uuid));
-
-  const SummaryRow = ({ title, tasks }) => (
-    <Row>
-      <Col xs={12}>
-        <h2>
-          {tasks.count()} {title}
-        </h2>
-        <ol>
-          {tasks.map(({ uuid, name }) => (
-            <li key={uuid}>
+  const SummaryColumn = ({ title, data }) => (
+    <Col xs={12} lg={6}>
+      <h2>
+        {title} ({data.count()})
+      </h2>
+      <ol>
+        {data.map(({ uuid, name, to }) => (
+          <li key={uuid}>
+            {to ? (
               <Link
                 className="btn btn-link text-left text-light p-0 d-block"
-                to={`/task/${uuid}`}
+                to={to}
               >
                 <span className="pl-1 pr-1">{name}</span>
               </Link>
-            </li>
-          ))}
-        </ol>
-      </Col>
-    </Row>
+            ) : (
+              <span className="pl-1 pr-1 mt-2 mb-2">{name}</span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </Col>
   );
 
   return (
@@ -76,10 +110,11 @@ const Report = ({ sprint, sprints }) => {
             <h1>Summary</h1>
             <hr className="my-4" />
           </Col>
+          <SummaryColumn title="Releases" data={releases} />
+          <SummaryColumn title="Commitments Met" data={commitmentsMet} />
+          <SummaryColumn title="Commitments Missed" data={commitmentsMissed} />
+          <SummaryColumn title="Unplanned Work" data={unplannedWork} />
         </Row>
-        <SummaryRow title="Commitments Met" tasks={commitmentsMet} />
-        <SummaryRow title="Unplanned Work" tasks={unplannedWork} />
-        <SummaryRow title="Commitments Missed" tasks={commitmentsMissed} />
         <Row>
           <Col xs={12}>
             <h1>Effort Distribution</h1>
@@ -87,6 +122,15 @@ const Report = ({ sprint, sprints }) => {
           </Col>
           <Col xs={12}>
             <SprintDistributionCustomField sprint={sprint} />
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12}>
+            <h1>Releases ({sprint.releases.count()})</h1>
+            <hr className="my-4" />
+          </Col>
+          <Col xs={12}>
+            <SprintReleases sprint={sprint} />
           </Col>
         </Row>
       </Container>

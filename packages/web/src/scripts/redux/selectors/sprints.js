@@ -6,6 +6,7 @@ import {
   MATCH_PROJECT_KANBAN_WITHOUT_NUMBER
 } from "../actions/asanaActions";
 import { selectTasks } from "./tasks";
+import { releases } from "./releases";
 
 const RUNNING_AVERAGE_WEEK_COUNT = 3;
 
@@ -65,7 +66,8 @@ const parseProjectIntoSprint = (project, tasksCollection) => {
 export const selectSprints = createSelector(
   state => state.asanaProjects.data,
   selectTasks,
-  (asanaProjects, tasksCollection) =>
+  releases,
+  (asanaProjects, tasksCollection, releases) =>
     collect(asanaProjects)
       .filter(({ name }) => MATCH_PROJECT_KANBAN.test(name))
       .map(asanaProject =>
@@ -82,7 +84,13 @@ export const selectSprints = createSelector(
               state === "COMPLETED" ? completedStoryPoints : storyPoints
             )
             .average()
-        )
+        ),
+        releases: releases
+          .where("draft", false)
+          .filter(({ publishedAt }) =>
+            publishedAt.isBetween(sprint.startOn, sprint.finishedOn)
+          )
+          .sortByDesc(({ publishedAt }) => publishedAt.unix())
       }))
 );
 

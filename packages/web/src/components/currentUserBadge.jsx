@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import UserBadge from "./userBadge";
+import AsanaUserBadge from "./user/badges/asana";
 
 export default () => {
   const { user } = useSelector(state => state.settings);
@@ -9,5 +9,5 @@ export default () => {
     return <div className="d-inline-block">Unauthenticated</div>;
   }
 
-  return <UserBadge user={user} />;
+  return <AsanaUserBadge user={user} />;
 };

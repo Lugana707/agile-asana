@@ -1,6 +1,6 @@
 import React from "react";
 import { Image } from "react-bootstrap";
-import Logo from "../logo.png";
+import Logo from "../../../logo.png";
 
 export default ({ user }) => {
   const { name, photo } = user;
@@ -13,7 +13,6 @@ export default ({ user }) => {
         fluid
         roundedCircle={!!photo}
       />
-
       {name && <span className="pl-2">{name}</span>}
     </div>
   );

@@ -35,8 +35,6 @@ const SprintDistributionCustomField = ({ sprint, customFieldName }) => {
     customFieldName || customFieldNames.first()
   );
 
-  collect({ customFieldName, currentCustomFieldName }).dump();
-
   const tasksCollection = useMemo(
     () =>
       tasks

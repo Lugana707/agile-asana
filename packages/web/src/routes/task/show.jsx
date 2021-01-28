@@ -10,7 +10,7 @@ import SprintInfoCard from "../../components/sprint/infoCard";
 import TagBadge from "../../components/task/badges/tag";
 import CustomFieldBadge from "../../components/task/badges/customField";
 import Widget from "../../components/library/widget";
-import UserBadge from "../../components/userBadge";
+import AsanaUserBadge from "../../components/user/badges/asana";
 import Table from "../../components/library/table";
 import TaskTableRow from "../../components/task/tableRow";
 import SimilarTaskList from "../../components/task/similarTaskList";
@@ -166,7 +166,7 @@ const ShowTask = ({ task, sprints }) => {
                       Assigned to
                     </Card.Subtitle>
                     <Card.Title>
-                      <UserBadge user={assignee} />
+                      <AsanaUserBadge user={assignee} />
                     </Card.Title>
                     <hr />
                   </>
@@ -277,7 +277,7 @@ const ShowTask = ({ task, sprints }) => {
                   Created by
                 </Card.Subtitle>
                 <Card.Title>
-                  <UserBadge user={createdBy} />
+                  <AsanaUserBadge user={createdBy} />
                 </Card.Title>
                 <hr />
                 <Card.Text

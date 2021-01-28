@@ -7,7 +7,7 @@ import collect from "collect.js";
 import moment from "moment";
 import TagBadge from "./badges/tag";
 import CustomFieldBadge from "./badges/customField";
-import UserBadge from "../userBadge";
+import AsanaUserBadge from "../user/badges/asana";
 
 const TaskTableRow = ({ data: task }) => {
   const {
@@ -74,7 +74,7 @@ const TaskTableRow = ({ data: task }) => {
       </td>
       {assignee && (
         <td className="align-middle col-3 d-none d-md-block">
-          <UserBadge user={assignee} />
+          <AsanaUserBadge user={assignee} />
         </td>
       )}
       <td className="align-middle text-right text-nowrap col-2 d-none d-md-block">
