@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
+import AnchorLink from "react-anchor-link-smooth-scroll";
 import { Container, Row, Col } from "react-bootstrap";
 import collect from "collect.js";
 import SprintBreakdown from "../../../components/sprint/tables/breakdown";
@@ -28,7 +29,7 @@ const Report = ({ sprint, sprints }) => {
         uuid,
         name: (
           <span>
-            {name}
+            <AnchorLink href="#releases">{name}</AnchorLink>
             <span className="text-muted pl-1">
               {publishedAt.format("dddd, MMM Do @ LT")}
             </span>
@@ -95,29 +96,63 @@ const Report = ({ sprint, sprints }) => {
       <Container className="text-left">
         <Row>
           <Col xs={12}>
-            <h1>Comparison</h1>
+            <h1>Table of Contents</h1>
+            <hr className="my-4" />
+            <ol>
+              <AnchorLink href="#comparison">
+                <li>Comparison</li>
+              </AnchorLink>
+              <ol>
+                <AnchorLink href="#sprintBreakdown">
+                  <li>Sprint Breakdown</li>
+                </AnchorLink>
+              </ol>
+              <AnchorLink href="#summary">
+                <li>Summary</li>
+                <ol>
+                  <li>Releases</li>
+                  <li>Commitments Met</li>
+                  <li>Commitments Missed</li>
+                  <li>Unplanned Work</li>
+                </ol>
+              </AnchorLink>
+              <AnchorLink href="#effortDistribution">
+                <li>Effort Distribution</li>
+              </AnchorLink>
+              <AnchorLink href="#releases">
+                <li>Releases</li>
+              </AnchorLink>
+            </ol>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12}>
+            <h1 id="comparison">Comparison</h1>
             <hr className="my-4" />
           </Col>
         </Row>
         <Row>
           <Col xs={12}>
-            <h2>Sprint Breakdown</h2>
+            <h2 id="sprintBreakdown">Sprint Breakdown</h2>
             <SprintBreakdown loading={!sprint} sprints={recentSprints} />
           </Col>
         </Row>
         <Row>
           <Col xs={12}>
-            <h1>Summary</h1>
+            <h1 id="summary">Summary</h1>
             <hr className="my-4" />
           </Col>
-          <SummaryColumn title="Releases" data={releases} />
+          <SummaryColumn
+            title={<AnchorLink href="#releases">Releases</AnchorLink>}
+            data={releases}
+          />
           <SummaryColumn title="Commitments Met" data={commitmentsMet} />
           <SummaryColumn title="Commitments Missed" data={commitmentsMissed} />
           <SummaryColumn title="Unplanned Work" data={unplannedWork} />
         </Row>
         <Row>
           <Col xs={12}>
-            <h1>Effort Distribution</h1>
+            <h1 id="effortDistribution">Effort Distribution</h1>
             <hr className="my-4" />
           </Col>
           <Col xs={12}>
@@ -126,7 +161,7 @@ const Report = ({ sprint, sprints }) => {
         </Row>
         <Row>
           <Col xs={12}>
-            <h1>Releases ({sprint.releases.count()})</h1>
+            <h1 id="releases">Releases ({sprint.releases.count()})</h1>
             <hr className="my-4" />
           </Col>
           <Col xs={12}>
