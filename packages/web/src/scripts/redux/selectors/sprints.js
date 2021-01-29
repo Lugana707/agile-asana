@@ -6,7 +6,7 @@ import {
   MATCH_PROJECT_KANBAN_WITHOUT_NUMBER
 } from "../actions/asanaActions";
 import { selectTasks } from "./tasks";
-import { releases } from "./releases";
+import { releases } from "./code";
 
 const RUNNING_AVERAGE_WEEK_COUNT = 3;
 

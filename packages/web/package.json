@@ -23,6 +23,7 @@
     "axios-progress-bar": "^1.2.0",
     "bootstrap": "^4.5.0",
     "camelcase": "^6.0.0",
+    "camelcase-keys": "^6.2.2",
     "chart.js": "^2.9.4",
     "collect.js": "^4.27.4",
     "color": "^3.1.3",

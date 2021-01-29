@@ -14,8 +14,10 @@ import AsanaUserBadge from "../../components/user/badges/asana";
 import Table from "../../components/library/table";
 import TaskTableRow from "../../components/task/tableRow";
 import SimilarTaskList from "../../components/task/similarTaskList";
+import withConfigured from "../../components/withConfigured";
+import PullRequestList from "../../components/code/pullRequest/list";
 
-const ShowTask = ({ task, sprints }) => {
+const ShowTask = ({ githubConfigured, task, sprints }) => {
   const {
     description,
     dueOn,
@@ -31,7 +33,8 @@ const ShowTask = ({ task, sprints }) => {
     assignee,
     parent,
     subtasks,
-    percentComplete
+    percentComplete,
+    pullRequests
   } = task || {};
 
   const tagsSorted = useMemo(() => collect(tags).sort(), [tags]);
@@ -309,6 +312,17 @@ const ShowTask = ({ task, sprints }) => {
           )}
         </Row>
         <hr />
+        {githubConfigured && (
+          <Row>
+            <Col xs={12}>
+              <h4 className="bg-primary p-2 rounded text-dark">
+                Pull Requests
+              </h4>
+              <PullRequestList pullRequests={pullRequests} />
+            </Col>
+          </Row>
+        )}
+        <hr />
         <Row>
           <Col xs={12}>
             <h4 className="bg-primary p-2 rounded text-dark">
@@ -350,4 +364,4 @@ const ShowTask = ({ task, sprints }) => {
   );
 };
 
-export default withTaskFromURL(withSprints(ShowTask));
+export default withConfigured(withTaskFromURL(withSprints(ShowTask)));

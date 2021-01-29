@@ -2,6 +2,7 @@ import { createSelector } from "reselect";
 import collect from "collect.js";
 import moment from "moment";
 import { MATCH_PROJECT_KANBAN } from "../actions/asanaActions";
+import { pullRequests } from "./code";
 
 /* jshint maxcomplexity:10 */
 const parseTask = (task, asanaTasks, asanaProjects, users) => {
@@ -107,8 +108,14 @@ export const selectTasks = createSelector(
   state => state.asanaTasks.data,
   state => state.asanaProjects.data,
   state => state.users.data,
-  (asanaTasks, asanaProjects, users) =>
-    collect(asanaTasks).map(task =>
-      parseTask(task, asanaTasks, asanaProjects, users)
-    )
+  pullRequests,
+  (asanaTasks, asanaProjects, users, pullRequests) =>
+    collect(asanaTasks)
+      .map(task => parseTask(task, asanaTasks, asanaProjects, users))
+      .map(task => ({
+        ...task,
+        pullRequests: pullRequests
+          .where("body")
+          .filter(({ body }) => body.includes(task.externalLink))
+      }))
 );
