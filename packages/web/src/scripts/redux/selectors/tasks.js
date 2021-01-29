@@ -79,7 +79,8 @@ const parseTask = (task, asanaTasks, asanaProjects, users) => {
       .pluck("name")
       .toArray(),
     sections: collect(memberships || [])
-      .pluck("section.name")
+      .pluck("section")
+      .map(section => ({ uuid: section.gid, name: section.name }))
       .toArray(),
     sprints: sprints.toArray(),
     description: html_notes || notes,
@@ -100,7 +101,8 @@ const parseTask = (task, asanaTasks, asanaProjects, users) => {
       .toArray(),
     mostRecentSprint,
     completedAtDayOfSprint: getCompletedDayOfSprint(),
-    percentComplete
+    percentComplete,
+    "@asana": task
   };
 };
 

@@ -19,7 +19,8 @@ const parseProjectIntoSprint = (project, tasksCollection) => {
     start_on,
     created_at,
     permalink_url,
-    tasks
+    tasks,
+    sections
   } = project;
 
   const sprintTasksCollection = tasksCollection.whereIn("uuid", tasks || []);
@@ -54,7 +55,7 @@ const parseProjectIntoSprint = (project, tasksCollection) => {
     startOn,
     finishedOn,
     sprintLength,
-    tasks: sprintTasksCollection.toArray(),
+    tasks: sprintTasksCollection,
     tasksCompleted: tasksCompletedCollection.toArray(),
     externalLink: permalink_url,
     state: archived ? "COMPLETED" : "ACTIVE",
@@ -65,7 +66,11 @@ const parseProjectIntoSprint = (project, tasksCollection) => {
       .flatten(1)
       .pluck("name")
       .unique()
-      .sort()
+      .sort(),
+    sections: collect(sections).map(section => ({
+      uuid: section.gid,
+      name: section.name
+    }))
   };
 };
 

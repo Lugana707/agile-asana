@@ -27,6 +27,7 @@ const SprintJumobtron = ({
 
   const links = collect([
     { title: "Dashboard", url: "" },
+    { title: "Board", url: "board" },
     { title: "Tasks", url: "task" },
     { title: "Report", url: "report" }
   ])

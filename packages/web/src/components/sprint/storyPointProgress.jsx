@@ -12,6 +12,7 @@ const SprintStoryPointProgress = ({ className = "", sprint, sm }) => {
         .where("storyPoints", uuid)
         .filter(({ sections }) =>
           collect(sections)
+            .pluck("name")
             .map(section => section.toLowerCase())
             .where()
             .filter(section => section !== "to do" && section !== "refined")

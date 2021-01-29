@@ -1,6 +1,5 @@
 import Logger from "js-logger";
 import { Octokit } from "@octokit/rest";
-import collect from "collect.js";
 
 const createOctokitClient = getState => {
   const { github } = getState().settings;
@@ -8,16 +7,16 @@ const createOctokitClient = getState => {
   return new Octokit({ auth: github.pat });
 };
 
-const getAll = async (get, options = {}, count = 0) => {
-  const { data } = await get({ ...options, per_page: 100, page: count });
+const getAll = async (get, callback, options = {}, maxCount = 1) => {
+  return await Promise.all(
+    new Array(maxCount).fill(0).map(async (obj, index) => {
+      const { data } = await get({ ...options, per_page: 100, page: index });
 
-  if (data.length >= 100) {
-    return collect(data)
-      .merge(await getAll(get, options, count + 1))
-      .toArray();
-  }
+      callback(data);
 
-  return data;
+      return data;
+    })
+  );
 };
 
 const loadOrganisations = () => {
@@ -33,9 +32,9 @@ const loadOrganisations = () => {
 
       const octokit = createOctokitClient(getState);
 
-      const data = await getAll(octokit.orgs.listForAuthenticatedUser);
-
-      dispatch({ type: "FOUND_GITHUB_ORGANISATIONS", data });
+      await getAll(octokit.orgs.listForAuthenticatedUser, data =>
+        dispatch({ type: "FOUND_GITHUB_ORGANISATIONS", data })
+      );
     } catch (e) {
       Logger.error(e);
     }
@@ -56,14 +55,16 @@ const loadRepositories = () => {
 
       const octokit = createOctokitClient(getState);
 
-      const data = await getAll(octokit.repos.listForOrg, {
-        org: defaultOrganisation,
-        type: "all",
-        sort: "full_name",
-        direction: "asc"
-      });
-
-      dispatch({ type: "FOUND_GITHUB_REPOSITORIES", data });
+      await getAll(
+        octokit.repos.listForOrg,
+        data => dispatch({ type: "FOUND_GITHUB_REPOSITORIES", data }),
+        {
+          org: defaultOrganisation,
+          type: "all",
+          sort: "full_name",
+          direction: "asc"
+        }
+      );
     } catch (e) {
       Logger.error(e);
     }
@@ -84,15 +85,18 @@ const loadPullRequests = () => {
 
       const octokit = createOctokitClient(getState);
 
-      const data = await getAll(octokit.pulls.list, {
-        owner: defaultOrganisation,
-        repo: defaultRepository,
-        state: "open",
-        sort: "created",
-        direction: "desc"
-      });
-
-      dispatch({ type: "FOUND_GITHUB_PULL_REQUESTS", data });
+      await getAll(
+        octokit.pulls.list,
+        data => dispatch({ type: "FOUND_GITHUB_PULL_REQUESTS", data }),
+        {
+          owner: defaultOrganisation,
+          repo: defaultRepository,
+          state: "all",
+          sort: "created",
+          direction: "desc"
+        },
+        10
+      );
     } catch (e) {
       Logger.error(e);
     }
@@ -113,12 +117,14 @@ const loadReleases = () => {
 
       const octokit = createOctokitClient(getState);
 
-      const data = await getAll(octokit.repos.listReleases, {
-        owner: defaultOrganisation,
-        repo: defaultRepository
-      });
-
-      dispatch({ type: "FOUND_GITHUB_RELEASES", data });
+      await getAll(
+        octokit.repos.listReleases,
+        data => dispatch({ type: "FOUND_GITHUB_RELEASES", data }),
+        {
+          owner: defaultOrganisation,
+          repo: defaultRepository
+        }
+      );
     } catch (e) {
       Logger.error(e);
     }

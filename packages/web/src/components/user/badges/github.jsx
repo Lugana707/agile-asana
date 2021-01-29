@@ -1,6 +1,6 @@
 import React from "react";
 import { Image } from "react-bootstrap";
-import Logo from "../../../logo.png";
+import GithubLogo from "../../../images/github/GitHub-Mark-32px.png";
 
 export default ({ user }) => {
   const { login, avatarUrl } = user;
@@ -8,7 +8,7 @@ export default ({ user }) => {
   return (
     <div className="d-inline-block" style={{ height: "30px" }}>
       <Image
-        src={avatarUrl || Logo}
+        src={avatarUrl || GithubLogo}
         className="h-100"
         fluid
         roundedCircle={!!avatarUrl}

@@ -76,7 +76,7 @@ const getProjects = async dispatch => {
       const { data } = await axios.get(url, {
         params: {
           opt_fields: [
-            "sections",
+            "sections.name",
             "name",
             "created_at",
             "due_on",
