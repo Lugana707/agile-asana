@@ -7,7 +7,6 @@ import { persistStore, persistReducer, createTransform } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 //import monitorReducersEnhancer from "./enhancers/monitorReducers";
 import loggerMiddleware from "./middleware/logger";
-import globalReducer from "./reducers/globalReducer";
 import objectReducer from "./reducers/objectReducer";
 import AsanaProjectReducer from "./reducers/asana/projectReducer";
 import AsanaTaskReducer from "./reducers/asana/taskReducer";
@@ -44,7 +43,6 @@ const initialiseReduxStore = preloadedState => {
     : compose)(...enhancers);
 
   const rootReducer = combineReducers({
-    globalReducer,
     asanaProjects: AsanaProjectReducer(),
     asanaTasks: AsanaTaskReducer(),
     tags: TagReducer(),

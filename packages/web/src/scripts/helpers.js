@@ -1,12 +1,5 @@
 import pluralise from "pluralise";
 
-const isLoading = state => {
-  const { loading: asanaProjectsLoading } = state.asanaProjects;
-  const { loading: asanaTasksLoading } = state.asanaTasks;
-
-  return asanaProjectsLoading || asanaTasksLoading;
-};
-
 const pluraliseText = ({ name, count }) => {
   const nameLowerCase = name.toLowerCase();
 
@@ -21,4 +14,4 @@ const pluraliseText = ({ name, count }) => {
   return pluralise(count, name);
 };
 
-export { isLoading, pluraliseText };
+export { pluraliseText };

@@ -8,7 +8,7 @@ import CurrentUserBadge from "./currentUserBadge";
 import withLoading from "./withLoading";
 import withConfigured from "./withConfigured";
 
-const Header = ({ loading: globalLoading, configured }) => {
+const Header = ({ loading, configured }) => {
   if (!configured) {
     return <div />;
   }
@@ -57,12 +57,8 @@ const Header = ({ loading: globalLoading, configured }) => {
           </Nav>
           <Nav className="navbar-right">
             <NavLink to="/settings">
-              <span className="pr-2" hidden={!globalLoading}>
-                <FontAwesomeIcon
-                  icon={faRedo}
-                  size="1x"
-                  spin={!!globalLoading}
-                />
+              <span className="pr-2" hidden={!loading}>
+                <FontAwesomeIcon icon={faRedo} size="1x" spin={!!loading} />
               </span>
               <CurrentUserBadge />
             </NavLink>

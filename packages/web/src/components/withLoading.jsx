@@ -1,16 +1,17 @@
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
-import { isLoading } from "../scripts/helpers";
+import collect from "collect.js";
 
 export default WrappedComponent => props => {
-  const { globalReducer, ...state } = useSelector(state => state);
+  const state = useSelector(state => state);
 
-  const { loading: globalLoading } = globalReducer;
-
-  const loading = useMemo(() => globalLoading || isLoading(state), [
-    globalLoading,
-    state
-  ]);
+  const loading = useMemo(
+    () =>
+      collect(state)
+        .map(({ loading }) => loading)
+        .firstWhere(true),
+    [state]
+  );
 
   return <WrappedComponent {...props} loading={loading} />;
 };

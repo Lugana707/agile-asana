@@ -5,7 +5,6 @@ import camelcase from "camelcase";
 import collect from "collect.js";
 import moment from "moment";
 import { ASANA_API_URL } from "../../api";
-import { isLoading } from "../../helpers";
 
 const SET_LOADING_ASANA_PROJECTS = "SET_LOADING_ASANAPROJECTS";
 const SUCCESS_LOADING_ASANA_PROJECTS = "SUCCESS_LOADING_ASANAPROJECTS";
@@ -26,6 +25,13 @@ const getAsanaApiClient = ({ settings }) => {
     client,
     workspace
   };
+};
+
+const isLoading = state => {
+  const { loading: asanaProjectsLoading } = state.asanaProjects;
+  const { loading: asanaTasksLoading } = state.asanaTasks;
+
+  return asanaProjectsLoading || asanaTasksLoading;
 };
 
 const getTasks = async (asanaClient, { gid: projectGid, name }) => {
