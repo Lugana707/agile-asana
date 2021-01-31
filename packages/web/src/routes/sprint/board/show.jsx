@@ -1,9 +1,13 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Image } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faAngleDoubleUp,
+  faAngleDoubleDown
+} from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import withSprintFromURL from "../../../components/sprint/withSprintFromURL";
-import SprintJumbotron from "../../../components/sprint/jumbotron";
 import GithubLogo from "../../../images/github/GitHub-Mark-32px.png";
 
 const Board = ({ sprint }) => {
@@ -73,7 +77,7 @@ const Board = ({ sprint }) => {
                   as={Button}
                   href={htmlUrl}
                   className={`d-block text-light p-0 ${
-                    completedAt ? "text-muted" : ""
+                    mergedAt ? "text-muted" : ""
                   }`}
                   style={{ textDecoration: mergedAt && "line-through" }}
                 >
@@ -88,18 +92,32 @@ const Board = ({ sprint }) => {
     );
   };
 
-  return (
-    <>
-      <SprintJumbotron sprint={sprint} title="Tasks" />
-      <Container fluid>
-        <Row>
-          <Col xs={12}>
-            <h4>All Tasks (exluding subtasks)</h4>
-            <hr className="my-4" />
-          </Col>
-          {getTaskSections(
-            tasksWithoutSubtasks.merge(tasksWithSubtasks.toArray())
-          ).map(({ uuid, name, tasks }) => (
+  const CollapsibleTaskRow = ({ name, tasks, startCollapsed }) => {
+    const [collapsed, setCollapsed] = useState(startCollapsed);
+
+    return (
+      <Row>
+        <Col xs={12}>
+          <Button
+            as="h4"
+            className="pb-0 mb-0"
+            onClick={() => setCollapsed(!collapsed)}
+            variant="link"
+            size="lg"
+          >
+            <span>
+              {name} ({tasks.count()})
+            </span>
+            <span className="pl-2">
+              <FontAwesomeIcon
+                icon={collapsed ? faAngleDoubleUp : faAngleDoubleDown}
+              />
+            </span>
+          </Button>
+          <hr className="my-2" />
+        </Col>
+        {!collapsed &&
+          getTaskSections(tasks).map(({ uuid, name, tasks }) => (
             <Col key={uuid}>
               <h4>
                 <span>{name}</span>
@@ -110,25 +128,25 @@ const Board = ({ sprint }) => {
               ))}
             </Col>
           ))}
-        </Row>
+      </Row>
+    );
+  };
+
+  return (
+    <>
+      <Container fluid>
+        <CollapsibleTaskRow
+          name="All Tasks (exluding subtasks)"
+          tasks={tasksWithoutSubtasks.merge(tasksWithSubtasks.toArray())}
+          startCollapsed={false}
+        />
         {tasksWithSubtasks.map(task => (
-          <Row key={task.uuid}>
-            <Col xs={12}>
-              <h4>{task.name}</h4>
-              <hr className="my-4" />
-            </Col>
-            {getTaskSections(getSubtasks(task)).map(({ uuid, name, tasks }) => (
-              <Col key={uuid}>
-                <h4>
-                  <span>{name}</span>
-                  <span className="pl-1 text-muted">({tasks.count()})</span>
-                </h4>
-                {tasks.map(task => (
-                  <TaskCard key={task.uuid} task={task} />
-                ))}
-              </Col>
-            ))}
-          </Row>
+          <CollapsibleTaskRow
+            key={task.uuid}
+            name={task.name}
+            tasks={getSubtasks(task)}
+            startCollapsed={!!task.completedAt}
+          />
         ))}
       </Container>
     </>
