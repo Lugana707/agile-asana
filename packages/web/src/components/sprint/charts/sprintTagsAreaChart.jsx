@@ -18,7 +18,7 @@ const GraphStoryPointsTrend = ({ sprints }) => {
           state === "ACTIVE" ? tasks : tasksCompleted
         )
         //.where("mostRecentSprint", sprint.uuid)
-        .map(({ tags, storyPoints = 0, mostRecentSprint }) =>
+        .map(({ tags = [], storyPoints = 0, mostRecentSprint }) =>
           tags.map(tag => ({
             tag,
             storyPoints,
