@@ -29,7 +29,6 @@ export default () => {
 
     return {
       ...state,
-      loading: false,
       ids,
       data,
       timestamp: new Date()
@@ -42,6 +41,8 @@ export default () => {
         return { ...state, loading: true };
       case "FOUND_GITHUB_RELEASES":
         return onFoundGithubRELEASES({ state, releases: data });
+      case "FINISHED_LOOKING_FOR_GITHUB_RELEASES":
+        return { ...state, loading: false };
       case "LOGOUT":
       case "LOGOUT_FROM_GITHUB":
         return initialState;

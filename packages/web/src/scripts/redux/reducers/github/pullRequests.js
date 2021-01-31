@@ -29,7 +29,6 @@ export default () => {
 
     return {
       ...state,
-      loading: false,
       ids,
       data,
       timestamp: new Date()
@@ -42,6 +41,8 @@ export default () => {
         return { ...state, loading: true };
       case "FOUND_GITHUB_PULL_REQUESTS":
         return onFoundGithubRepositories({ state, pullRequests: data });
+      case "FINISHED_LOOKING_FOR_GITHUB_PULL_REQUESTS":
+        return { ...state, loading: false };
       case "LOGOUT":
       case "LOGOUT_FROM_GITHUB":
         return initialState;

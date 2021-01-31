@@ -1,5 +1,6 @@
 import Logger from "js-logger";
 import { Octokit } from "@octokit/rest";
+import collect from "collect.js";
 
 const createOctokitClient = getState => {
   const { github } = getState().settings;
@@ -8,15 +9,23 @@ const createOctokitClient = getState => {
 };
 
 const getAll = async (get, callback, options = {}, maxCount = 1) => {
-  return await Promise.all(
-    new Array(maxCount).fill(0).map(async (obj, index) => {
-      const { data } = await get({ ...options, per_page: 100, page: index });
+  const getAllRecursive = async count => {
+    const { data } = await get({ ...options, per_page: 100, page: count });
 
-      callback(data);
+    callback(data);
 
-      return data;
-    })
-  );
+    if (data.length >= 100 && count + 1 < maxCount) {
+      await new Promise(resolve => setTimeout(resolve, 250));
+
+      return collect(data)
+        .merge(await getAllRecursive(count + 1))
+        .toArray();
+    }
+
+    return data;
+  };
+
+  return getAllRecursive(0);
 };
 
 const loadOrganisations = () => {
@@ -37,6 +46,8 @@ const loadOrganisations = () => {
       );
     } catch (e) {
       Logger.error(e);
+    } finally {
+      dispatch({ type: "FINISHED_LOOKING_FOR_GITHUB_ORGANISATIONS" });
     }
   };
 };
@@ -67,6 +78,8 @@ const loadRepositories = () => {
       );
     } catch (e) {
       Logger.error(e);
+    } finally {
+      dispatch({ type: "FINISHED_LOOKING_FOR_GITHUB_REPOSITORIES" });
     }
   };
 };
@@ -95,10 +108,12 @@ const loadPullRequests = () => {
           sort: "created",
           direction: "desc"
         },
-        10
+        2
       );
     } catch (e) {
       Logger.error(e);
+    } finally {
+      dispatch({ type: "FINISHED_LOOKING_FOR_GITHUB_PULL_REQUESTS" });
     }
   };
 };
@@ -127,6 +142,8 @@ const loadReleases = () => {
       );
     } catch (e) {
       Logger.error(e);
+    } finally {
+      dispatch({ type: "FINISHED_LOOKING_FOR_GITHUB_RELEASES" });
     }
   };
 };
