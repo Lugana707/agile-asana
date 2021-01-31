@@ -172,7 +172,7 @@ const GithubSettings = ({ configured }) => {
           )}
           {githubRepositories.length > 0 && (
             <Form.Group as={Col} xs="12" controlId="formGithubRepositories">
-              <Form.Label>Github Repositories</Form.Label>
+              <Form.Label>Github Repository</Form.Label>
               {githubRepositories.length === 1 && defaultOrganisation ? (
                 <span className="d-block">{defaultOrganisation}</span>
               ) : (
