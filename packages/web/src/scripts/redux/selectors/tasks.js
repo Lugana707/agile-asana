@@ -2,7 +2,7 @@ import { createSelector } from "reselect";
 import collect from "collect.js";
 import moment from "moment";
 import { MATCH_PROJECT_KANBAN } from "../actions/asanaActions";
-import { pullRequests } from "./code";
+import { pullRequests, releases } from "./code";
 
 /* jshint maxcomplexity:10 */
 const parseTask = (task, asanaTasks, asanaProjects, users) => {
@@ -111,7 +111,8 @@ export const selectTasks = createSelector(
   state => state.asanaProjects.data,
   state => state.users.data,
   pullRequests,
-  (asanaTasks, asanaProjects, users, pullRequests) =>
+  releases,
+  (asanaTasks, asanaProjects, users, pullRequests, releases) =>
     collect(asanaTasks)
       .map(task => parseTask(task, asanaTasks, asanaProjects, users))
       .map(task => ({
@@ -119,5 +120,18 @@ export const selectTasks = createSelector(
         pullRequests: pullRequests
           .where("body")
           .filter(({ body }) => body.includes(task.externalLink))
+      }))
+      .map(task => ({
+        ...task,
+        releases: task.pullRequests
+          .pluck("number")
+          .map(number =>
+            releases
+              .where("body")
+              .filter(({ body }) => body.includes(`#${number}`))
+              .toArray()
+          )
+          .flatten(1)
+          .unique("uuid")
       }))
 );

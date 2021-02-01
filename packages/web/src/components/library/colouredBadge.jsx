@@ -7,7 +7,7 @@ export default ({ colour, children, ...props }) => {
 
   return (
     <Badge
-      className={`${textColour} mr-1`}
+      className={`${textColour} mr-1 mb-1`}
       style={{ backgroundColor: colour, borderColor: colour }}
       {...props}
     >

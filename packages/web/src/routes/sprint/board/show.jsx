@@ -1,14 +1,27 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { Container, Row, Col, Card, Button, Image } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Image,
+  ListGroup,
+  Badge
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleDoubleUp,
-  faAngleDoubleDown
+  faAngleDoubleDown,
+  faTag
 } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle } from "@fortawesome/free-regular-svg-icons";
 import collect from "collect.js";
 import withSprintFromURL from "../../../components/sprint/withSprintFromURL";
 import GithubLogo from "../../../images/github/GitHub-Mark-32px.png";
+import AsanaUserBadge from "../../../components/user/badges/asana";
+import TagBadge from "../../../components/task/badges/tag";
 
 const Board = ({ sprint }) => {
   const { tasks, sections } = sprint || {};
@@ -54,40 +67,117 @@ const Board = ({ sprint }) => {
   }
 
   const TaskCard = ({ task }) => {
-    const { uuid, name, completedAt, pullRequests } = task;
+    const { uuid, name, completedAt, pullRequests, assignee, tags } = task;
+
+    const releases = getSubtasks(task)
+      .pluck("releases")
+      .flatten(1)
+      .merge(task.releases.toArray())
+      .unique("uuid")
+      .sortByDesc(({ publishedAt, createdAt }) =>
+        (publishedAt || createdAt).unix()
+      );
 
     return (
-      <Card bg="dark" text="light" className="text-left">
+      <Card bg="dark" text="light" className="text-left mb-2">
         <Card.Body>
-          <Card.Subtitle>
-            <Link
-              to={`/task/${uuid}`}
-              className={completedAt ? "text-muted" : ""}
-            >
-              {name}
-            </Link>
-          </Card.Subtitle>
-          {pullRequests.isNotEmpty() && (
-            <Card.Text className="pt-2">
-              {pullRequests.map(({ uuid, title, mergedAt, htmlUrl }) => (
-                <a
-                  key={uuid}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  as={Button}
-                  href={htmlUrl}
-                  className={`d-block text-light p-0 ${
-                    mergedAt ? "text-muted" : ""
-                  }`}
-                  style={{ textDecoration: mergedAt && "line-through" }}
-                >
-                  <Image src={GithubLogo} className="h-100" fluid />
-                  <span className="pl-1">{title}</span>
-                </a>
-              ))}
-            </Card.Text>
-          )}
+          <Card.Link
+            as={Link}
+            className={completedAt ? "text-muted" : ""}
+            to={`/task/${uuid}`}
+          >
+            {completedAt && (
+              <FontAwesomeIcon
+                className="mr-1 text-success"
+                icon={faCheckCircle}
+              />
+            )}
+            <span>{name}</span>
+          </Card.Link>
         </Card.Body>
+        {(pullRequests.isNotEmpty() || releases.isNotEmpty()) && (
+          <ListGroup className="list-group-flush">
+            {releases.map(
+              ({ uuid, name, publishedAt, htmlUrl, prerelease, draft }) => (
+                <ListGroup.Item key={uuid} variant="dark">
+                  <Row>
+                    <Col xs={2} className="text-center">
+                      <FontAwesomeIcon icon={faTag} />
+                    </Col>
+                    <Col className="d-flex align-items-center">
+                      <a
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        as={Button}
+                        href={htmlUrl}
+                        className="d-block text-dark p-0"
+                      >
+                        {name}
+                      </a>
+                      <Badge
+                        variant={
+                          draft
+                            ? "light"
+                            : prerelease
+                            ? "warning"
+                            : publishedAt
+                            ? "success"
+                            : "danger"
+                        }
+                        className="ml-auto"
+                      >
+                        {draft
+                          ? "draft"
+                          : prerelease
+                          ? "rerelease"
+                          : publishedAt
+                          ? publishedAt.format("dddd, MMM Do @ LT")
+                          : "unknown"}
+                      </Badge>
+                    </Col>
+                  </Row>
+                </ListGroup.Item>
+              )
+            )}
+            {pullRequests.map(({ uuid, title, mergedAt, htmlUrl }) => (
+              <ListGroup.Item key={uuid} variant="dark">
+                <Row>
+                  <Col xs={2} className="text-center">
+                    <Image src={GithubLogo} fluid />
+                  </Col>
+                  <Col>
+                    <a
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      as={Button}
+                      href={htmlUrl}
+                      className={`d-block text-dark p-0 ${
+                        mergedAt ? "text-muted" : ""
+                      }`}
+                      style={{ textDecoration: mergedAt && "line-through" }}
+                    >
+                      {title}
+                    </a>
+                  </Col>
+                </Row>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        )}
+        {((!completedAt && assignee) || tags.length > 0) && (
+          <Card.Body>
+            <Card.Subtitle>
+              {!completedAt && assignee && (
+                <small className="float-right pl-2">
+                  <AsanaUserBadge user={assignee} />
+                </small>
+              )}
+              {tags.map(tag => (
+                <TagBadge key={tag} tag={tag} />
+              ))}
+            </Card.Subtitle>
+          </Card.Body>
+        )}
       </Card>
     );
   };
