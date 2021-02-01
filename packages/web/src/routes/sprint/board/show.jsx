@@ -236,23 +236,21 @@ const Board = ({ sprint }) => {
   };
 
   return (
-    <>
-      <Container fluid>
+    <Container fluid style={{ maxWidth: "1600px" }}>
+      <CollapsibleTaskRow
+        name="All Tasks (exluding subtasks)"
+        tasks={tasksWithoutSubtasks.merge(tasksWithSubtasks.toArray())}
+        startCollapsed={false}
+      />
+      {tasksWithSubtasks.map(task => (
         <CollapsibleTaskRow
-          name="All Tasks (exluding subtasks)"
-          tasks={tasksWithoutSubtasks.merge(tasksWithSubtasks.toArray())}
-          startCollapsed={false}
+          key={task.uuid}
+          name={task.name}
+          tasks={getSubtasks(task)}
+          startCollapsed={!!task.completedAt}
         />
-        {tasksWithSubtasks.map(task => (
-          <CollapsibleTaskRow
-            key={task.uuid}
-            name={task.name}
-            tasks={getSubtasks(task)}
-            startCollapsed={!!task.completedAt}
-          />
-        ))}
-      </Container>
-    </>
+      ))}
+    </Container>
   );
 };
 
