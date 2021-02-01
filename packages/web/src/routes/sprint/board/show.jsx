@@ -21,6 +21,7 @@ import collect from "collect.js";
 import withSprintFromURL from "../../../components/sprint/withSprintFromURL";
 import GithubLogo from "../../../images/github/GitHub-Mark-32px.png";
 import AsanaUserBadge from "../../../components/user/badges/asana";
+import GithubUserBadge from "../../../components/user/badges/github";
 import TagBadge from "../../../components/task/badges/tag";
 
 const Board = ({ sprint }) => {
@@ -139,29 +140,41 @@ const Board = ({ sprint }) => {
                 </ListGroup.Item>
               )
             )}
-            {pullRequests.map(({ uuid, title, mergedAt, htmlUrl }) => (
-              <ListGroup.Item key={uuid} variant="dark">
-                <Row>
-                  <Col xs={2} className="text-center">
-                    <Image src={GithubLogo} fluid />
-                  </Col>
-                  <Col>
-                    <a
-                      rel="noopener noreferrer"
-                      target="_blank"
-                      as={Button}
-                      href={htmlUrl}
-                      className={`d-block text-dark p-0 ${
-                        mergedAt ? "text-muted" : ""
-                      }`}
-                      style={{ textDecoration: mergedAt && "line-through" }}
-                    >
-                      {title}
-                    </a>
-                  </Col>
-                </Row>
-              </ListGroup.Item>
-            ))}
+            {pullRequests.map(
+              ({ uuid, title, mergedAt, htmlUrl, assignees }) => (
+                <ListGroup.Item key={uuid} variant="dark">
+                  <Row>
+                    <Col xs={2} className="text-center">
+                      <Image src={GithubLogo} fluid />
+                    </Col>
+                    <Col>
+                      <a
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        as={Button}
+                        href={htmlUrl}
+                        className={`d-block text-dark p-0 ${
+                          mergedAt ? "text-muted" : ""
+                        }`}
+                        style={{ textDecoration: mergedAt && "line-through" }}
+                      >
+                        {title}
+                      </a>
+                      {!mergedAt && (
+                        <small className="float-right">
+                          {assignees.map(assignee => (
+                            <GithubUserBadge
+                              key={assignee.id}
+                              user={assignee}
+                            />
+                          ))}
+                        </small>
+                      )}
+                    </Col>
+                  </Row>
+                </ListGroup.Item>
+              )
+            )}
           </ListGroup>
         )}
         {((!completedAt && assignee) || tags.length > 0) && (
