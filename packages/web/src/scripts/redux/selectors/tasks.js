@@ -112,6 +112,7 @@ export const selectTasks = createSelector(
   state => state.users.data,
   pullRequests,
   releases,
+  /* jshint maxparams:5 */
   (asanaTasks, asanaProjects, users, pullRequests, releases) =>
     collect(asanaTasks)
       .map(task => parseTask(task, asanaTasks, asanaProjects, users))
