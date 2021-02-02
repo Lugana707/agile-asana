@@ -262,9 +262,11 @@ const Board = ({ sprint }) => {
                 <span>{name}</span>
                 <span className="pl-1 text-muted">({tasks.count()})</span>
               </h4>
-              {tasks.map(task => (
-                <TaskCard key={task.uuid} task={task} />
-              ))}
+              <div className="overflow-auto" style={{ height: "80vh" }}>
+                {tasks.map(task => (
+                  <TaskCard key={task.uuid} task={task} />
+                ))}
+              </div>
             </Col>
           ))}
       </Row>
