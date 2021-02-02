@@ -30,6 +30,8 @@ import TagBadge from "../../../components/task/badges/tag";
 const Board = ({ sprint }) => {
   const { tasks, sections } = sprint || {};
 
+  const [sectionFocus, setSectionFocus] = useState("default");
+
   const subtasks = useMemo(() => tasks.pluck("subtasks").flatten(1), [tasks]);
 
   const getTaskSections = useCallback(
@@ -231,56 +233,54 @@ const Board = ({ sprint }) => {
     );
   };
 
-  const CollapsibleTaskRow = ({ name, tasks, startCollapsed }) => {
-    const [collapsed, setCollapsed] = useState(startCollapsed);
-
-    return (
-      <Row>
-        <Col xs={12}>
-          <Button
-            as="h4"
-            className="pb-0 mb-0"
-            onClick={() => setCollapsed(!collapsed)}
-            variant="link"
-            size="lg"
-          >
-            <span>
-              {name} ({tasks.count()})
-            </span>
-            <FontAwesomeIcon
-              className="ml-2"
-              icon={collapsed ? faAngleDoubleUp : faAngleDoubleDown}
-            />
-          </Button>
-          <hr className="my-2" />
-        </Col>
-        {!collapsed &&
-          getTaskSections(tasks).map(({ uuid, name, tasks }) => (
-            <Col key={uuid}>
-              <h4>
-                <span>{name}</span>
-                <span className="ml-1 text-muted">({tasks.count()})</span>
-              </h4>
-              <div className="overflow-auto" style={{ maxHeight: "80vh" }}>
-                {tasks.map(task => (
-                  <TaskCard key={task.uuid} task={task} />
-                ))}
-              </div>
-            </Col>
-          ))}
-      </Row>
-    );
-  };
+  const CollapsibleTaskRow = ({ name, tasks, id = false }) => (
+    <Row>
+      <Col xs={12}>
+        <Button
+          as="h4"
+          className="pb-0 mb-0"
+          onClick={() => setSectionFocus(sectionFocus === id ? false : id)}
+          variant="link"
+          size="lg"
+        >
+          <span>
+            {name} ({tasks.count()})
+          </span>
+          <FontAwesomeIcon
+            className="ml-2"
+            icon={sectionFocus === id ? faAngleDoubleDown : faAngleDoubleUp}
+          />
+        </Button>
+        <hr className="my-2" />
+      </Col>
+      {sectionFocus === id &&
+        getTaskSections(tasks).map(({ uuid, name, tasks }) => (
+          <Col key={uuid}>
+            <h4>
+              <span>{name}</span>
+              <span className="ml-1 text-muted">({tasks.count()})</span>
+            </h4>
+            <div className="overflow-auto" style={{ maxHeight: "80vh" }}>
+              {tasks.map(task => (
+                <TaskCard key={task.uuid} task={task} />
+              ))}
+            </div>
+          </Col>
+        ))}
+    </Row>
+  );
 
   return (
     <Container fluid style={{ maxWidth: "1600px" }}>
       <CollapsibleTaskRow
+        id="default"
         name="All Tasks (exluding subtasks)"
         tasks={tasksWithoutSubtasks.merge(tasksWithSubtasks.toArray())}
         startCollapsed={false}
       />
       {tasksWithSubtasks.map(task => (
         <CollapsibleTaskRow
+          id={task.uuid}
           key={task.uuid}
           name={
             <>
