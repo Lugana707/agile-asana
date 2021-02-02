@@ -16,7 +16,10 @@ import {
   faAngleDoubleDown,
   faTag
 } from "@fortawesome/free-solid-svg-icons";
-import { faCheckCircle } from "@fortawesome/free-regular-svg-icons";
+import {
+  faCheckCircle,
+  faTimesCircle
+} from "@fortawesome/free-regular-svg-icons";
 import collect from "collect.js";
 import withSprintFromURL from "../../../components/sprint/withSprintFromURL";
 import GithubLogo from "../../../images/github/GitHub-Mark-32px.png";
@@ -73,9 +76,9 @@ const Board = ({ sprint }) => {
       name,
       weight,
       completedAt,
-      pullRequests,
       assignee,
-      tags
+      tags,
+      pullRequests
     } = task;
 
     const releases = getSubtasks(task)
@@ -149,28 +152,27 @@ const Board = ({ sprint }) => {
               )
             )}
             {pullRequests.map(
-              ({ uuid, title, mergedAt, htmlUrl, assignees }) => (
+              ({
+                uuid,
+                title,
+                mergedAt,
+                closedAt,
+                htmlUrl,
+                requestedReviewers,
+                assignees
+              }) => (
                 <ListGroup.Item key={uuid} variant="dark">
                   <Row>
                     <Col xs={2} className="text-center">
                       <Image src={GithubLogo} fluid />
                     </Col>
                     <Col>
-                      <a
-                        rel="noopener noreferrer"
-                        target="_blank"
-                        as={Button}
-                        href={htmlUrl}
-                        className={`d-block text-dark p-0 ${
-                          mergedAt ? "text-muted" : ""
-                        }`}
-                        style={{ textDecoration: mergedAt && "line-through" }}
-                      >
-                        {title}
-                      </a>
-                      {!mergedAt && (
+                      {!closedAt && (
                         <small className="float-right">
-                          {assignees.map(assignee => (
+                          {(requestedReviewers.length
+                            ? requestedReviewers
+                            : assignees
+                          ).map(assignee => (
                             <GithubUserBadge
                               key={assignee.id}
                               user={assignee}
@@ -178,6 +180,27 @@ const Board = ({ sprint }) => {
                           ))}
                         </small>
                       )}
+                      <a
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        as={Button}
+                        href={htmlUrl}
+                        className={`d-block text-dark p-0 ${
+                          closedAt ? "text-muted" : ""
+                        }`}
+                        style={{
+                          textDecoration:
+                            (mergedAt || closedAt) && "line-through"
+                        }}
+                      >
+                        <span>{title}</span>
+                        {!mergedAt && closedAt && (
+                          <FontAwesomeIcon
+                            className="ml-1 text-danger"
+                            icon={faTimesCircle}
+                          />
+                        )}
+                      </a>
                     </Col>
                   </Row>
                 </ListGroup.Item>
