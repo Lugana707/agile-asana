@@ -194,7 +194,7 @@ const Board = ({ sprint }) => {
                 </small>
               )}
               {weight && (
-                <Badge variant="success" className="mr-1" pill>
+                <Badge variant="primary" className="mr-1" pill>
                   {weight}
                 </Badge>
               )}
