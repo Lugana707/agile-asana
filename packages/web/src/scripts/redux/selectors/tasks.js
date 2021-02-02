@@ -120,7 +120,7 @@ export const selectTasks = createSelector(
         ...task,
         pullRequests: pullRequests
           .where("body")
-          .filter(({ body }) => body.includes(task.externalLink))
+          .filter(({ body }) => body.includes(task.uuid))
       }))
       .map(task => ({
         ...task,
