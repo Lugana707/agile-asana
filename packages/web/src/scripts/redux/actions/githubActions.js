@@ -14,7 +14,7 @@ const getAll = async (get, callback, options = {}, maxCount = 1) => {
 
     callback(data);
 
-    if (data.length >= 100 && count + 1 < maxCount) {
+    if (data.length >= 100 && count < maxCount) {
       await new Promise(resolve => setTimeout(resolve, 250));
 
       return collect(data)
@@ -25,7 +25,7 @@ const getAll = async (get, callback, options = {}, maxCount = 1) => {
     return data;
   };
 
-  return getAllRecursive(0);
+  return await getAllRecursive(1);
 };
 
 const loadOrganisations = () => {
