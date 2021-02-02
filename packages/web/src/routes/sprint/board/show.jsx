@@ -212,7 +212,7 @@ const Board = ({ sprint }) => {
           <Card.Body>
             <Card.Subtitle>
               {!completedAt && assignee && (
-                <small className="float-right pl-2">
+                <small className="float-right ml-2">
                   <AsanaUserBadge user={assignee} />
                 </small>
               )}
@@ -247,11 +247,10 @@ const Board = ({ sprint }) => {
             <span>
               {name} ({tasks.count()})
             </span>
-            <span className="pl-2">
-              <FontAwesomeIcon
-                icon={collapsed ? faAngleDoubleUp : faAngleDoubleDown}
-              />
-            </span>
+            <FontAwesomeIcon
+              className="ml-2"
+              icon={collapsed ? faAngleDoubleUp : faAngleDoubleDown}
+            />
           </Button>
           <hr className="my-2" />
         </Col>
@@ -260,7 +259,7 @@ const Board = ({ sprint }) => {
             <Col key={uuid}>
               <h4>
                 <span>{name}</span>
-                <span className="pl-1 text-muted">({tasks.count()})</span>
+                <span className="ml-1 text-muted">({tasks.count()})</span>
               </h4>
               <div className="overflow-auto" style={{ height: "80vh" }}>
                 {tasks.map(task => (
@@ -283,7 +282,17 @@ const Board = ({ sprint }) => {
       {tasksWithSubtasks.map(task => (
         <CollapsibleTaskRow
           key={task.uuid}
-          name={task.name}
+          name={
+            <>
+              {task.completedAt && (
+                <FontAwesomeIcon
+                  className="text-success mr-1"
+                  icon={faCheckCircle}
+                />
+              )}
+              <span>{task.name}</span>
+            </>
+          }
           tasks={getSubtasks(task)}
           startCollapsed={!!task.completedAt}
         />
