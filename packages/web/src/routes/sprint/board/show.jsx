@@ -68,7 +68,15 @@ const Board = ({ sprint }) => {
   }
 
   const TaskCard = ({ task }) => {
-    const { uuid, name, completedAt, pullRequests, assignee, tags } = task;
+    const {
+      uuid,
+      name,
+      weight,
+      completedAt,
+      pullRequests,
+      assignee,
+      tags
+    } = task;
 
     const releases = getSubtasks(task)
       .pluck("releases")
@@ -184,6 +192,11 @@ const Board = ({ sprint }) => {
                 <small className="float-right pl-2">
                   <AsanaUserBadge user={assignee} />
                 </small>
+              )}
+              {weight && (
+                <Badge variant="success" className="mr-1" pill>
+                  {weight}
+                </Badge>
               )}
               {tags.map(tag => (
                 <TagBadge key={tag} tag={tag} />
