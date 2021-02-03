@@ -40,13 +40,6 @@ const Report = ({ sprint, sprints, githubConfigured }) => {
     [sprint.releases]
   );
 
-  const commitmentsMet = useMemo(
-    () =>
-      collect(tasksCompleted)
-        .where("tags.length")
-        .map(task => ({ ...task, to: `/task/${task.uuid}` })),
-    [tasksCompleted]
-  );
   const unplannedWork = useMemo(
     () =>
       collect(tasks)
@@ -54,13 +47,22 @@ const Report = ({ sprint, sprints, githubConfigured }) => {
         .map(task => ({ ...task, to: `/task/${task.uuid}` })),
     [tasks]
   );
+  const commitmentsMet = useMemo(
+    () =>
+      collect(tasksCompleted)
+        .where("tags.length")
+        .whereNotIn("uuid", unplannedWork.pluck("uuid").toArray())
+        .map(task => ({ ...task, to: `/task/${task.uuid}` })),
+    [tasksCompleted, unplannedWork]
+  );
   const commitmentsMissed = useMemo(
     () =>
       collect(tasks)
         .where("tags.length")
-        .filter(({ uuid }) => !commitmentsMet.pluck("uuid").some(uuid))
+        .whereNotIn("uuid", unplannedWork.pluck("uuid").toArray())
+        .whereNotIn("uuid", commitmentsMet.pluck("uuid").toArray())
         .map(task => ({ ...task, to: `/task/${task.uuid}` })),
-    [tasks, commitmentsMet]
+    [tasks, commitmentsMet, unplannedWork]
   );
 
   if (!sprint) {
