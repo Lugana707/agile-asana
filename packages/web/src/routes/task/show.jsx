@@ -169,7 +169,10 @@ const ShowTask = ({ githubConfigured, task, sprints }) => {
                       Assigned to
                     </Card.Subtitle>
                     <Card.Title>
-                      <AsanaUserBadge user={assignee} />
+                      <AsanaUserBadge
+                        className="d-inline-block"
+                        user={assignee}
+                      />
                     </Card.Title>
                     <hr />
                   </>
@@ -280,7 +283,7 @@ const ShowTask = ({ githubConfigured, task, sprints }) => {
                   Created by
                 </Card.Subtitle>
                 <Card.Title>
-                  <AsanaUserBadge user={createdBy} />
+                  <AsanaUserBadge className="d-inline-block" user={createdBy} />
                 </Card.Title>
                 <hr />
                 <Card.Text

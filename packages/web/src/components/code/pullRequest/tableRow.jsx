@@ -32,7 +32,11 @@ const TableRow = ({ data: pullRequest }) => {
       {!mergedAt && assignees.length > 0 && (
         <td className="align-middle col-3 d-none d-md-block">
           {assignees.map(assignee => (
-            <GithubUserBadge key={assignee.id} user={assignee} />
+            <GithubUserBadge
+              key={assignee.id}
+              className="d-inline-block"
+              user={assignee}
+            />
           ))}
         </td>
       )}

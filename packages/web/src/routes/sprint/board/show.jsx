@@ -174,10 +174,12 @@ const Board = ({ sprint }) => {
                           {(requestedReviewers.length
                             ? requestedReviewers
                             : assignees
-                          ).map(assignee => (
+                          ).map((assignee, index) => (
                             <GithubUserBadge
+                              className={`d-inline-block ${!!index && "pl-1"}`}
                               key={assignee.id}
                               user={assignee}
+                              hideName
                             />
                           ))}
                         </small>
@@ -214,9 +216,11 @@ const Board = ({ sprint }) => {
           <Card.Body>
             <Card.Subtitle>
               {!completedAt && assignee && (
-                <small className="float-right ml-2">
-                  <AsanaUserBadge user={assignee} />
-                </small>
+                <AsanaUserBadge
+                  className="float-right ml-2"
+                  user={assignee}
+                  hideName
+                />
               )}
               {weight && (
                 <Badge variant="primary" className="mr-1" pill>

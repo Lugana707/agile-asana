@@ -74,7 +74,7 @@ const TaskTableRow = ({ data: task }) => {
       </td>
       {assignee && (
         <td className="align-middle col-3 d-none d-md-block">
-          <AsanaUserBadge user={assignee} />
+          <AsanaUserBadge className="d-inline-block" user={assignee} />
         </td>
       )}
       <td className="align-middle text-right text-nowrap col-2 d-none d-md-block">

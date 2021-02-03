@@ -31,7 +31,7 @@ const Releases = ({ sprint }) => {
             </td>
             <td className="align-middle">{publishedAt.format("dddd @ LT")}</td>
             <td className="align-middle">
-              <GithubUserBadge user={author} />
+              <GithubUserBadge className="d-inline-block" user={author} />
             </td>
           </tr>
         ))}

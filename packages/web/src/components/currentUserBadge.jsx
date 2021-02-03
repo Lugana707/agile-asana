@@ -9,5 +9,5 @@ export default () => {
     return <div className="d-inline-block">Unauthenticated</div>;
   }
 
-  return <AsanaUserBadge user={user} />;
+  return <AsanaUserBadge className="d-inline-block" user={user} />;
 };
