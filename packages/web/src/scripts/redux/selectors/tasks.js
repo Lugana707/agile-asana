@@ -116,23 +116,24 @@ export const selectTasks = createSelector(
   (asanaTasks, asanaProjects, users, pullRequests, releases) =>
     collect(asanaTasks)
       .map(task => parseTask(task, asanaTasks, asanaProjects, users))
-      .map(task => ({
-        ...task,
-        pullRequests: pullRequests
+      .map(task => {
+        const taskPullRequests = pullRequests
           .where("body")
-          .filter(({ body }) => body.includes(task.uuid))
-      }))
-      .map(task => ({
-        ...task,
-        releases: task.pullRequests
-          .pluck("number")
-          .map(number =>
-            releases
-              .where("body")
-              .filter(({ body }) => body.includes(`#${number}`))
-              .toArray()
-          )
-          .flatten(1)
-          .unique("uuid")
-      }))
+          .filter(({ body }) => body.includes(task.uuid));
+
+        return {
+          ...task,
+          pullRequests: taskPullRequests,
+          releases: taskPullRequests
+            .pluck("number")
+            .map(number =>
+              releases
+                .where("body")
+                .filter(({ body }) => body.includes(`#${number}`))
+                .toArray()
+            )
+            .flatten(1)
+            .unique("uuid")
+        };
+      })
 );
