@@ -56,9 +56,9 @@ const getTasks = async (asanaClient, { gid: projectGid, name }) => {
       "memberships.(project.name|section.name)",
       "permalink_url",
       "parent",
-      "subtasks"
-      //"dependencies",
-      //"dependents"
+      "subtasks",
+      "dependencies",
+      "dependents"
     ]
   });
 

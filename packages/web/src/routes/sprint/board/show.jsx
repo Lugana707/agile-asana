@@ -14,7 +14,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleDoubleUp,
   faAngleDoubleDown,
-  faTag
+  faTag,
+  faExclamationCircle
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faCheckCircle,
@@ -97,6 +98,16 @@ const Board = ({ sprint }) => {
 
   const getSubtasks = useCallback(
     task => tasks.whereIn("uuid", task.subtasks),
+    [tasks]
+  );
+
+  const getBlockers = useCallback(
+    task => tasks.whereIn("uuid", task.dependencies.toArray()),
+    [tasks]
+  );
+
+  const getBlocking = useCallback(
+    task => tasks.whereIn("uuid", task.dependents.toArray()),
     [tasks]
   );
 
@@ -220,14 +231,37 @@ const Board = ({ sprint }) => {
         (publishedAt || createdAt).unix()
       );
 
+    const blockers = getBlockers(task);
+    const blocking = getBlocking(task);
+
     return (
       <Card bg="dark" text="light" className="text-left mb-2">
         <Card.Body>
           <Card.Link
             as={Link}
-            className={completedAt ? "text-muted" : ""}
+            className={
+              blockers.isNotEmpty()
+                ? "text-danger"
+                : blocking.isNotEmpty()
+                ? "text-warning"
+                : completedAt
+                ? "text-muted"
+                : ""
+            }
             to={`/task/${uuid}`}
           >
+            {blockers.isNotEmpty() && (
+              <FontAwesomeIcon
+                className="mr-1 text-danger"
+                icon={faExclamationCircle}
+              />
+            )}
+            {blocking.isNotEmpty() && (
+              <FontAwesomeIcon
+                className="mr-1 text-warning"
+                icon={faExclamationCircle}
+              />
+            )}
             {completedAt && (
               <FontAwesomeIcon
                 className="mr-1 text-success"
@@ -237,8 +271,47 @@ const Board = ({ sprint }) => {
             <span>{name}</span>
           </Card.Link>
         </Card.Body>
-        {(pullRequests.isNotEmpty() || releases.isNotEmpty()) && (
+        {(pullRequests.isNotEmpty() ||
+          releases.isNotEmpty() ||
+          blocking.isNotEmpty() ||
+          blockers.isNotEmpty()) && (
           <ListGroup className="list-group-flush">
+            {blocking.map(block => (
+              <ListGroup.Item key={block.uuid} variant="warning">
+                <Row>
+                  <Col className="d-flex align-items-center">
+                    <Badge variant="warning" className="mr-4">
+                      blocking
+                    </Badge>
+                    <Card.Link
+                      as={Link}
+                      className="text-dark"
+                      to={`/task/${uuid}`}
+                    >
+                      {block.name}
+                    </Card.Link>
+                  </Col>
+                </Row>
+              </ListGroup.Item>
+            ))}
+            {blockers.map(block => (
+              <ListGroup.Item key={block.uuid} variant="danger">
+                <Row>
+                  <Col className="d-flex align-items-center">
+                    <Badge variant="danger" className="mr-4">
+                      blocked by
+                    </Badge>
+                    <Card.Link
+                      as={Link}
+                      className="text-dark"
+                      to={`/task/${uuid}`}
+                    >
+                      {block.name}
+                    </Card.Link>
+                  </Col>
+                </Row>
+              </ListGroup.Item>
+            ))}
             {releases.map(release => (
               <ListGroup.Item key={release.uuid} variant="dark">
                 <ReleaseRow release={release} />

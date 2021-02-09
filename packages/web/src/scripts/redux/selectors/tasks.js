@@ -25,7 +25,9 @@ const parseTask = (task, asanaTasks, asanaProjects, users) => {
     permalink_url,
     parent,
     subtasks = [],
-    custom_fields
+    custom_fields,
+    dependencies = [],
+    dependents = []
   } = task;
 
   const completedAt = completed_at ? moment(completed_at) : false;
@@ -102,6 +104,8 @@ const parseTask = (task, asanaTasks, asanaProjects, users) => {
     mostRecentSprint,
     completedAtDayOfSprint: getCompletedDayOfSprint(),
     percentComplete,
+    dependencies: collect(dependencies || []).pluck("gid"),
+    dependents: collect(dependents || []).pluck("gid"),
     "@asana": task
   };
 };
