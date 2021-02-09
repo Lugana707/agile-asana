@@ -37,6 +37,8 @@ const ShowTask = ({ githubConfigured, task, sprints }) => {
     pullRequests
   } = task || {};
 
+  collect(task).dump();
+
   const tagsSorted = useMemo(() => collect(tags).sort(), [tags]);
 
   const sortedCustomFields = useMemo(
@@ -50,14 +52,16 @@ const ShowTask = ({ githubConfigured, task, sprints }) => {
   );
 
   const completedAtSprint = useMemo(
-    () => completedAt && sprints.firstWhere("uuid", mostRecentSprint),
+    () => completedAt && sprints.firstWhere("uuid", "===", mostRecentSprint),
     [completedAt, sprints, mostRecentSprint]
   );
   const currentSprint = useMemo(
     () =>
       !completedAtSprint &&
       mostRecentSprint &&
-      sprints.where("isCurrentSprint").firstWhere("uuid", mostRecentSprint),
+      sprints
+        .where("isCurrentSprint")
+        .firstWhere("uuid", "===", mostRecentSprint),
     [sprints, completedAtSprint, mostRecentSprint]
   );
   const previousSprints = useMemo(
