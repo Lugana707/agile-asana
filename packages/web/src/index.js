@@ -1,12 +1,12 @@
 import RenderApp from "./index.jsx";
-import jsLogger from "js-logger";
+import Logger from "js-logger";
 import { loadProgressBar } from "axios-progress-bar";
 import * as serviceWorker from "./serviceWorker";
 
 const rootElement = "root";
 
-jsLogger.useDefaults({ logLevel: jsLogger.DEBUG });
-jsLogger.debug("Configured logger!", { logLevel: jsLogger.getLevel() });
+Logger.useDefaults({ logLevel: Logger.DEBUG });
+Logger.debug("Configured logger!", { logLevel: Logger.getLevel() });
 
 loadProgressBar({ showSpinner: true, parent: `#${rootElement}` });
 

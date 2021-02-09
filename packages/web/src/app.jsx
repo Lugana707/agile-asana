@@ -30,7 +30,7 @@ axios.interceptors.response.use(null, error => {
   return Promise.reject(error);
 });
 
-function App() {
+const App = () => {
   return (
     <div className="App">
       <DataProvider>
@@ -79,6 +79,6 @@ function App() {
       </DataProvider>
     </div>
   );
-}
+};
 
 export default App;
