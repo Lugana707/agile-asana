@@ -4,7 +4,7 @@ import moment from "moment";
 import { MATCH_PROJECT_KANBAN } from "../actions/asanaActions";
 import { pullRequests, releases } from "./code";
 
-/* jshint maxcomplexity:10 */
+/* jshint maxcomplexity:11 */
 const parseTask = (task, asanaTasks, asanaProjects, users) => {
   const asanaProjectsCollection = collect(asanaProjects);
   const usersCollection = collect(users);
