@@ -22,7 +22,13 @@ import GithubReleases from "./reducers/github/releases";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["asanaProjects", "asanaTasks", "users", "settings"],
+  whitelist: [
+    "asanaProjects",
+    "asanaTasks",
+    "users",
+    "settings",
+    "asanaSettings"
+  ],
   transforms: [
     createTransform(
       ({ loading, ...inboundState }) => inboundState,
@@ -50,6 +56,9 @@ const initialiseReduxStore = preloadedState => {
     backlogs: BacklogReducer(),
     users: UserReducer(),
     settings: objectReducer("settings"),
+    asanaSettings: objectReducer("asanaSettings", {
+      backlogMatch: "^Product Backlog"
+    }),
     githubOrganisations: GithubOrganisationsReducer(),
     githubRepositories: GithubRepositories(),
     githubPullRequests: GithubPullRequestsReducer(),
