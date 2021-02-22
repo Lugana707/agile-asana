@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import collect from "collect.js";
 import withTasks from "../task/withTasks";
-import { MATCH_PROJECT_BACKLOG } from "../../scripts/redux/actions/asanaActions";
 
 export default WrappedComponent =>
   withTasks(({ tasks, ...props }) => {
@@ -13,7 +12,7 @@ export default WrappedComponent =>
     const backlogTasksCollection = useMemo(
       () =>
         collect(asanaProjects)
-          .filter(({ name }) => MATCH_PROJECT_BACKLOG.test(name))
+          .where("isBacklog", true)
           .pluck("tasks")
           .flatten(1)
           .unique()

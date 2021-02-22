@@ -23,7 +23,7 @@ import {
   updateSettings,
   logout
 } from "../../scripts/redux/actions/settingsActions";
-import BacklogModal from "./asana/backlogModal";
+import AsanaBacklogModal from "./asana/backlogModal";
 import withConfigured from "../withConfigured";
 
 const AsanaSettings = ({ configured, history }) => {
@@ -166,7 +166,7 @@ const AsanaSettings = ({ configured, history }) => {
             </Form.Group>
           )}
           <Form.Group as={Col} xs="12" hidden>
-            <BacklogModal variant="primary" className="mb-2" />
+            <AsanaBacklogModal variant="primary" className="mb-2" />
           </Form.Group>
         </Row>
         <Row>

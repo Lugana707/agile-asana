@@ -1,7 +1,6 @@
 import { createSelector } from "reselect";
 import collect from "collect.js";
 import moment from "moment";
-import { MATCH_PROJECT_BACKLOG } from "../actions/asanaActions";
 import { selectTasks } from "./tasks";
 import { selectCurrentSprint } from "./sprints";
 
@@ -11,10 +10,7 @@ export const selectForecastSprints = createSelector(
   selectCurrentSprint,
   (asanaProjects, tasksCollection, currentSprint) =>
     collect(asanaProjects)
-      .filter(
-        ({ name }) =>
-          MATCH_PROJECT_BACKLOG.test(name) && /\WRefined/iu.test(name)
-      )
+      .filter(({ isBacklog, name }) => isBacklog && /\WRefined/iu.test(name))
       .pluck("tasks")
       .flatten(1)
       .map(uuid => tasksCollection.firstWhere("uuid", uuid))

@@ -13,7 +13,6 @@ const SET_LOADING_ASANA_TASKS = "SET_LOADING_ASANATASKS";
 
 const MATCH_PROJECT_KANBAN = /^(Sprint|Dev|Product) (Kanban )?(Week )?(\d+)/iu;
 const MATCH_PROJECT_KANBAN_WITHOUT_NUMBER = /^(Sprint|Dev|Product) (Kanban )?(Week )?/iu;
-const MATCH_PROJECT_BACKLOG = /^Product Backlog/iu;
 
 const getAsanaApiClient = ({ settings }) => {
   const { asanaApiKey } = settings;
@@ -71,7 +70,7 @@ const getTasks = async (asanaClient, { gid: projectGid, name }) => {
   return tasks;
 };
 
-const getProjects = async dispatch => {
+const getProjects = async (dispatch, { asanaSettings }) => {
   try {
     dispatch({ type: SET_LOADING_ASANA_PROJECTS, loading: true });
 
@@ -96,16 +95,13 @@ const getProjects = async dispatch => {
         validateStatus: status => status === 200
       });
 
-      const projects = data.data
-        .map(project => ({ ...project, archived }))
-        .filter(
-          ({ name }) =>
-            MATCH_PROJECT_KANBAN.test(name) || MATCH_PROJECT_BACKLOG.test(name)
-        );
+      const projects = data.data.map(project => ({ ...project, archived }));
       Logger.debug("Gotten project list from API!", { projects });
 
       return projects;
     };
+
+    const backlogMatch = new RegExp(asanaSettings.backlogMatch);
 
     const asanaProjects = collect(
       await Promise.all([
@@ -114,16 +110,22 @@ const getProjects = async dispatch => {
       ])
     )
       .flatten(1)
+      .map(project => ({
+        ...project,
+        isBacklog: backlogMatch.test(project.name),
+        isSprint: MATCH_PROJECT_KANBAN.test(project.name)
+      }))
+      .filter(({ isBacklog, isSprint }) => isBacklog || isSprint)
       .pipe(collection =>
-        collection
-          .filter(({ name }) => MATCH_PROJECT_KANBAN.test(name))
-          .sortDesc(({ created_at }) => moment(created_at).unix())
-          .take(20)
-          .merge(
-            collection
-              .filter(({ name }) => !MATCH_PROJECT_KANBAN.test(name))
-              .toArray()
-          )
+        collection.whereNotIn(
+          "gid",
+          collection
+            .where("isSprint", true)
+            .sortDesc(({ created_at }) => moment(created_at).unix())
+            .skip(20)
+            .pluck("gid")
+            .toArray()
+        )
       )
       .toArray();
 
@@ -221,7 +223,7 @@ const lookForNewProjects = ({ forceReload = false } = {}) => {
 
     const currentAsanaProjects = collect(state.asanaProjects.data);
 
-    const asanaProjects = await getProjects(dispatch);
+    const asanaProjects = await getProjects(dispatch, state);
 
     const newAsanaProjects = collect(asanaProjects).filter(
       ({ gid }) => !currentAsanaProjects.contains("gid", gid)
@@ -273,11 +275,11 @@ const reloadRecentProjects = ({ numberOfProjects = 2 } = {}) => {
       reloadProject({
         projects: collect(asanaProjects)
           .sortByDesc(({ created_at }) => moment(created_at).unix())
-          .filter(({ name }) => !MATCH_PROJECT_BACKLOG.test(name))
+          .where("isSprint", true)
           .take(numberOfProjects)
           .merge(
             collect(asanaProjects)
-              .filter(({ name }) => MATCH_PROJECT_BACKLOG.test(name))
+              .where("isBacklog", true)
               .toArray()
           )
           .unique("gid")
@@ -293,7 +295,6 @@ export {
   lookForNewProjects,
   reloadProject,
   reloadRecentProjects,
-  MATCH_PROJECT_BACKLOG,
   MATCH_PROJECT_KANBAN,
   MATCH_PROJECT_KANBAN_WITHOUT_NUMBER
 };
