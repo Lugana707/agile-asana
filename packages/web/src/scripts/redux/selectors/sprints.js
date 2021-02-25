@@ -43,7 +43,7 @@ const parseProjectIntoSprint = (project, tasksCollection) => {
     10
   );
 
-  const finishedOn = moment(due_on);
+  const finishedOn = moment(due_on || moment());
   const startOn = moment(start_on || created_at);
   const sprintLength = finishedOn.diff(startOn.format("YYYY-MM-DD"), "days");
 
