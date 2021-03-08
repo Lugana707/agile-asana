@@ -6,8 +6,9 @@ import { faSave, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import Asana from "asana";
 import collect from "collect.js";
 import Table from "../../library/table";
+import withConfigured from "../../withConfigured";
 
-export default ({ children, ...props }) => {
+const BacklogModal = ({ configured, children, ...props }) => {
   const dispatch = useDispatch();
 
   const [show, setShow] = useState(false);
@@ -55,7 +56,7 @@ export default ({ children, ...props }) => {
   };
 
   useEffect(() => {
-    if (!asanaClient) {
+    if (!asanaClient || !configured.asana) {
       return;
     }
 
@@ -72,7 +73,11 @@ export default ({ children, ...props }) => {
             .sortBy("name")
         )
       );
-  }, [asanaClient, asanaApiKey, asanaDefaultWorkspace]);
+  }, [asanaClient, configured.asana, asanaApiKey, asanaDefaultWorkspace]);
+
+  if (!configured.asana) {
+    return <div />;
+  }
 
   const TableRow = ({ data }) => {
     const { gid, name, permalink_url } = data;
@@ -157,3 +162,5 @@ export default ({ children, ...props }) => {
     </>
   );
 };
+
+export default withConfigured(BacklogModal);

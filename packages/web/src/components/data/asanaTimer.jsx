@@ -24,7 +24,7 @@ const AsanaTimer = ({
   const [timedOut, setTimedOut] = useState(false);
 
   const reloadAsanaProjectsIfAppropriate = useCallback(() => {
-    if (loading || !configured) {
+    if (loading || !configured.asana) {
       return;
     }
 
@@ -38,7 +38,7 @@ const AsanaTimer = ({
     dispatch(reloadRecentProjects());
   }, [
     loading,
-    configured,
+    configured.asana,
     lastCheckedForData,
     reloadDataTimeoutSeconds,
     dispatch

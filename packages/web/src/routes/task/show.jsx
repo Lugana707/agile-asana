@@ -17,7 +17,7 @@ import SimilarTaskList from "../../components/task/similarTaskList";
 import withConfigured from "../../components/withConfigured";
 import PullRequestList from "../../components/code/pullRequest/list";
 
-const ShowTask = ({ githubConfigured, task, sprints }) => {
+const ShowTask = ({ configured, task, sprints }) => {
   const {
     description,
     dueOn,
@@ -319,7 +319,7 @@ const ShowTask = ({ githubConfigured, task, sprints }) => {
           )}
         </Row>
         <hr />
-        {githubConfigured && (
+        {configured.github && (
           <Row>
             <Col xs={12}>
               <h4 className="bg-primary p-2 rounded text-dark">

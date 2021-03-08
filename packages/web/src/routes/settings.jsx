@@ -47,7 +47,7 @@ const Settings = ({ loading, configured }) => {
         </Container>
       </Jumbotron>
       <Container className="text-left">
-        {configured && (
+        {configured.asana && (
           <>
             <Row>
               <Col xs={12}>

@@ -171,13 +171,16 @@ const AsanaSettings = ({ configured, history }) => {
         </Row>
         <Row>
           <Form.Group as={Col} xs="12">
-            <Button type="submit" variant={configured ? "warning" : "primary"}>
+            <Button
+              type="submit"
+              variant={configured.asana ? "warning" : "primary"}
+            >
               {loading ? (
                 <>
                   <FontAwesomeIcon icon={faCircleNotch} spin />
                   <span className="pl-1">Updating...</span>
                 </>
-              ) : configured ? (
+              ) : configured.asana ? (
                 <>
                   <FontAwesomeIcon icon={faSave} />
                   <span className="pl-1">Update</span>
@@ -189,7 +192,7 @@ const AsanaSettings = ({ configured, history }) => {
                 </>
               )}
             </Button>
-            {configured && (
+            {configured.asana && (
               <Button
                 variant="danger"
                 className="float-right"

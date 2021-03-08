@@ -107,7 +107,7 @@ const GithubSettings = ({ configured }) => {
     dispatch(updateSettings({ settings: { ...settings, github } }));
   };
 
-  if (!configured) {
+  if (!configured.asana) {
     return <div />;
   }
 
@@ -201,13 +201,16 @@ const GithubSettings = ({ configured }) => {
         </Row>
         <Row>
           <Form.Group as={Col} xs="12">
-            <Button type="submit" variant={configured ? "warning" : "primary"}>
+            <Button
+              type="submit"
+              variant={configured.asana ? "warning" : "primary"}
+            >
               {loading ? (
                 <>
                   <FontAwesomeIcon icon={faCircleNotch} spin />
                   <span className="pl-1">Updating...</span>
                 </>
-              ) : configured ? (
+              ) : configured.asana ? (
                 <>
                   <FontAwesomeIcon icon={faSave} />
                   <span className="pl-1">Update</span>
@@ -219,7 +222,7 @@ const GithubSettings = ({ configured }) => {
                 </>
               )}
             </Button>
-            {configured && (
+            {configured.asana && (
               <Button
                 variant="danger"
                 className="float-right"

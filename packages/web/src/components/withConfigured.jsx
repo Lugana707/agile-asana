@@ -20,14 +20,10 @@ export default WrappedComponent => props => {
     [github]
   );
 
-  const configured = useMemo(() => !!asanaConfigured, [asanaConfigured]);
-
   return (
     <WrappedComponent
       {...props}
-      asanaConfigured={asanaConfigured}
-      githubConfigured={githubConfigured}
-      configured={configured}
+      configured={{ asana: asanaConfigured, github: githubConfigured }}
     />
   );
 };

@@ -13,7 +13,7 @@ import withConfigured from "../../../components/withConfigured";
 
 const SPRINT_BREAKDOWN_COUNT = 5;
 
-const Report = ({ sprint, sprints, githubConfigured }) => {
+const Report = ({ sprint, sprints, configured }) => {
   const recentSprints = useMemo(
     () =>
       sprints
@@ -113,7 +113,7 @@ const Report = ({ sprint, sprints, githubConfigured }) => {
               <AnchorLink href="#summary">
                 <li>Summary</li>
                 <ol>
-                  {githubConfigured && <li>Releases</li>}
+                  {configured.github && <li>Releases</li>}
                   <li>Commitments Met</li>
                   <li>Commitments Missed</li>
                   <li>Unplanned Work</li>
@@ -136,7 +136,7 @@ const Report = ({ sprint, sprints, githubConfigured }) => {
                   </ol>
                 </>
               )}
-              {githubConfigured && (
+              {configured.github && (
                 <AnchorLink href="#releases">
                   <li>Releases</li>
                 </AnchorLink>
@@ -161,7 +161,7 @@ const Report = ({ sprint, sprints, githubConfigured }) => {
             <h1 id="summary">Summary</h1>
             <hr className="my-4" />
           </Col>
-          {githubConfigured && (
+          {configured.github && (
             <SummaryColumn
               title={<AnchorLink href="#releases">Releases</AnchorLink>}
               data={releases}
@@ -188,7 +188,7 @@ const Report = ({ sprint, sprints, githubConfigured }) => {
             </Col>
           ))}
         </Row>
-        {githubConfigured && (
+        {configured.github && (
           <Row>
             <Col xs={12}>
               <h1 id="releases">Releases ({sprint.releases.count()})</h1>

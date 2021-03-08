@@ -30,7 +30,7 @@ const Header = ({ loading, configured, history, location }) => {
     initialiseGA4();
   }, [history, location.pathname, location.search]);
 
-  if (!configured) {
+  if (!configured.asana) {
     return <div />;
   }
 

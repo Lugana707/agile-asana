@@ -34,20 +34,20 @@ const Asana = ({ history, configured, loading }) => {
   }, [asanaApiKey]);
 
   useEffect(() => {
-    if (!configured) {
+    if (!configured.asana) {
       history.push("/settings");
     } else if (!user) {
       dispatch(loadUser());
     }
-  }, [configured, user, dispatch, history]);
+  }, [configured.asana, user, dispatch, history]);
 
   useEffect(() => {
-    if (loading || !configured) {
+    if (loading || !configured.asana) {
       return;
     } else if (!asanaProjects || !asanaTasks) {
       dispatch(loadAll());
     }
-  }, [loading, configured, dispatch, asanaProjects, asanaTasks]);
+  }, [loading, configured.asana, dispatch, asanaProjects, asanaTasks]);
 
   return <div />;
 };
