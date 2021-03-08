@@ -15,7 +15,7 @@ export default () => {
 
   const parseTask = ({ assignee, subtasks, custom_fields, ...task }) => ({
     ...task,
-    custom_fields: custom_fields.map(({ name, enum_value }) => ({
+    custom_fields: (custom_fields || []).map(({ name, enum_value }) => ({
       name,
       enum_value: collect(enum_value)
         .only(["name", "color"])
