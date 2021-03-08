@@ -14,11 +14,12 @@ const GraphStoryPointsTrend = ({ sprints }) => {
   const tasksByTag = useMemo(
     () =>
       sprintCollection
-        .flatMap(({ state, tasksCompleted, tasks }) =>
-          state === "ACTIVE" ? tasks : tasksCompleted
+        .flatMap(({ isCurrentSprint, tasksCompleted, tasks }) =>
+          isCurrentSprint ? tasks : tasksCompleted
         )
         //.where("mostRecentSprint", sprint.uuid)
-        .map(({ tags = [], storyPoints = 0, mostRecentSprint }) =>
+        .dump()
+        .map(({ tags = [], storyPoints = 0, mostRecentSprint, number }) =>
           tags.map(tag => ({
             tag,
             storyPoints,

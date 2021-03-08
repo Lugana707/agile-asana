@@ -10,8 +10,8 @@ export default WrappedComponent => props => {
   const sprintsWithTasks = useMemo(
     () =>
       allSprints.map(({ tasks, tasksCompleted, ...sprint }) => ({
-        tasks: allTasks.whereIn("uuid", tasks),
-        tasksCompleted: allTasks.whereIn("uuid", tasksCompleted),
+        tasks: allTasks.whereIn("uuid", tasks).toArray(),
+        tasksCompleted: allTasks.whereIn("uuid", tasksCompleted).toArray(),
         ...sprint
       })),
     [allSprints, allTasks]
