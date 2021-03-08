@@ -22,6 +22,8 @@ const Report = ({ sprint, sprints, configured }) => {
     [sprints, sprint]
   );
 
+  collect(sprint).dump();
+
   const { tasks, tasksCompleted, customFieldNames } = sprint || {};
 
   const releases = useMemo(
@@ -43,26 +45,24 @@ const Report = ({ sprint, sprints, configured }) => {
   const unplannedWork = useMemo(
     () =>
       collect(tasks)
-        .filter(({ tags }) => collect(tags).some("Unplanned"))
+        .where("unplanned")
         .map(task => ({ ...task, to: `/task/${task.uuid}` })),
     [tasks]
   );
   const commitmentsMet = useMemo(
     () =>
       collect(tasksCompleted)
-        .where("tags.length")
-        .whereNotIn("uuid", unplannedWork.pluck("uuid").toArray())
+        .where("commitment")
         .map(task => ({ ...task, to: `/task/${task.uuid}` })),
-    [tasksCompleted, unplannedWork]
+    [tasksCompleted]
   );
   const commitmentsMissed = useMemo(
     () =>
       collect(tasks)
-        .where("tags.length")
-        .whereNotIn("uuid", unplannedWork.pluck("uuid").toArray())
-        .whereNotIn("uuid", commitmentsMet.pluck("uuid").toArray())
+        .where("commitment")
+        .where("completedAt", false)
         .map(task => ({ ...task, to: `/task/${task.uuid}` })),
-    [tasks, commitmentsMet, unplannedWork]
+    [tasks]
   );
 
   if (!sprint) {

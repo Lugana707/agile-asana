@@ -5,12 +5,11 @@ import {
   MATCH_PROJECT_KANBAN,
   MATCH_PROJECT_KANBAN_WITHOUT_NUMBER
 } from "../actions/asanaActions";
-import { selectTasks } from "./tasks";
 import { releases } from "./code";
 
 const RUNNING_AVERAGE_WEEK_COUNT = 3;
 
-const parseProjectIntoSprint = (project, tasksCollection) => {
+const parseProjectIntoSprint = (asanaProject, asanaProjects, asanaTasks) => {
   const {
     gid,
     archived,
@@ -21,13 +20,25 @@ const parseProjectIntoSprint = (project, tasksCollection) => {
     permalink_url,
     tasks,
     sections
-  } = project;
+  } = asanaProject;
 
-  const sprintTasksCollection = tasksCollection.whereIn("uuid", tasks || []);
+  const sprintTasksCollection = collect(asanaTasks).whereIn("gid", tasks || []);
 
   const tasksCompletedCollection = sprintTasksCollection
-    .filter(task => !!task.completedAt)
-    .where("mostRecentSprint", gid);
+    .filter(task => !!task.completed_at)
+    .filter(
+      ({ memberships }) =>
+        collect(memberships)
+          .pluck("project.gid")
+          .pipe(projects =>
+            collect(asanaProjects).whereIn("gid", projects.toArray())
+          )
+          .filter()
+          .filter(project => MATCH_PROJECT_KANBAN.test(project.name))
+          .sortBy(project => moment(project.created_at).unix())
+          .pluck("gid")
+          .last() === gid
+    );
 
   const sumStoryPoints = collection =>
     collection
@@ -55,14 +66,15 @@ const parseProjectIntoSprint = (project, tasksCollection) => {
     startOn,
     finishedOn,
     sprintLength,
-    tasks: sprintTasksCollection,
-    tasksCompleted: tasksCompletedCollection.toArray(),
+    tasks: sprintTasksCollection.pluck("gid").toArray(),
+    tasksCompleted: tasksCompletedCollection.pluck("gid").toArray(),
     externalLink: permalink_url,
     state: archived ? "COMPLETED" : "ACTIVE",
     isCurrentSprint: !archived,
     isCompletedSprint: archived,
     customFieldNames: sprintTasksCollection
-      .pluck("customFields")
+      .pluck("custom_fields")
+      .filter()
       .flatten(1)
       .pluck("name")
       .unique()
@@ -76,13 +88,13 @@ const parseProjectIntoSprint = (project, tasksCollection) => {
 
 export const selectSprints = createSelector(
   state => state.asanaProjects.data,
-  selectTasks,
+  state => state.asanaTasks.data,
   releases,
-  (asanaProjects, tasksCollection, releases) =>
+  (asanaProjects, asanaTasks, releases) =>
     collect(asanaProjects)
       .filter(({ name }) => MATCH_PROJECT_KANBAN.test(name))
       .map(asanaProject =>
-        parseProjectIntoSprint(asanaProject, tasksCollection)
+        parseProjectIntoSprint(asanaProject, asanaProjects, asanaTasks)
       )
       .sortByDesc("number")
       .map((sprint, index, array) => ({
