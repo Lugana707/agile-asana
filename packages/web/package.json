@@ -1,8 +1,8 @@
 {
-  "name": "agile-asana.web",
+  "name": "app.agilelytics.ca",
   "version": "0.1.0",
   "author": "Sam Albon",
-  "license": "MIT",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Lugana707/agile-asana.git"
