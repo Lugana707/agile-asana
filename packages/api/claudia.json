@@ -1,0 +1,10 @@
+{
+  "lambda": {
+    "role": "api_agilelytics_ca-executor",
+    "name": "api_agilelytics_ca",
+    "region": "us-east-1"
+  },
+  "api": {
+    "id": "19f0637i37"
+  }
+}

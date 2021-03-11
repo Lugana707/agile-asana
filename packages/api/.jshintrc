@@ -1,0 +1,21 @@
+{
+  "esversion": 10,
+  "curly": true,
+  "eqeqeq": true,
+  "forin": true,
+  "freeze": true,
+  "futurehostile": true,
+  "latedef": true,
+  "leanswitch": true,
+  "maxcomplexity": 6,
+  "maxdepth": 2,
+  "maxparams": 4,
+  "noarg": true,
+  "nonew": true,
+  "regexpu": true,
+  "shadow": "outer",
+  "undef": true,
+  "unused": true,
+  "varstmt": true,
+  "node": true
+}

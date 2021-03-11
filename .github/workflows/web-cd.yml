@@ -7,9 +7,15 @@ on:
       - ".github/workflows/web-cd.yml"
       - "packages/web/**"
 
+env:
+  ENVIRONMENT_NAME: production
+  AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
+  AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+
 jobs:
-  build-test-deploy:
-    name: Build, Test, & Deploy
+  build-test-deploy-web:
+    name: Build, Test, & Deploy Web
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -45,3 +51,25 @@ jobs:
           CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
           PURGE_URLS: '["https://${{ env.AWS_S3_BUCKET }}/"]'
+
+  build-test-deploy-api:
+    name: Build, Test, Deploy API
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: [api]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+      - name: Build & Test & Deploy
+        working-directory: packages/${{ matrix.package }}
+        run: |
+          DOCKER_BUILDKIT=1 docker build \
+            -t opencolumnist/${{ matrix.package }}:latest \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --build-arg ENVIRONMENT_NAME=${{ env.ENVIRONMENT_NAME }} \
+            --build-arg AWS_DEFAULT_REGION=${{ env.AWS_DEFAULT_REGION }} \
+            --build-arg AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }} \
+            --build-arg AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }} \
+            --target deploy \
+            .

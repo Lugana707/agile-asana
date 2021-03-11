@@ -1,0 +1,5 @@
+node_modules/
+coverage/
+bin/
+.env
+lambda.js

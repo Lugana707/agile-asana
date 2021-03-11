@@ -11,3 +11,23 @@ services:
       - 80:3000
     volumes:
       - ./packages/web/:/src/:cached
+
+  api:
+    build:
+      context: packages/api
+      target: test
+    command: sh -c "yarn install --frozen-lockfile --non-interactive  && yarn start"
+    ports:
+      - 3000:3000
+    env_file:
+      - packages/api/.env
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: DEBUG
+      PORT: 3000
+      ORIGIN: localhost
+      ENVIRONMENT_NAME: test
+    volumes:
+      - ./packages/api:/src
+    tmpfs:
+      - /cache/yarn

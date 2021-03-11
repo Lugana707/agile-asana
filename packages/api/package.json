@@ -1,0 +1,59 @@
+{
+  "name": "api.agilelytics.ca",
+  "version": "0.1.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lugana707/agile-asana.git"
+  },
+  "main": "lambda.js",
+  "scripts": {
+    "start": "nodemon src/server.js",
+    "test": "yarn lint && yarn hint && yarn depcheck && yarn jest",
+    "ci": "yarn install --frozen-lockfile --non-interactive && CI=true yarn test",
+    "jest": "jest src/ --coverage",
+    "lint": "eslint src/",
+    "hint": "jshint src/",
+    "depcheck": "depcheck .",
+    "build:transpile": "babel src --out-dir bin",
+    "build:lambda": "claudia generate-serverless-express-proxy --source . --express-module src/app --use-local-dependencies",
+    "create:lambda": "claudia create --handler lambda.handler --deploy-proxy-api --runtime nodejs12.x --version test --region us-east-1",
+    "deploy:test:lambda": "claudia update --version test --update-env NODE_ENV=production,ENVIRONMENT_NAME=test --timeout 30 --memory 128 --runtime nodejs12.x",
+    "deploy:production:lambda": "claudia update --version production --update-env NODE_ENV=production,ENVIRONMENT_NAME=production --timeout 30 --memory 128 --runtime nodejs12.x"
+  },
+  "author": "Sam Albon",
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "dependencies": {
+    "aws-serverless-express": "^3.4.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "helmet": "^3.21.1",
+    "js-logger": "^1.6.0",
+    "lightship": "^4.3.7",
+    "locale": "^0.1.0",
+    "morgan": "^1.9.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.8",
+    "@babel/core": "^7.12.9",
+    "@babel/eslint-parser": "^7.12.1",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-proposal-private-methods": "^7.12.1",
+    "babel-jest": "^26.6.3",
+    "claudia": "^5.9.0",
+    "depcheck": "^0.9.2",
+    "eslint": "^7.7.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "jest": "^24.9.0",
+    "jshint": "^2.11.0",
+    "nodemon": "^2.0.3",
+    "supertest": "^4.0.2"
+  },
+  "nodemonConfig": {
+    "ext": "js,json,yml"
+  }
+}
