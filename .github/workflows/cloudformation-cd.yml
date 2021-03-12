@@ -10,16 +10,12 @@ on:
 env:
   AWS_REGION: ca-central-1
   ENVIRONMENT_NAME: production
+  WEBSITE_NAME: app.agilelytics.ca
 
 jobs:
   deploy:
     name: Update Static Site
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        website: [asana.albon.me, app.agilelytics.ca]
-    env:
-      WEBSITE_NAME: ${{ matrix.website }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2.3.4

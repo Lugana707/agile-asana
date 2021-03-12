@@ -30,3 +30,19 @@ RUN \
 FROM scratch AS release
 
 COPY --from=build /src/build /build
+
+FROM amazon/aws-cli:2.0.61 AS deploy
+
+ARG AWS_S3_BUCKET
+ARG AWS_DEFAULT_REGION
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+
+ENV AWS_S3_BUCKET=s3://${AWS_S3_BUCKET}
+ENV AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+
+WORKDIR /build
+COPY --from=build /src/build .
+RUN aws s3 sync . ${AWS_S3_BUCKET} --acl public-read --follow-symlinks --delete
