@@ -32,7 +32,6 @@ const Settings = ({ loading, configured }) => {
         <Container>
           <h1>Settings</h1>
           <p>These settings be stored locally using local storage.</p>
-          <Alert variant="info">All data is stored locally!</Alert>
           <hr className="my-4" />
           <fieldset disabled={loading}>
             <ButtonGroup>
