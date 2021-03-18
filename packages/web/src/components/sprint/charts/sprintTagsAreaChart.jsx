@@ -15,10 +15,8 @@ const GraphStoryPointsTrend = ({ sprints }) => {
     () =>
       sprintCollection
         .flatMap(({ isCurrentSprint, tasksCompleted, tasks }) =>
-          isCurrentSprint ? tasks : tasksCompleted
+          isCurrentSprint ? tasks.toArray() : tasksCompleted.toArray()
         )
-        //.where("mostRecentSprint", sprint.uuid)
-        .dump()
         .map(({ tags = [], storyPoints = 0, mostRecentSprint, number }) =>
           tags.map(tag => ({
             tag,
