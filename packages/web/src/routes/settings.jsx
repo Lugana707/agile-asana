@@ -2,7 +2,6 @@ import React from "react";
 import {
   Container,
   Jumbotron,
-  Alert,
   Button,
   ButtonGroup,
   Row,
