@@ -19,14 +19,6 @@ const StoryPointsPerDay = ({ sprint }) => {
     sprintStartOn
   ]);
 
-  const daysOfTheWeek = useMemo(
-    () =>
-      collect(new Array(sprintLength + 1).fill(0)).map(
-        (obj, index) => obj + index
-      ),
-    [sprintLength]
-  );
-
   const getStoryPointsForSprintDay = useCallback(
     dayOfWeek =>
       collect(sprintTasksCompleted)
@@ -37,6 +29,25 @@ const StoryPointsPerDay = ({ sprint }) => {
         )
         .sum("storyPoints"),
     [sprintTasksCompleted, dayOfWeekForFirstDayOfSprint]
+  );
+
+  const daysOfTheWeek = useMemo(
+    () =>
+      collect(new Array(sprintLength + 1).fill(0))
+        .map((obj, index) => obj + index)
+        .filter((dayOfWeek, index, array) => {
+          if (
+            (dayOfWeek + dayOfWeekForFirstDayOfSprint) % 7 === 0 ||
+            (dayOfWeek + dayOfWeekForFirstDayOfSprint) % 7 === 6 ||
+            index === array.length - 1
+          ) {
+            return !!getStoryPointsForSprintDay(dayOfWeek);
+          }
+
+          return true;
+        })
+        .dump(),
+    [sprintLength, dayOfWeekForFirstDayOfSprint, getStoryPointsForSprintDay]
   );
 
   const data = useMemo(
