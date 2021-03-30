@@ -3,8 +3,9 @@ import { Bar } from "react-chartjs-2";
 import collect from "collect.js";
 import moment from "moment";
 import randomFlatColors from "random-flat-colors";
+import withSprints from "../withSprints";
 
-const StoryPointsPerDay = ({ sprint }) => {
+const StoryPointsPerDay = ({ sprint, sprints }) => {
   const {
     state: sprintState,
     storyPoints: committedStoryPoints,
@@ -38,16 +39,28 @@ const StoryPointsPerDay = ({ sprint }) => {
         .filter((dayOfWeek, index, array) => {
           if (
             (dayOfWeek + dayOfWeekForFirstDayOfSprint) % 7 === 0 ||
-            (dayOfWeek + dayOfWeekForFirstDayOfSprint) % 7 === 6 ||
-            index === array.length - 1
+            (dayOfWeek + dayOfWeekForFirstDayOfSprint) % 7 === 6
           ) {
             return !!getStoryPointsForSprintDay(dayOfWeek);
           }
 
+          if (index === array.length - 1) {
+            const previousSprint = sprints
+              .map(({ finishedOn }) => finishedOn.format("YYYYMMDD"))
+              .firstWhere(true, "===", sprintStartOn.format("YYYYMMDD"));
+
+            return !previousSprint || !!getStoryPointsForSprintDay(dayOfWeek);
+          }
+
           return true;
-        })
-        .dump(),
-    [sprintLength, dayOfWeekForFirstDayOfSprint, getStoryPointsForSprintDay]
+        }),
+    [
+      sprintLength,
+      dayOfWeekForFirstDayOfSprint,
+      getStoryPointsForSprintDay,
+      sprints,
+      sprintStartOn
+    ]
   );
 
   const data = useMemo(
@@ -170,4 +183,4 @@ const StoryPointsPerDay = ({ sprint }) => {
   );
 };
 
-export default StoryPointsPerDay;
+export default withSprints(StoryPointsPerDay);
