@@ -25,8 +25,6 @@ const Report = ({ sprint, sprints, configured }) => {
     [sprints, sprint]
   );
 
-  collect(sprint).dump();
-
   const { tasks, tasksCompleted, customFieldNames } = sprint || {};
 
   const releases = useMemo(

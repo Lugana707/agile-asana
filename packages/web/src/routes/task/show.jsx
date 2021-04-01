@@ -37,8 +37,6 @@ const ShowTask = ({ configured, task, sprints }) => {
     pullRequests
   } = task || {};
 
-  collect(task).dump();
-
   const tagsSorted = useMemo(() => collect(tags).sort(), [tags]);
 
   const sortedCustomFields = useMemo(
