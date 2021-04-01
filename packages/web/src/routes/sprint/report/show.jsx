@@ -2,6 +2,9 @@ import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import AnchorLink from "react-anchor-link-smooth-scroll";
 import { Container, Row, Col } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimesCircle } from "@fortawesome/free-regular-svg-icons";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import collect from "collect.js";
 import SprintBreakdown from "../../../components/sprint/tables/breakdown";
 import SprintReleases from "../../../components/sprint/tables/releases";
@@ -75,13 +78,16 @@ const Report = ({ sprint, sprints, configured }) => {
         {title} ({data.count()})
       </h2>
       <ol>
-        {data.map(({ uuid, name, to }) => (
+        {data.map(({ uuid, name, to, completedAt }) => (
           <li key={uuid}>
             {to ? (
               <Link
                 className="btn btn-link text-left text-light p-0 d-block"
                 to={to}
               >
+                <FontAwesomeIcon
+                  icon={!!completedAt ? faCheckCircle : faTimesCircle}
+                />
                 <span className="pl-1 pr-1">{name}</span>
               </Link>
             ) : (
