@@ -1,6 +1,5 @@
-![Web CD](https://github.com/Lugana707/app.agilelytics.ca/workflows/Web%20CD/badge.svg)
-![CloudFormation CD](https://github.com/Lugana707/app.agilelytics.ca/workflows/CloudFormation%20CD/badge.svg)
-![Trunk Updated](https://github.com/Lugana707/app.agilelytics.ca/workflows/Trunk%20Updated/badge.svg)
+[![Trunk Updated](https://github.com/Lugana707/app.agilelytics.ca/actions/workflows/trunk-updated.yml/badge.svg)](https://github.com/Lugana707/app.agilelytics.ca/actions/workflows/trunk-updated.yml)
+[![Release](https://github.com/Lugana707/app.agilelytics.ca/actions/workflows/release.yml/badge.svg)](https://github.com/Lugana707/app.agilelytics.ca/actions/workflows/release.yml)
 
 # [<img src="https://app.agilelytics.ca/static/media/logo.c3abc04e.png" alt="drawing" width="50px" alt="agilelytics"/>](https://app.agilelytics.ca/) agilelytics
 
