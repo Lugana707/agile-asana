@@ -2,19 +2,16 @@ import React, { useMemo, useCallback } from "react";
 import { Bar } from "react-chartjs-2";
 import collect from "collect.js";
 import moment from "moment";
-import randomFlatColors from "random-flat-colors";
 import withSprints from "../withSprints";
+import withColours from "../../withColours";
 
-const StoryPointsPerDay = ({ sprint, sprints }) => {
+const StoryPointsPerDay = ({ sprint, sprints, colours }) => {
   const {
-    state: sprintState,
     storyPoints: committedStoryPoints,
     sprintLength,
     startOn: sprintStartOn,
     tasksCompleted: sprintTasksCompleted
   } = sprint;
-
-  const burnUp = useMemo(() => sprintState === "COMPLETED", [sprintState]);
 
   const dayOfWeekForFirstDayOfSprint = useMemo(() => sprintStartOn.weekday(), [
     sprintStartOn
@@ -65,12 +62,18 @@ const StoryPointsPerDay = ({ sprint, sprints }) => {
 
   const data = useMemo(
     () => ({
-      labels: daysOfTheWeek.toArray(),
+      labels: daysOfTheWeek
+        .map(dayOfWeek =>
+          moment()
+            .weekday(dayOfWeek + sprintStartOn.weekday())
+            .format("dddd")
+        )
+        .toArray(),
       datasets: [
         {
-          label: burnUp ? "Burn Up" : "Burn Down",
+          label: "Burn Down",
           type: "line",
-          color: randomFlatColors("gray"),
+          color: colours.actualTrend,
           data: daysOfTheWeek
             .map(obj => getStoryPointsForSprintDay(obj))
             .map(
@@ -80,29 +83,28 @@ const StoryPointsPerDay = ({ sprint, sprints }) => {
                   .take(index)
                   .sum()
             )
-            .when(!burnUp, collection =>
-              collection.map(obj => committedStoryPoints - obj)
-            )
+            .map(obj => committedStoryPoints - obj)
             .take(moment().diff(sprintStartOn, "days") + 1)
             .toArray()
         },
         {
           label: "Ideal Trend",
           type: "line",
-          color: randomFlatColors("white"),
+          color: colours.idealTrend,
           pointRadius: 0,
           data: daysOfTheWeek
             .map(
               (obj, index) =>
                 (committedStoryPoints / (daysOfTheWeek.count() - 1)) * index
             )
-            .when(!burnUp, collection => collection.reverse())
+            .reverse()
             .toArray()
         },
         {
-          label: "Story Points",
+          label: "Story Points Done",
           type: "bar",
-          color: randomFlatColors("orange"),
+          hidden: true,
+          color: colours.completedStoryPoints,
           data: daysOfTheWeek
             .map(obj => getStoryPointsForSprintDay(obj))
             .toArray()
@@ -120,8 +122,10 @@ const StoryPointsPerDay = ({ sprint, sprints }) => {
       sprintStartOn,
       getStoryPointsForSprintDay,
       daysOfTheWeek,
-      burnUp,
-      committedStoryPoints
+      committedStoryPoints,
+      colours.idealTrend,
+      colours.actualTrend,
+      colours.completedStoryPoints
     ]
   );
 
@@ -130,35 +134,10 @@ const StoryPointsPerDay = ({ sprint, sprints }) => {
       responsive: true,
       maintainAspectRatio: false,
       tooltips: {
-        callbacks: {
-          title: (tooltipItem, data) =>
-            `${moment()
-              .weekday(
-                parseInt(tooltipItem[0].label, 10) + sprintStartOn.weekday()
-              )
-              .format("dddd")}`
-        }
+        mode: "index",
+        intersect: false
       },
       scales: {
-        xAxes: [
-          {
-            ticks: {
-              callback: value => {
-                const dayOfWeek = value + sprintStartOn.weekday();
-                const weekday = dayOfWeek % 7;
-                const text = moment()
-                  .weekday(dayOfWeek)
-                  .format("dddd");
-
-                if (weekday === 6 || weekday === 0) {
-                  return `${text}*`;
-                }
-
-                return text;
-              }
-            }
-          }
-        ],
         yAxes: [
           {
             type: "linear",
@@ -169,7 +148,7 @@ const StoryPointsPerDay = ({ sprint, sprints }) => {
         ]
       }
     }),
-    [sprintStartOn]
+    []
   );
 
   if (!sprint) {
@@ -183,4 +162,4 @@ const StoryPointsPerDay = ({ sprint, sprints }) => {
   );
 };
 
-export default withSprints(StoryPointsPerDay);
+export default withSprints(withColours(StoryPointsPerDay));

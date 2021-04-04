@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import SprintBurnUpDown from "../../components/sprint/charts/burnUpDown";
+import SprintBurnDown from "../../components/sprint/charts/burnDown";
 import SprintTagsBarChart from "../../components/sprint/charts/sprintTagsBarChart";
 import SprintTimeProgress from "../../components/sprint/timeProgress";
 import SprintStoryPointProgress from "../../components/sprint/storyPointProgress";
@@ -25,7 +25,7 @@ const Show = ({ sprint }) => {
       <Container>
         <Row>
           <Col xs={{ span: 12, order: 0 }} md={12} className="pb-4">
-            <SprintBurnUpDown sprint={sprint} />
+            <SprintBurnDown sprint={sprint} />
           </Col>
           <Col xs={{ span: 12, order: 1 }} className="pb-4">
             <SprintStoryPointProgress sprint={sprint} />

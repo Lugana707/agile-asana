@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
 import { Bar } from "react-chartjs-2";
 import collect from "collect.js";
-import randomFlatColors from "random-flat-colors";
 import Color from "color";
+import withColours from "../../withColours";
 
-const SprintStoryPointsTrend = ({ sprints }) => {
+const SprintStoryPointsTrend = ({ sprints, colours }) => {
   const sprintsCollection = useMemo(
     () => collect(sprints || []).sortBy("number"),
     [sprints]
@@ -16,24 +16,14 @@ const SprintStoryPointsTrend = ({ sprints }) => {
   );
 
   const data = useMemo(() => {
-    const gray = Color(randomFlatColors("gray")).darken(0.2);
-
     return {
       labels: sprintsCollection.pluck("number").toArray(),
       datasets: [
         {
-          label: "3 Week Average",
-          type: "line",
-          fill: true,
-          borderColor: gray.hex(),
-          backgroundColor: gray.fade(0.75).hex(),
-          data: completedSprints.pluck("averageCompletedStoryPoints").toArray()
-        },
-        {
           label: "Overall Trend",
           type: "line",
           hidden: true,
-          color: randomFlatColors("white"),
+          color: colours.actualTrend,
           spanGaps: true,
           data: sprintsCollection
             .pluck("number")
@@ -61,15 +51,25 @@ const SprintStoryPointsTrend = ({ sprints }) => {
             .toArray()
         },
         {
+          label: "3 Week Average",
+          type: "line",
+          fill: true,
+          borderColor: colours.idealTrend,
+          backgroundColor: Color(colours.idealTrend)
+            .fade(0.75)
+            .hex(),
+          data: completedSprints.pluck("averageCompletedStoryPoints").toArray()
+        },
+        {
           label: "Committed Story Points",
           type: "bar",
-          color: randomFlatColors("orange"),
+          color: colours.committedStoryPoints,
           data: sprintsCollection.pluck("storyPoints").toArray()
         },
         {
           label: "Completed Story Points",
           type: "bar",
-          color: randomFlatColors("yellow"),
+          color: colours.completedStoryPoints,
           data: sprintsCollection.pluck("completedStoryPoints").toArray()
         }
       ].map(({ color, ...obj }) => ({
@@ -80,7 +80,14 @@ const SprintStoryPointsTrend = ({ sprints }) => {
         borderWidth: 1
       }))
     };
-  }, [sprintsCollection, completedSprints]);
+  }, [
+    sprintsCollection,
+    completedSprints,
+    colours.idealTrend,
+    colours.actualTrend,
+    colours.committedStoryPoints,
+    colours.completedStoryPoints
+  ]);
 
   const options = useMemo(
     () => ({
@@ -120,4 +127,4 @@ const SprintStoryPointsTrend = ({ sprints }) => {
   );
 };
 
-export default SprintStoryPointsTrend;
+export default withColours(SprintStoryPointsTrend);
