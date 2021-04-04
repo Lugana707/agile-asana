@@ -16,6 +16,13 @@ const SprintStoryPointsTrend = ({ sprints, colours }) => {
   );
 
   const data = useMemo(() => {
+    const threeWeekAverage = {
+      label: "3 Week Average",
+      type: "line",
+      color: colours.idealTrend,
+      data: completedSprints.pluck("averageCompletedStoryPoints").toArray()
+    };
+
     return {
       labels: sprintsCollection.pluck("number").toArray(),
       datasets: [
@@ -50,16 +57,7 @@ const SprintStoryPointsTrend = ({ sprints, colours }) => {
             })
             .toArray()
         },
-        {
-          label: "3 Week Average",
-          type: "line",
-          fill: true,
-          borderColor: colours.idealTrend,
-          backgroundColor: Color(colours.idealTrend)
-            .fade(0.75)
-            .hex(),
-          data: completedSprints.pluck("averageCompletedStoryPoints").toArray()
-        },
+        { ...threeWeekAverage },
         {
           label: "Committed Story Points",
           type: "bar",
@@ -71,6 +69,16 @@ const SprintStoryPointsTrend = ({ sprints, colours }) => {
           type: "bar",
           color: colours.completedStoryPoints,
           data: sprintsCollection.pluck("completedStoryPoints").toArray()
+        },
+        {
+          ...threeWeekAverage,
+          label: `${threeWeekAverage.label} Background`,
+          fill: true,
+          pointRadius: 0,
+          borderColor: false,
+          backgroundColor: Color("gray")
+            .fade(0.75)
+            .hex()
         }
       ].map(({ color, ...obj }) => ({
         borderColor: color,
@@ -120,9 +128,21 @@ const SprintStoryPointsTrend = ({ sprints, colours }) => {
     []
   );
 
+  const legend = useMemo(
+    () => ({
+      display: true,
+      labels: {
+        filter: ({ text }) => {
+          return !text.toLowerCase().includes("background");
+        }
+      }
+    }),
+    []
+  );
+
   return (
     <div className="chartjs-min-height w-100 overflow-hidden">
-      <Bar data={data} options={options} />
+      <Bar data={data} options={options} legend={legend} />
     </div>
   );
 };
