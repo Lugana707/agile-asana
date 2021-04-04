@@ -4,10 +4,9 @@ on:
   push:
     branches: trunk
     paths:
-      - ".github/workflows/web-cd.yml"
-      - "packages/web/**"
-      - ".github/workflows/cloudformation-cd.yml"
-      - ".orchestration/cloudformation/**"
+      - "!.github/**"
+      - ".github/workflows/release.yml"
+      - "!README.md"
 
 env:
   ENVIRONMENT_NAME: production
