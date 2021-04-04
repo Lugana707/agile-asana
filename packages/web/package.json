@@ -19,6 +19,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "asana": "^0.18.5",
+    "audit-ci": "^3.1.1",
     "axios": "^0.21.1",
     "axios-progress-bar": "^1.2.0",
     "bootstrap": "^4.5.0",
@@ -55,10 +56,11 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "yarn test:hint && yarn test:depcheck",
+    "test": "yarn test:hint && yarn test:depcheck && test:node-audit",
     "test:react": "react-scripts test",
     "test:hint": "jshint src/",
     "test:depcheck": "depcheck .",
+    "test:node-audit": "yarn audit-ci --critical",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
