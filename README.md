@@ -2,7 +2,7 @@
 ![CloudFormation CD](https://github.com/Lugana707/app.agilelytics.ca/workflows/CloudFormation%20CD/badge.svg)
 ![Trunk Updated](https://github.com/Lugana707/app.agilelytics.ca/workflows/Trunk%20Updated/badge.svg)
 
-# agilelytics (app.agilelytics.ca)
+# [<img src="https://app.agilelytics.ca/static/media/logo.c3abc04e.png" alt="drawing" width="50px" alt="agilelytics"/>](https://app.agilelytics.ca/) agilelytics
 
 Web UI aimed towards providing tools for agile organisations using Asana.
 
