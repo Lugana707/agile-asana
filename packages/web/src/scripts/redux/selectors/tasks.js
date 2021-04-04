@@ -4,7 +4,7 @@ import moment from "moment";
 import { selectSprints } from "./sprints";
 import { pullRequests, releases } from "./code";
 
-/* jshint maxcomplexity:11 */
+/* jshint maxcomplexity:14 */
 const parseTask = (asanaTask, asanaTasks, allSprints, users) => {
   const usersCollection = collect(users);
 
