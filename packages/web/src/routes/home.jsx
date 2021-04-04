@@ -39,7 +39,7 @@ const Home = ({ sprints }) => {
         <div className="loading-spinner centre" />
       ) : (
         <Row className="mr-4">
-          <Col xs={12} lg={6} style={{ height: "50vh" }}>
+          <Col xs={12} lg={12} style={{ height: "50vh" }}>
             <SprintStoryPointsTrend sprints={sprintsForDisplay} />
           </Col>
           <Col
