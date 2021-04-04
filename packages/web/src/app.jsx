@@ -13,6 +13,7 @@ import BacklogDashboard from "./routes/backlog/dashboard";
 import BacklogForecast from "./routes/backlog/forecast";
 import Sprints from "./routes/sprint/index";
 import SprintShow from "./routes/sprint/show";
+import SprintDashboardShow from "./routes/sprint/dashboard/show";
 import SprintTaskShow from "./routes/sprint/task/show";
 import SprintReportShow from "./routes/sprint/report/show";
 import SprintBoardShow from "./routes/sprint/board/show";
@@ -49,6 +50,11 @@ const App = () => {
             <Route exact path="/backlog/forecast" component={BacklogForecast} />
             <Route exact path="/sprint" component={Sprints} />
             <Route exact path="/sprint/:uuid" component={SprintShow} />
+            <Route
+              exact
+              path="/sprint/:uuid/dashboard"
+              component={SprintDashboardShow}
+            />
             <Route exact path="/sprint/:uuid/task" component={SprintTaskShow} />
             <Route
               exact
