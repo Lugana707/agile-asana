@@ -4,6 +4,7 @@ on:
   push:
     branches: trunk
     paths:
+      - "**"
       - "!.github/**"
       - ".github/workflows/release.yml"
       - "!README.md"
