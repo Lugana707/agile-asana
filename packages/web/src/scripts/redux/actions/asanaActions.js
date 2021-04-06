@@ -11,9 +11,6 @@ const SUCCESS_LOADING_ASANA_PROJECTS = "SUCCESS_LOADING_ASANAPROJECTS";
 
 const SET_LOADING_ASANA_TASKS = "SET_LOADING_ASANATASKS";
 
-const MATCH_PROJECT_KANBAN = /^(Sprint|Dev|Product) (Kanban )?(Week )?(\d+)/iu;
-const MATCH_PROJECT_KANBAN_WITHOUT_NUMBER = /^(Sprint|Dev|Product) (Kanban )?(Week )?/iu;
-
 const getAsanaApiClient = ({ settings }) => {
   const { asanaApiKey } = settings;
 
@@ -102,6 +99,7 @@ const getProjects = async (dispatch, { asanaSettings }) => {
     };
 
     const backlogMatch = new RegExp(asanaSettings.backlogMatch);
+    const sprintMatch = new RegExp(asanaSettings.sprintMatch);
 
     const asanaProjects = collect(
       await Promise.all([
@@ -113,7 +111,7 @@ const getProjects = async (dispatch, { asanaSettings }) => {
       .map(project => ({
         ...project,
         isBacklog: backlogMatch.test(project.name),
-        isSprint: MATCH_PROJECT_KANBAN.test(project.name)
+        isSprint: sprintMatch.test(project.name)
       }))
       .filter(({ isBacklog, isSprint }) => isBacklog || isSprint)
       .pipe(collection =>
@@ -290,11 +288,4 @@ const reloadRecentProjects = ({ numberOfProjects = 2 } = {}) => {
   };
 };
 
-export {
-  loadAll,
-  lookForNewProjects,
-  reloadProject,
-  reloadRecentProjects,
-  MATCH_PROJECT_KANBAN,
-  MATCH_PROJECT_KANBAN_WITHOUT_NUMBER
-};
+export { loadAll, lookForNewProjects, reloadProject, reloadRecentProjects };

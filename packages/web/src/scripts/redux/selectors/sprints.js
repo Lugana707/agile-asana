@@ -1,15 +1,16 @@
 import { createSelector } from "reselect";
 import collect from "collect.js";
 import moment from "moment";
-import {
-  MATCH_PROJECT_KANBAN,
-  MATCH_PROJECT_KANBAN_WITHOUT_NUMBER
-} from "../actions/asanaActions";
 import { releases } from "./code";
 
 const RUNNING_AVERAGE_WEEK_COUNT = 3;
 
-const parseProjectIntoSprint = (asanaProject, asanaProjects, asanaTasks) => {
+const parseProjectIntoSprint = (
+  asanaProject,
+  asanaProjects,
+  asanaTasks,
+  sprintMatch
+) => {
   const {
     gid,
     archived,
@@ -34,7 +35,7 @@ const parseProjectIntoSprint = (asanaProject, asanaProjects, asanaTasks) => {
             collect(asanaProjects).whereIn("gid", projects.toArray())
           )
           .filter()
-          .filter(project => MATCH_PROJECT_KANBAN.test(project.name))
+          .filter(project => new RegExp(sprintMatch).test(project.name))
           .sortBy(project => moment(project.created_at).unix())
           .pluck("gid")
           .last() === gid
@@ -49,10 +50,13 @@ const parseProjectIntoSprint = (asanaProject, asanaProjects, asanaTasks) => {
   const storyPoints = sumStoryPoints(sprintTasksCollection);
   const completedStoryPoints = sumStoryPoints(tasksCompletedCollection);
 
-  const week = parseInt(
-    name.replace(MATCH_PROJECT_KANBAN_WITHOUT_NUMBER, "").trim(),
-    10
-  );
+  const getWeek = () => {
+    const numbersInName = name.match(/(\d+)/);
+    const [number] = numbersInName || [-1];
+
+    return parseInt(number, 10);
+  };
+  const week = getWeek();
 
   const finishedOn = moment(due_on || moment());
   const startOn = moment(start_on || created_at);
@@ -89,12 +93,18 @@ const parseProjectIntoSprint = (asanaProject, asanaProjects, asanaTasks) => {
 export const selectSprints = createSelector(
   state => state.asanaProjects.data,
   state => state.asanaTasks.data,
+  state => state.asanaSettings,
   releases,
-  (asanaProjects, asanaTasks, releases) =>
+  (asanaProjects, asanaTasks, { sprintMatch }, releases) =>
     collect(asanaProjects)
-      .filter(({ name }) => MATCH_PROJECT_KANBAN.test(name))
+      .filter(({ name }) => new RegExp(sprintMatch).test(name))
       .map(asanaProject =>
-        parseProjectIntoSprint(asanaProject, asanaProjects, asanaTasks)
+        parseProjectIntoSprint(
+          asanaProject,
+          asanaProjects,
+          asanaTasks,
+          sprintMatch
+        )
       )
       .sortByDesc("number")
       .map((sprint, index, array) => ({
