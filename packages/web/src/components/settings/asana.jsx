@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useMemo, useReducer, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import {
   Row,
@@ -24,6 +24,7 @@ import {
   logout
 } from "../../scripts/redux/actions/settingsActions";
 import AsanaBacklogModal from "./asana/backlogModal";
+import AsanaSprintModal from "./asana/sprintModal";
 import withConfigured from "../withConfigured";
 
 const AsanaSettings = ({ configured, history }) => {
@@ -34,6 +35,11 @@ const AsanaSettings = ({ configured, history }) => {
   );
 
   const { asanaApiKey, asanaDefaultWorkspace, user } = settingsFromState;
+
+  const showExperimentalFeatures = useMemo(
+    () => user && user.name === "Sam Albon-Li",
+    [user]
+  );
 
   const dispatch = useDispatch();
 
@@ -165,8 +171,11 @@ const AsanaSettings = ({ configured, history }) => {
               )}
             </Form.Group>
           )}
-          <Form.Group as={Col} xs="12" hidden>
+          <Form.Group as={Col} xs="12" hidden={!showExperimentalFeatures}>
             <AsanaBacklogModal variant="primary" className="mb-2" />
+          </Form.Group>
+          <Form.Group as={Col} xs="12" hidden={!showExperimentalFeatures}>
+            <AsanaSprintModal variant="primary" className="mb-2" />
           </Form.Group>
         </Row>
         <Row>
