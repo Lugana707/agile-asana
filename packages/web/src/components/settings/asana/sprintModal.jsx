@@ -29,21 +29,42 @@ const SprintModal = ({ configured, children, ...props }) => {
   const [sprintMatch, setSprintMatch] = useState(
     asanaSettings.sprintMatch || ""
   );
+
+  const valid = useMemo(() => {
+    if (!sprintMatch) {
+      return false;
+    }
+
+    try {
+      new RegExp(sprintMatch);
+    } catch {
+      return false;
+    }
+
+    return true;
+  }, [sprintMatch]);
+
   const [projects, setProjects] = useState(false);
   const filteredProjects = useMemo(
     () =>
       projects &&
       projects
-        .when(!!sprintMatch, collection =>
-          collection.filter(({ name }) =>
-            new RegExp(sprintMatch, "iu").test(name)
-          )
+        .filter(
+          ({ name }) => !valid || new RegExp(sprintMatch, "iu").test(name)
         )
-        .toArray(),
-    [sprintMatch, projects]
-  );
+        .map(sprint => {
+          const match = sprint.name.match(/(\d+)/);
+          const [number] = match || [false];
 
-  const valid = useMemo(() => sprintMatch, [sprintMatch]);
+          return {
+            ...sprint,
+            number: number ? parseInt(number, 10) : false
+          };
+        })
+        .sortByDesc("number")
+        .toArray(),
+    [sprintMatch, projects, valid]
+  );
 
   const handleSave = () => {
     dispatch({
@@ -79,7 +100,7 @@ const SprintModal = ({ configured, children, ...props }) => {
   }
 
   const TableRow = ({ data }) => {
-    const { gid, name, permalink_url } = data;
+    const { gid, name, number, permalink_url } = data;
 
     return (
       <tr key={gid}>
@@ -95,6 +116,9 @@ const SprintModal = ({ configured, children, ...props }) => {
             <span>{name}</span>
             <FontAwesomeIcon className="ml-1" icon={faExternalLinkAlt} />
           </a>
+        </td>
+        <td className="align-middle">
+          <i>{`Sprint ${number}` || "Cannot find sprint number!"}</i>
         </td>
       </tr>
     );

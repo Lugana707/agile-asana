@@ -57,6 +57,7 @@ const initialiseReduxStore = preloadedState => {
     users: UserReducer(),
     settings: objectReducer("settings"),
     asanaSettings: objectReducer("asanaSettings", {
+      sprintMatch: "^(Sprint|Dev|Product) (Kanban )?(Week )?(\\d+)",
       backlogMatch: "^Product Backlog"
     }),
     githubOrganisations: GithubOrganisationsReducer(),
