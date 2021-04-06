@@ -53,7 +53,7 @@ const SprintModal = ({ configured, children, ...props }) => {
           ({ name }) => !valid || new RegExp(sprintMatch, "iu").test(name)
         )
         .map(sprint => {
-          const match = sprint.name.match(/(\d+)/);
+          const match = sprint.name.match(/(\d+)/iu);
           const [number] = match || [false];
 
           return {

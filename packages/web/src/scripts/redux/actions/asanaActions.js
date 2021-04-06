@@ -98,8 +98,8 @@ const getProjects = async (dispatch, { asanaSettings }) => {
       return projects;
     };
 
-    const backlogMatch = new RegExp(asanaSettings.backlogMatch);
-    const sprintMatch = new RegExp(asanaSettings.sprintMatch);
+    const backlogMatch = new RegExp(asanaSettings.backlogMatch, "iu");
+    const sprintMatch = new RegExp(asanaSettings.sprintMatch, "iu");
 
     const asanaProjects = collect(
       await Promise.all([

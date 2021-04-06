@@ -35,7 +35,7 @@ const parseProjectIntoSprint = (
             collect(asanaProjects).whereIn("gid", projects.toArray())
           )
           .filter()
-          .filter(project => new RegExp(sprintMatch).test(project.name))
+          .filter(project => new RegExp(sprintMatch, "iu").test(project.name))
           .sortBy(project => moment(project.created_at).unix())
           .pluck("gid")
           .last() === gid
@@ -51,7 +51,7 @@ const parseProjectIntoSprint = (
   const completedStoryPoints = sumStoryPoints(tasksCompletedCollection);
 
   const getWeek = () => {
-    const numbersInName = name.match(/(\d+)/);
+    const numbersInName = name.match(/(\d+)/iu);
     const [number] = numbersInName || [-1];
 
     return parseInt(number, 10);
@@ -97,7 +97,7 @@ export const selectSprints = createSelector(
   releases,
   (asanaProjects, asanaTasks, { sprintMatch }, releases) =>
     collect(asanaProjects)
-      .filter(({ name }) => new RegExp(sprintMatch).test(name))
+      .filter(({ name }) => new RegExp(sprintMatch, "iu").test(name))
       .map(asanaProject =>
         parseProjectIntoSprint(
           asanaProject,
