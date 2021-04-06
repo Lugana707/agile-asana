@@ -29,21 +29,34 @@ const BacklogModal = ({ configured, children, ...props }) => {
   const [backlogMatch, setBacklogMatch] = useState(
     asanaSettings.backlogMatch || ""
   );
+
+  const valid = useMemo(() => {
+    if (!backlogMatch) {
+      return false;
+    }
+
+    try {
+      new RegExp(backlogMatch);
+    } catch {
+      return false;
+    }
+
+    return true;
+  }, [backlogMatch]);
+
   const [projects, setProjects] = useState(false);
   const filteredProjects = useMemo(
     () =>
       projects &&
       projects
-        .when(!!backlogMatch, collection =>
+        .when(valid, collection =>
           collection.filter(({ name }) =>
             new RegExp(backlogMatch, "iu").test(name)
           )
         )
         .toArray(),
-    [backlogMatch, projects]
+    [backlogMatch, projects, valid]
   );
-
-  const valid = useMemo(() => backlogMatch, [backlogMatch]);
 
   const handleSave = () => {
     dispatch({
