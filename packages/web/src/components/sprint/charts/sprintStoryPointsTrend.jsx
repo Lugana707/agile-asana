@@ -32,6 +32,7 @@ const SprintStoryPointsTrend = ({ sprints, colours }) => {
           hidden: true,
           color: colours.actualTrend,
           spanGaps: true,
+          yAxisID: "y-axis-storypoints",
           data: sprintsCollection
             .pluck("number")
             .map(number => {
@@ -62,13 +63,28 @@ const SprintStoryPointsTrend = ({ sprints, colours }) => {
           label: "Committed Story Points",
           type: "bar",
           color: colours.committedStoryPoints,
+          yAxisID: "y-axis-storypoints",
           data: sprintsCollection.pluck("storyPoints").toArray()
         },
         {
           label: "Completed Story Points",
           type: "bar",
           color: colours.completedStoryPoints,
+          yAxisID: "y-axis-storypoints",
           data: sprintsCollection.pluck("completedStoryPoints").toArray()
+        },
+        {
+          label: "Commitments Met",
+          type: "line",
+          hidden: true,
+          color: colours.completedStoryPoints,
+          yAxisID: "y-axis-percentage",
+          data: sprintsCollection
+            .where("isCompletedSprint")
+            .map(({ storyPoints, completedStoryPoints }) =>
+              Math.round((completedStoryPoints / parseFloat(storyPoints)) * 100)
+            )
+            .toArray()
         },
         {
           ...threeWeekAverage,
@@ -78,7 +94,8 @@ const SprintStoryPointsTrend = ({ sprints, colours }) => {
           borderColor: false,
           backgroundColor: Color("gray")
             .fade(0.75)
-            .hex()
+            .hex(),
+          yAxisID: "y-axis-storypoints"
         }
       ].map(({ color, ...obj }) => ({
         borderColor: color,
@@ -118,9 +135,27 @@ const SprintStoryPointsTrend = ({ sprints, colours }) => {
             gridLines: { display: false },
             display: true,
             stacked: false,
+            position: "left",
             type: "linear",
-            scaleLabel: { display: false },
+            scaleLabel: { display: false, labelString: "Story Points" },
+            id: "y-axis-storypoints",
             ticks: { beginAtZero: true, precision: 0 }
+          },
+          {
+            gridLines: { display: false },
+            display: true,
+            stacked: false,
+            position: "right",
+            type: "linear",
+            scaleLabel: { display: false, labelString: "Percentage" },
+            id: "y-axis-percentage",
+            ticks: {
+              beginAtZero: true,
+              max: 100,
+              callback: function(value) {
+                return `${value}%`;
+              }
+            }
           }
         ]
       }
