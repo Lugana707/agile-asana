@@ -6,11 +6,6 @@ import collect from "collect.js";
 import moment from "moment";
 import { ASANA_API_URL } from "../../api";
 
-const SET_LOADING_ASANA_PROJECTS = "SET_LOADING_ASANAPROJECTS";
-const SUCCESS_LOADING_ASANA_PROJECTS = "SUCCESS_LOADING_ASANAPROJECTS";
-
-const SET_LOADING_ASANA_TASKS = "SET_LOADING_ASANATASKS";
-
 const getAsanaApiClient = ({ settings }) => {
   const { asanaApiKey } = settings;
 
@@ -69,7 +64,7 @@ const getTasks = async (asanaClient, { gid: projectGid, name }) => {
 
 const getProjects = async (dispatch, { asanaSettings }) => {
   try {
-    dispatch({ type: SET_LOADING_ASANA_PROJECTS, loading: true });
+    dispatch({ type: "STARTED_LOADING_ASANA_PROJECTS" });
 
     const getProjectsFromAsana = async archived => {
       const url = `${ASANA_API_URL}/projects`;
@@ -129,79 +124,50 @@ const getProjects = async (dispatch, { asanaSettings }) => {
 
     return asanaProjects;
   } catch (error) {
-    dispatch({ type: SET_LOADING_ASANA_PROJECTS, loading: false });
     Logger.error(error.callStack || error);
+
     return false;
+  } finally {
+    dispatch({ type: "FINISHED_LOADING_ASANA_PROJECTS" });
   }
 };
 
 const loadProjectTasks = async (dispatch, getState, { asanaProjects }) => {
   try {
-    dispatch({ type: SET_LOADING_ASANA_TASKS, loading: true });
+    dispatch({ type: "STARTED_LOADING_ASANA_TASKS" });
 
     const { client } = getAsanaApiClient(getState());
 
-    const { data: asanaTasks } = getState().asanaTasks;
+    await Promise.all(
+      asanaProjects.map(async project => {
+        const tasks = collect(await getTasks(client, project)).map(
+          ({ custom_fields, ...task }) => ({
+            ...task,
+            custom_fields: custom_fields.filter(obj => !!obj.enum_value),
+            ...custom_fields
+              .filter(obj => !!obj.number_value)
+              .reduce(
+                (accumulator, { name, number_value }) => ({
+                  [camelcase(name)]: number_value,
+                  ...accumulator
+                }),
+                {}
+              )
+          })
+        );
 
-    const asanaProjectTasksCollection = collect(
-      await Promise.all(asanaProjects.map(project => getTasks(client, project)))
+        dispatch({
+          type: "ASANA_PROJECT_ADDED",
+          project,
+          tasks,
+          loading: true
+        });
+      })
     );
-
-    const tasksCollection = asanaProjectTasksCollection
-      .flatten(1)
-      .unique("gid")
-      .map(({ custom_fields, ...task }) => ({
-        ...task,
-        custom_fields: custom_fields.filter(obj => !!obj.enum_value),
-        ...custom_fields
-          .filter(obj => !!obj.number_value)
-          .reduce(
-            (accumulator, { name, number_value }) => ({
-              [camelcase(name)]: number_value,
-              ...accumulator
-            }),
-            {}
-          )
-      }));
-
-    const taskKeyMap = tasksCollection
-      .mapWithKeys(({ gid }) => [gid, true])
-      .all();
-    const merged = tasksCollection.merge(
-      collect(asanaTasks)
-        .filter(({ gid }) => !taskKeyMap[gid])
-        .all()
-    );
-
-    dispatch({
-      type: "SUCCESS_LOADING_ASANATASKS",
-      loading: false,
-      data: merged.toArray()
-    });
-
-    dispatch({
-      type: SUCCESS_LOADING_ASANA_PROJECTS,
-      data: asanaProjectTasksCollection
-        .map((projectTasks, index) => {
-          if (!asanaProjects[index]) {
-            collect(projectTasks).dump();
-            collect({ index }).dump();
-          }
-
-          return projectTasks;
-        })
-        .map((projectTasks, index) => ({
-          tasks: collect(projectTasks)
-            .pluck("gid")
-            .toArray(),
-          ...asanaProjects[index]
-        }))
-        .toArray()
-    });
   } catch (error) {
-    dispatch({ type: SET_LOADING_ASANA_TASKS, loading: false });
     Logger.error(error.callStack || error);
-    return false;
+  } finally {
+    dispatch({ type: "FINISHED_LOADING_ASANA_TASKS" });
   }
 };
 

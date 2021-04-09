@@ -1,4 +1,4 @@
-/* jshint maxcomplexity:8 */
+/* jshint maxcomplexity:10 */
 
 import { REHYDRATE } from "redux-persist";
 import collect from "collect.js";
@@ -15,31 +15,25 @@ export default () => {
 
   const onProjectsAddedHandler = ({ state, projects }) => {
     const projectCollection = collect(projects).where("name", true);
-    const projectIdsCollection = projectCollection.pluck(uuidKey);
-
-    const ids = projectIdsCollection
-      .merge(state.ids)
-      .unique()
-      .sort()
-      .toArray();
 
     const data = collect(state.data)
-      .whereNotIn(uuidKey, projectIdsCollection.toArray())
+      .whereNotIn(uuidKey, projectCollection.pluck(uuidKey).toArray())
       .merge(projectCollection.toArray())
       .unique(uuidKey)
-      .sortBy(uuidKey)
-      .toArray();
+      .sortBy(uuidKey);
 
     return {
       ...state,
-      loading: false,
-      ids,
-      data,
+      ids: data.pluck(uuidKey).toArray(),
+      data: data.toArray(),
       timestamp: new Date()
     };
   };
 
-  return (state = initialState, { type, loading, data, payload } = {}) => {
+  return (
+    state = initialState,
+    { type, loading, project, tasks, payload } = {}
+  ) => {
     switch (type) {
       case REHYDRATE:
         if (!payload || !payload.asanaProjects) {
@@ -55,8 +49,15 @@ export default () => {
         });
       case "SET_LOADING_ASANAPROJECTS":
         return { ...state, loading };
-      case "SUCCESS_LOADING_ASANAPROJECTS":
-        return onProjectsAddedHandler({ state, projects: data });
+      case "STARTED_LOADING_ASANA_PROJECTS":
+        return { ...state, loading: true };
+      case "ASANA_PROJECT_ADDED":
+        return onProjectsAddedHandler({
+          state,
+          projects: [{ ...project, tasks: tasks.pluck("gid").toArray() }]
+        });
+      case "FINISHED_LOADING_ASANA_PROJECTS":
+        return { ...state, loading: false };
       case "LOGOUT":
         return initialState;
       default:

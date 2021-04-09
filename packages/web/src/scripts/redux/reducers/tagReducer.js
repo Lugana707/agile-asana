@@ -15,7 +15,7 @@ export default () => {
   const uuidKey = "uuid";
 
   const onTasksSetHandler = ({ state, tasks }) => {
-    const tagsCollection = collect(tasks)
+    const tagsCollection = tasks
       .pluck("tags")
       .flatten(1)
       .where("name")
@@ -26,24 +26,21 @@ export default () => {
         color: getColourFromTag({ color })
       }));
 
-    const ids = tagsCollection
-      .pluck(uuidKey)
-      .unique()
-      .sort()
-      .toArray();
-
-    const data = tagsCollection.sortBy("name").toArray();
+    const data = collect(state.data)
+      .whereNotIn(uuidKey, tagsCollection.pluck(uuidKey).toArray())
+      .merge(tagsCollection.toArray())
+      .unique("name")
+      .sortBy(uuidKey);
 
     return {
       ...state,
-      loading: false,
-      ids,
-      data,
+      ids: data.pluck(uuidKey).toArray(),
+      data: data.toArray(),
       timestamp: new Date()
     };
   };
 
-  return (state = initialState, { type, loading, data, payload } = {}) => {
+  return (state = initialState, { type, loading, tasks, payload } = {}) => {
     switch (type) {
       case REHYDRATE:
         if (!payload || !payload.asanaTasks) {
@@ -54,11 +51,10 @@ export default () => {
 
         return onTasksSetHandler({
           state,
-          loading: false,
-          tasks: asanaTasks.data || asanaTasks.asanaTasks
+          tasks: collect(asanaTasks.data || asanaTasks.asanaTasks || [])
         });
-      case "SUCCESS_LOADING_ASANATASKS":
-        return onTasksSetHandler({ state, tasks: data });
+      case "ASANA_PROJECT_ADDED":
+        return onTasksSetHandler({ state, tasks });
       case "LOGOUT":
         return initialState;
       default:

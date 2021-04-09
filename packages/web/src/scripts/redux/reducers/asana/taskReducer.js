@@ -1,4 +1,4 @@
-/* jshint maxcomplexity:8 */
+/* jshint maxcomplexity:11 */
 
 import { REHYDRATE } from "redux-persist";
 import collect from "collect.js";
@@ -29,33 +29,21 @@ export default () => {
   });
 
   const onTasksAddedHandler = ({ state, tasks }) => {
-    const tasksCollection = collect(tasks).map(parseTask);
-
-    const taskIdsCollection = tasksCollection.pluck(uuidKey);
-
-    const ids = taskIdsCollection
-      .merge(state.ids)
-      .unique()
-      .sort()
-      .toArray();
-
     const data = collect(state.data)
-      .whereNotIn(uuidKey, taskIdsCollection.toArray())
-      .merge(tasksCollection.toArray())
+      .whereNotIn(uuidKey, tasks.pluck(uuidKey).toArray())
+      .merge(tasks.map(parseTask).toArray())
       .unique(uuidKey)
-      .sortBy(uuidKey)
-      .toArray();
+      .sortBy(uuidKey);
 
     return {
       ...state,
-      loading: false,
-      ids,
-      data,
+      ids: data.pluck(uuidKey).toArray(),
+      data: data.toArray(),
       timestamp: new Date()
     };
   };
 
-  return (state = initialState, { type, loading, data, payload } = {}) => {
+  return (state = initialState, { type, loading, tasks, payload } = {}) => {
     switch (type) {
       case REHYDRATE:
         if (!payload || !payload.asanaTasks) {
@@ -67,12 +55,16 @@ export default () => {
         return onTasksAddedHandler({
           state,
           loading: false,
-          tasks: asanaTasks.data || asanaTasks.asanaTasks
+          tasks: collect(asanaTasks.data || asanaTasks.asanaTasks || [])
         });
       case "SET_LOADING_ASANATASKS":
         return { ...state, loading };
-      case "SUCCESS_LOADING_ASANATASKS":
-        return onTasksAddedHandler({ state, tasks: data });
+      case "STARTED_LOADING_ASANA_TASKS":
+        return { ...state, loading: true };
+      case "ASANA_PROJECT_ADDED":
+        return onTasksAddedHandler({ state, tasks });
+      case "FINISHED_LOADING_ASANA_TASKS":
+        return { ...state, loading: false };
       case "LOGOUT":
         return initialState;
       default:

@@ -15,7 +15,7 @@ export default () => {
       .all();
 
   const onTasksSetHandler = ({ state, tasks }) => {
-    const assigneeCollection = collect(tasks)
+    const assigneeCollection = tasks
       .pluck("assignee")
       .where()
       .map(({ gid, ...user }) => ({
@@ -25,14 +25,20 @@ export default () => {
       .unique(uuidKey)
       .sortBy(uuidKey);
 
-    const ids = assigneeCollection.pluck(uuidKey).toArray();
+    const data = collect(state.data)
+      .whereNotIn(uuidKey, assigneeCollection.pluck(uuidKey).toArray())
+      .merge(assigneeCollection.map(parseUser).toArray())
+      .unique(uuidKey);
 
-    const data = assigneeCollection.map(parseUser).toArray();
-
-    return { ...state, ids, data };
+    return {
+      ...state,
+      ids: data.pluck(uuidKey).toArray(),
+      data: data.toArray(),
+      timestamp: new Date()
+    };
   };
 
-  return (state = initialState, { type, data, payload } = {}) => {
+  return (state = initialState, { type, tasks, payload } = {}) => {
     switch (type) {
       case REHYDRATE:
         if (!payload || !payload.users) {
@@ -46,8 +52,8 @@ export default () => {
             .pluck(uuidKey)
             .toArray()
         };
-      case "SUCCESS_LOADING_ASANATASKS":
-        return onTasksSetHandler({ state, tasks: data });
+      case "ASANA_PROJECT_ADDED":
+        return onTasksSetHandler({ state, tasks });
       case "LOGOUT":
         return initialState;
       default:
