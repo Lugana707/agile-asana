@@ -121,7 +121,10 @@ const SprintStoryPointsTrend = ({ sprints, colours }) => {
       maintainAspectRatio: false,
       tooltips: {
         mode: "index",
-        intersect: false
+        intersect: false,
+        callbacks: {
+          title: tooltipItem => sprintsCollection.get(tooltipItem[0].index).name
+        }
       },
       scales: {
         xAxes: [
@@ -160,7 +163,7 @@ const SprintStoryPointsTrend = ({ sprints, colours }) => {
         ]
       }
     }),
-    []
+    [sprintsCollection]
   );
 
   const legend = useMemo(
