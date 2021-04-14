@@ -30,7 +30,7 @@ const Report = ({ loading, sprints, numberOfTags = 3 }) => {
         .map(sprint => {
           const {
             uuid,
-            number,
+            name,
             storyPoints,
             completedStoryPoints,
             tasksCompleted
@@ -51,7 +51,7 @@ const Report = ({ loading, sprints, numberOfTags = 3 }) => {
 
           return {
             uuid,
-            number,
+            name,
             percentageComplete,
             tags
           };
@@ -59,7 +59,7 @@ const Report = ({ loading, sprints, numberOfTags = 3 }) => {
         .pipe(collection =>
           collection.push({
             uuid: false,
-            number: "",
+            name: "",
             tags: popularTags
               .map(tag => ({
                 name: tag,
@@ -84,14 +84,14 @@ const Report = ({ loading, sprints, numberOfTags = 3 }) => {
   );
 
   const TableRow = ({ data }) => {
-    const { uuid, number, tags, percentageComplete } = data;
+    const { uuid, name, tags, percentageComplete } = data;
 
     return (
       <tr key={uuid}>
         <td className="text-left align-middle">
           <LinkContainer to={`/sprint/${uuid}`}>
             <Button variant="link" className="pl-0">
-              {number}
+              {name}
             </Button>
           </LinkContainer>
         </td>
