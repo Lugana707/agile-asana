@@ -32,6 +32,7 @@
     "ga-4-react": "^0.1.271",
     "js-logger": "^1.6.0",
     "moment": "^2.27.0",
+    "node-notifier": "8.0.1",
     "node-sass": "^4.14.1",
     "pluralise": "^1.0.1",
     "random-flat-colors": "^1.0.7",
