@@ -82,3 +82,9 @@
     }
   }
 }
+
+.table-wrapper {
+  @extend .overflow-auto;
+
+  max-height: 75vh;
+}

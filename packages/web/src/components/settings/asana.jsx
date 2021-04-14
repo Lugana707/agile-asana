@@ -1,4 +1,4 @@
-import React, { useMemo, useReducer, useEffect } from "react";
+import React, { useReducer, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import {
   Row,
@@ -6,6 +6,7 @@ import {
   Form,
   Tooltip,
   OverlayTrigger,
+  ButtonGroup,
   Button
 } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
@@ -35,11 +36,6 @@ const AsanaSettings = ({ configured, history }) => {
   );
 
   const { asanaApiKey, asanaDefaultWorkspace, user } = settingsFromState;
-
-  const showExperimentalFeatures = useMemo(
-    () => user && user.name === "Sam Albon-Li",
-    [user]
-  );
 
   const dispatch = useDispatch();
 
@@ -145,7 +141,9 @@ const AsanaSettings = ({ configured, history }) => {
             <Form.Group as={Col} xs="12" controlId="formAsanaWorkspace">
               <Form.Label>Asana Workspace</Form.Label>
               {workspaces.length === 1 && asanaDefaultWorkspace ? (
-                <span className="d-block">{asanaDefaultWorkspace.name}</span>
+                <ul>
+                  <li>{asanaDefaultWorkspace.name}</li>
+                </ul>
               ) : (
                 <Form.Control
                   as="select"
@@ -171,11 +169,16 @@ const AsanaSettings = ({ configured, history }) => {
               )}
             </Form.Group>
           )}
-          <Form.Group as={Col} xs="12" hidden={!showExperimentalFeatures}>
-            <AsanaBacklogModal variant="primary" className="mb-2" />
-          </Form.Group>
-          <Form.Group as={Col} xs="12" hidden={!showExperimentalFeatures}>
-            <AsanaSprintModal variant="primary" className="mb-2" />
+          <Form.Group as={Col} xs="12" controlId="formAsanaFilters">
+            <Form.Label>Asana Project Filters</Form.Label>
+            <ButtonGroup className="d-block">
+              <AsanaBacklogModal variant="primary" className="mb-2">
+                Backlogs
+              </AsanaBacklogModal>
+              <AsanaSprintModal variant="primary" className="mb-2">
+                Sprints
+              </AsanaSprintModal>
+            </ButtonGroup>
           </Form.Group>
         </Row>
         <Row>

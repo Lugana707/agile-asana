@@ -117,19 +117,16 @@ const BacklogModal = ({ configured, children, ...props }) => {
   return (
     <>
       <Button onClick={handleShow} {...props}>
-        {children || "WIP: Configure Backlog"}
+        {children || "Configure Backlog"}
       </Button>
-      <Modal show={show} onHide={handleClose} size="lg" centered>
+      <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header
           className="bg-secondary text-dark border-bottom-0"
           closeButton
         >
           <Modal.Title>Configure Backlog</Modal.Title>
         </Modal.Header>
-        <Modal.Body
-          className="bg-dark text-light overflow-auto"
-          style={{ maxHeight: "50vh" }}
-        >
+        <Modal.Body className="bg-dark text-light overflow-auto">
           <div>
             <p>
               Everyone treats their backlog in Asana differently - some teams
@@ -156,11 +153,16 @@ const BacklogModal = ({ configured, children, ...props }) => {
               />
             </Form.Group>
           )}
-          <Table
-            loading={projects === false}
-            data={filteredProjects}
-            row={TableRow}
-          />
+          <div
+            className={`table-wrapper ${projects === false ? "p-3" : ""}`}
+            style={{ maxHeight: "65vh" }}
+          >
+            <Table
+              loading={projects === false}
+              data={filteredProjects}
+              row={TableRow}
+            />
+          </div>
         </Modal.Body>
         <Modal.Footer className="bg-dark text-light border-top-0">
           <Button variant="secondary" onClick={handleClose}>

@@ -11,13 +11,17 @@ import withConfigured from "../../withConfigured";
 const SprintModal = ({ configured, children, ...props }) => {
   const dispatch = useDispatch();
 
+  const { loading, ...settings } = useSelector(state => state.settings);
+  const { ...asanaSettings } = useSelector(state => state.asanaSettings);
+
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleShow = () => {
+    setSprintMatch(asanaSettings.sprintMatch || "");
 
-  const { loading, ...settings } = useSelector(state => state.settings);
-  const { ...asanaSettings } = useSelector(state => state.asanaSettings);
+    setShow(true);
+  };
 
   const { asanaApiKey, asanaDefaultWorkspace } = settings;
 
@@ -118,7 +122,7 @@ const SprintModal = ({ configured, children, ...props }) => {
           </a>
         </td>
         <td className="align-middle">
-          <i>{`Sprint ${number}` || "Cannot find sprint number!"}</i>
+          <i>{number || "Cannot find sprint number!"}</i>
         </td>
       </tr>
     );
@@ -127,19 +131,16 @@ const SprintModal = ({ configured, children, ...props }) => {
   return (
     <>
       <Button onClick={handleShow} {...props}>
-        {children || "WIP: Configure Sprints"}
+        {children || "Configure Sprints"}
       </Button>
-      <Modal show={show} onHide={handleClose} size="lg" centered>
+      <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header
           className="bg-secondary text-dark border-bottom-0"
           closeButton
         >
           <Modal.Title>Configure Sprints</Modal.Title>
         </Modal.Header>
-        <Modal.Body
-          className="bg-dark text-light overflow-auto"
-          style={{ maxHeight: "50vh" }}
-        >
+        <Modal.Body className="bg-dark text-light">
           <div>
             <p>Everyone records their sprints in Asana differently.</p>
             <p>
@@ -161,11 +162,16 @@ const SprintModal = ({ configured, children, ...props }) => {
               />
             </Form.Group>
           )}
-          <Table
-            loading={projects === false}
-            data={filteredProjects}
-            row={TableRow}
-          />
+          <div
+            className={`table-wrapper ${projects === false ? "p-3" : ""}`}
+            style={{ maxHeight: "65vh" }}
+          >
+            <Table
+              loading={projects === false}
+              data={filteredProjects}
+              row={TableRow}
+            />
+          </div>
         </Modal.Body>
         <Modal.Footer className="bg-dark text-light border-top-0">
           <Button variant="secondary" onClick={handleClose}>
