@@ -9,11 +9,11 @@ const TasksAtRiskCardAndTable = ({ currentSprint }) => {
     return <div />;
   }
 
-  const { uuid, number } = currentSprint;
+  const { uuid, name } = currentSprint;
 
   return (
     <Widget to={`/sprint/${uuid}`} bg="primary" text="dark">
-      <div className="pb-1">Sprint {number}</div>
+      <div className="pb-1">{name}</div>
       <SprintStoryPointProgress sprint={currentSprint} sm />
       <SprintTimeProgress className="mt-1" sprint={currentSprint} />
     </Widget>
