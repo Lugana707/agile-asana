@@ -65,6 +65,7 @@ const parseProjectIntoSprint = (
   return {
     uuid: gid,
     number: week,
+    name,
     storyPoints,
     completedStoryPoints,
     startOn,

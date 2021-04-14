@@ -17,7 +17,7 @@ import moment from "moment";
 const InfoCard = ({ sprint, showSummary, showLinks }) => {
   const {
     uuid,
-    number,
+    name,
     startOn,
     finishedOn,
     storyPoints,
@@ -61,12 +61,14 @@ const InfoCard = ({ sprint, showSummary, showLinks }) => {
       <Card.Body>
         <Card.Title>
           <Link as={Button} to={`/sprint/${uuid}`} variant="link">
-            <span className="text-light">Sprint {number}</span>
-            {completed ? (
-              <span className="text-success"> Completed</span>
-            ) : (
-              <span className="text-warning"> (In Progress)</span>
-            )}
+            <span className="text-light text-nowrap pr-1">{name}</span>
+            <span className="d-inline-block">
+              {completed ? (
+                <span className="text-success">Completed</span>
+              ) : (
+                <span className="text-warning">(In&nbsp;Progress)</span>
+              )}
+            </span>
             {completed && !showSummary && (
               <span className="text-muted float-right">
                 {completedStoryPoints} / {storyPoints}
@@ -74,8 +76,8 @@ const InfoCard = ({ sprint, showSummary, showLinks }) => {
             )}
           </Link>
         </Card.Title>
+        <hr />
         <Card.Subtitle className="text-muted">
-          <hr />
           <span className="d-block">
             <span className="font-weight-bold">
               {moment(startOn).format("MMM D")}
@@ -84,8 +86,10 @@ const InfoCard = ({ sprint, showSummary, showLinks }) => {
             <span className="font-weight-bold">
               {moment(finishedOn).format("MMM D")}
             </span>
-            {completed && !showSummary && (
-              <span className="float-right">
+            {!showSummary && (
+              <span
+                className={`float-right ${completed ? "" : "text-warning"}`}
+              >
                 {Math.floor((completedStoryPoints / storyPoints) * 100)}%
               </span>
             )}
