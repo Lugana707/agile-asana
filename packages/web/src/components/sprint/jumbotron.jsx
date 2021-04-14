@@ -23,7 +23,7 @@ const SprintJumobtron = ({
 }) => {
   const { pathname } = location;
 
-  const { number, uuid, externalLink } = sprint;
+  const { name, uuid, externalLink } = sprint;
 
   const links = collect([
     { title: "Dashboard", url: "" },
@@ -41,7 +41,7 @@ const SprintJumobtron = ({
     <Jumbotron fluid>
       <Container>
         <Dropdown className="btn-link text-dark float-left pr-2">
-          <Dropdown.Toggle as="h1">Sprint {number}</Dropdown.Toggle>
+          <Dropdown.Toggle as="h1">{name}</Dropdown.Toggle>
           <Dropdown.Menu>
             {sprints.map(sprint => (
               <Dropdown.Item
@@ -52,7 +52,9 @@ const SprintJumobtron = ({
                   ""
                 )}`}
                 disabled={sprint.uuid === uuid}
-              >{`Sprint ${sprint.number}`}</Dropdown.Item>
+              >
+                {sprint.name}
+              </Dropdown.Item>
             ))}
           </Dropdown.Menu>
         </Dropdown>
