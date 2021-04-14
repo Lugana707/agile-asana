@@ -56,7 +56,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "yarn test:hint && yarn test:depcheck && yarn test:node-audit",
+    "test": "yarn test:hint && yarn test:depcheck && yarn test:node-audit && yarn test:react --coverage",
     "test:react": "react-scripts test",
     "test:hint": "jshint src/",
     "test:depcheck": "depcheck .",
