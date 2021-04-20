@@ -28,14 +28,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.3.4
       - name: Build & Test & Deploy
-        working-directory: packages/${{ matrix.package }}
+        working-directory: packages/${{ matrix.default.package }}
         run: |
           DOCKER_BUILDKIT=1 docker build \
-            -t agilelytics/${{ matrix.package }}:latest \
+            -t agilelytics/${{ matrix.default.package }}:latest \
             --build-arg BUILDKIT_INLINE_CACHE=1 \
             --build-arg ENVIRONMENT_NAME=${{ env.ENVIRONMENT_NAME }} \
             --build-arg AWS_DEFAULT_REGION=${{ env.AWS_DEFAULT_REGION }} \
             --build-arg AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }} \
             --build-arg AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }} \
-            --target ${{ matrix.target }} \
+            --target ${{ matrix.default.target }} \
             .
