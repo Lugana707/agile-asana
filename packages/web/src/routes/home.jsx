@@ -7,16 +7,29 @@ import SprintTagsAreaChart from "../components/sprint/charts/sprintTagsAreaChart
 import TasksAtRiskWidget from "../components/backlog/alerts/tasksAtRiskWidget";
 import SprintProgressWidget from "../components/sprint/widgets/progress";
 import BacklogStoryPoints from "../components/backlog/widgets/storyPoints";
-import withSprints from "../components/sprint/withSprints";
+import withSprintsCombined from "../components/sprint/withSprintsCombined";
 
-const Home = ({ sprints }) => {
+const Home = ({ sprints, sprintsCombined }) => {
   const [filteredSprints, setFilteredSprints] = useState(false);
+
+  const sprintsCombinedForDisplay = useMemo(
+    () =>
+      filteredSprints && filteredSprints.isNotEmpty()
+        ? sprintsCombined
+            .whereIn("number", filteredSprints.pluck("number").toArray())
+            .toArray()
+        : [],
+    [filteredSprints, sprintsCombined]
+  );
+
   const sprintsForDisplay = useMemo(
     () =>
       filteredSprints && filteredSprints.isNotEmpty()
-        ? filteredSprints.toArray()
+        ? sprints
+            .whereIn("number", filteredSprints.pluck("number").toArray())
+            .toArray()
         : [],
-    [filteredSprints]
+    [filteredSprints, sprints]
   );
 
   return (
@@ -30,17 +43,17 @@ const Home = ({ sprints }) => {
         <Col xs={12} className="pb-4">
           <SprintFilter
             defaultCount={20}
-            sprints={sprints}
+            sprints={sprintsCombined}
             setSprints={setFilteredSprints}
           />
         </Col>
       </Row>
-      {!sprintsForDisplay.length ? (
+      {!sprintsForDisplay.length && !sprintsCombinedForDisplay.length ? (
         <div className="loading-spinner centre" />
       ) : (
         <Row className="mr-4">
           <Col xs={12} lg={12} style={{ height: "50vh" }}>
-            <SprintStoryPointsTrend sprints={sprintsForDisplay} />
+            <SprintStoryPointsTrend sprints={sprintsCombinedForDisplay} />
           </Col>
           <Col
             xs={12}
@@ -64,4 +77,4 @@ const Home = ({ sprints }) => {
   );
 };
 
-export default withSprints(Home);
+export default withSprintsCombined(Home);
