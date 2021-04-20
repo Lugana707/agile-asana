@@ -3,7 +3,7 @@ import collect from "collect.js";
 import moment from "moment";
 import { releases } from "./code";
 
-const RUNNING_AVERAGE_WEEK_COUNT = 3;
+export const RUNNING_AVERAGE_WEEK_COUNT = 3;
 
 const parseProjectIntoSprint = (
   asanaProject,
