@@ -18,13 +18,9 @@ jobs:
   build-test-deploy:
     name: Build, Test, Deploy
     runs-on: ubuntu-latest
-    needs:
-      - deploy-cloudformation
     strategy:
       matrix:
         default:
-          - package: web
-            target: release
           - package: api
             target: deploy
     steps:
