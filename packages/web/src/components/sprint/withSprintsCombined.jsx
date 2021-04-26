@@ -18,7 +18,7 @@ export default WrappedComponent =>
             completedStoryPoints: value.sum("completedStoryPoints"),
             customFieldNames: collect([]),
             externalLink: "https://app.asana.com/",
-            finishedOn: false,
+            finishedOn: moment.max(value.pluck("finishedOn").toArray()),
             isCompletedSprint: !!value.firstWhere("isCompletedSprint", true),
             isCurrentSprint: !!value.firstWhere("isCurrentSprint", true),
             name: `Sprint ${key} (Combined)`,
@@ -32,7 +32,7 @@ export default WrappedComponent =>
               .flatten(1)
               .unique("uuid"),
             sprintLength: value.max("sprintLength"),
-            startOn: moment(value.map(({ startOn }) => startOn.unix()).min()),
+            startOn: moment.min(value.pluck("startOn").toArray()),
             storyPoints: value.sum("storyPoints"),
             tasks: value.pluck("tasks").flatten(1),
             tasksCompleted: value.pluck("tasksCompleted").flatten(1),

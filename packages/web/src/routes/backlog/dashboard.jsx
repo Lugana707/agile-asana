@@ -13,16 +13,19 @@ import TagsFilter, {
 import TaskWeightKeySelector, {
   withTaskWeightKeyFromURL
 } from "../../components/library/taskWeightKeySelector";
-import withSprints from "../../components/sprint/withSprints";
+import withSprintsCombined from "../../components/sprint/withSprintsCombined";
 
-const Forecast = ({ sprints, history, taskWeightKey, tagsFilter }) => {
+const Forecast = ({ sprintsCombined, history, taskWeightKey, tagsFilter }) => {
   const [filteredSprints, setFilteredSprints] = useState(false);
-  const sprintsForDisplay = useMemo(
+
+  const sprintsCombinedForDisplay = useMemo(
     () =>
       filteredSprints && filteredSprints.isNotEmpty()
-        ? filteredSprints.toArray()
+        ? sprintsCombined
+            .whereIn("number", filteredSprints.pluck("number").toArray())
+            .toArray()
         : [],
-    [filteredSprints]
+    [filteredSprints, sprintsCombined]
   );
 
   return (
@@ -45,7 +48,7 @@ const Forecast = ({ sprints, history, taskWeightKey, tagsFilter }) => {
           <Col xs={12}>
             <SprintFilter
               defaultCount={54}
-              sprints={sprints}
+              sprints={sprintsCombined}
               setSprints={setFilteredSprints}
             />
           </Col>
@@ -65,7 +68,7 @@ const Forecast = ({ sprints, history, taskWeightKey, tagsFilter }) => {
             style={{ height: "50vh" }}
           >
             <BacklogProgressPerSprint
-              sprints={sprintsForDisplay}
+              sprints={sprintsCombinedForDisplay}
               weight={taskWeightKey}
               tags={tagsFilter}
             />
@@ -76,7 +79,7 @@ const Forecast = ({ sprints, history, taskWeightKey, tagsFilter }) => {
             lg={6}
             style={{ height: "50vh" }}
           >
-            <SprintStoryPointsTrend sprints={sprintsForDisplay} />
+            <SprintStoryPointsTrend sprints={sprintsCombinedForDisplay} />
           </Col>
         </Row>
       </Container>
@@ -85,5 +88,5 @@ const Forecast = ({ sprints, history, taskWeightKey, tagsFilter }) => {
 };
 
 export default withRouter(
-  withTagsFilterFromURL(withTaskWeightKeyFromURL(withSprints(Forecast)))
+  withTagsFilterFromURL(withTaskWeightKeyFromURL(withSprintsCombined(Forecast)))
 );
