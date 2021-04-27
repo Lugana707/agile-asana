@@ -128,8 +128,3 @@ export const selectSprints = createSelector(
           .sortByDesc(({ publishedAt }) => publishedAt.unix())
       }))
 );
-
-export const selectCurrentSprint = createSelector(
-  selectSprints,
-  sprintsCollection => sprintsCollection.firstWhere("isCurrentSprint", true)
-);

@@ -2,14 +2,16 @@ import { createSelector } from "reselect";
 import collect from "collect.js";
 import moment from "moment";
 import { selectTasks } from "./tasks";
-import { selectCurrentSprint } from "./sprints";
+import { selectSprints } from "./sprints";
 
 export const selectForecastSprints = createSelector(
   state => state.asanaProjects.data,
   selectTasks,
-  selectCurrentSprint,
-  (asanaProjects, tasksCollection, currentSprint) =>
-    collect(asanaProjects)
+  selectSprints,
+  (asanaProjects, tasksCollection, sprints) => {
+    const currentSprint = sprints.firstWhere("isCurrentSprint");
+
+    return collect(asanaProjects)
       .filter(({ isBacklog, name }) => isBacklog && /\WRefined/iu.test(name))
       .pluck("tasks")
       .flatten(1)
@@ -61,5 +63,6 @@ export const selectForecastSprints = createSelector(
             .unique()
             .sort()
         };
-      })
+      });
+  }
 );

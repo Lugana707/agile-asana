@@ -4,20 +4,13 @@ import SprintTimeProgress from "../timeProgress";
 import SprintStoryPointProgress from "../storyPointProgress";
 import withCurrentSprint from "../withCurrentSprint";
 
-const TasksAtRiskCardAndTable = ({ currentSprint }) => {
-  if (!currentSprint) {
-    return <div />;
-  }
-
-  const { uuid, name } = currentSprint;
-
-  return (
-    <Widget to={`/sprint/${uuid}`} bg="primary" text="dark">
-      <div className="pb-1">{name}</div>
+const SprintWidgetProgress = ({ currentSprints }) =>
+  currentSprints.map(currentSprint => (
+    <Widget to={`/sprint/${currentSprint.uuid}`} bg="primary" text="dark">
+      <div className="pb-1">{currentSprint.name}</div>
       <SprintStoryPointProgress sprint={currentSprint} sm />
       <SprintTimeProgress className="mt-1" sprint={currentSprint} />
     </Widget>
-  );
-};
+  ));
 
-export default withCurrentSprint(TasksAtRiskCardAndTable);
+export default withCurrentSprint(SprintWidgetProgress);

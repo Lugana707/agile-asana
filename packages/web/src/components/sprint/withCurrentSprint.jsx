@@ -1,9 +1,17 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { selectCurrentSprint } from "../../scripts/redux/selectors/sprints";
+import { selectSprints } from "../../scripts/redux/selectors/sprints";
 
 export default WrappedComponent => props => {
-  const currentSprint = useSelector(selectCurrentSprint);
+  const sprints = useSelector(selectSprints);
 
-  return <WrappedComponent {...props} currentSprint={currentSprint} />;
+  const currentSprints = sprints.where("isCurrentSprint");
+
+  return (
+    <WrappedComponent
+      {...props}
+      currentSprints={currentSprints}
+      currentSprint={currentSprints.first()}
+    />
+  );
 };
