@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from "react";
-import { Bar } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import collect from "collect.js";
 import moment from "moment";
 import withSprints from "../withSprints";
@@ -60,15 +60,21 @@ const StoryPointsPerDay = ({ sprint, sprints, colours }) => {
     ]
   );
 
-  const data = useMemo(
-    () => ({
-      labels: daysOfTheWeek
+  const labels = useMemo(
+    () =>
+      daysOfTheWeek
         .map(dayOfWeek =>
           moment()
             .weekday(dayOfWeek + sprintStartOn.weekday())
             .format("dddd")
         )
-        .toArray(),
+        .pipe(collection => collect(["", ...collection.toArray()])),
+    [daysOfTheWeek, sprintStartOn]
+  );
+
+  const data = useMemo(
+    () => ({
+      labels: labels.toArray(),
       datasets: [
         {
           label: "Burn Down",
@@ -85,40 +91,40 @@ const StoryPointsPerDay = ({ sprint, sprints, colours }) => {
             )
             .map(obj => committedStoryPoints - obj)
             .take(moment().diff(sprintStartOn, "days") + 1)
-            .toArray()
+            .pipe(collection => [committedStoryPoints, ...collection.toArray()])
         },
         {
           label: "Ideal Trend",
           type: "line",
           color: colours.idealTrend,
           pointRadius: 0,
-          data: daysOfTheWeek
+          data: labels
             .map(
               (obj, index) =>
-                (committedStoryPoints / (daysOfTheWeek.count() - 1)) * index
+                (committedStoryPoints / (labels.count() - 1)) * index
             )
             .reverse()
             .toArray()
         },
         {
-          label: "Story Points Done",
+          label: "Story Points to Done",
           type: "bar",
-          hidden: true,
           color: colours.completedStoryPoints,
           data: daysOfTheWeek
             .map(obj => getStoryPointsForSprintDay(obj))
-            .toArray()
+            .pipe(collection => [0, ...collection.toArray()])
         }
       ].map(({ color, ...obj }) => ({
-        ...obj,
         borderColor: color,
         backgroundColor: color,
         cubicInterpolationMode: "monotone",
         fill: false,
-        borderWidth: 1
+        borderWidth: 1.5,
+        ...obj
       }))
     }),
     [
+      labels,
       sprintStartOn,
       getStoryPointsForSprintDay,
       daysOfTheWeek,
@@ -157,7 +163,7 @@ const StoryPointsPerDay = ({ sprint, sprints, colours }) => {
 
   return (
     <div className="chartjs-min-height">
-      <Bar data={data} options={options} />
+      <Line data={data} options={options} />
     </div>
   );
 };
