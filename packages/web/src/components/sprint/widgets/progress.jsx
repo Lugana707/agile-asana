@@ -6,7 +6,12 @@ import withCurrentSprint from "../withCurrentSprint";
 
 const SprintWidgetProgress = ({ currentSprints }) =>
   currentSprints.map(currentSprint => (
-    <Widget to={`/sprint/${currentSprint.uuid}`} bg="primary" text="dark">
+    <Widget
+      to={`/sprint/${currentSprint.uuid}`}
+      bg="primary"
+      text="dark"
+      key={currentSprint.uuid}
+    >
       <div className="pb-1">{currentSprint.name}</div>
       <SprintStoryPointProgress sprint={currentSprint} sm />
       <SprintTimeProgress className="mt-1" sprint={currentSprint} />
